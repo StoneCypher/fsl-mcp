@@ -1,2 +1,2 @@
-
-export { double, unhandled_external } from './stub.js';
+// Public API surface for fsl-mcp. Tool exports are added by later tasks.
+export {};
