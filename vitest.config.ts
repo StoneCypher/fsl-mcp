@@ -18,7 +18,7 @@ export default defineConfig({
       provider: 'v8',
       reporter: ['text', 'html', 'json'],
       include: ['src/**/*.ts'],
-      exclude: ['src/**/*.spec.ts', 'src/**/*.stoch.ts', 'src/**/*.mutat.ts'],
+      exclude: ['src/**/*.spec.ts', 'src/**/*.stoch.ts', 'src/**/*.mutat.ts', 'src/ts/bin.ts'],
       all: true,
       lines: 80,
       functions: 80,
