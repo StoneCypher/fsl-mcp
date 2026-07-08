@@ -19,6 +19,7 @@
   "type": "module",
   "module": "dist/index.mjs",
   "main": "dist/index.cjs",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "import": {
@@ -28,9 +29,6 @@
       "require": {
         "types": "./dist/index.d.cts",
         "default": "./dist/index.cjs"
-      },
-      "default": {
-        "default": "./dist/index.mjs"
       }
     }
   },
@@ -45,8 +43,8 @@
     "clean": "node src/build_js/clean.js",
     "update_madlibs": "node src/build_js/update_madlibs.js && cp README.md docs",
     "typescript": "tsc --build tsconfig.json",
-    "terser": "node src/build_js/minify_bundles.js && cp dist/index.iife.js dist/index.iife.js.map docs",
-    "dts": "cp build/ts/*.d.ts build/ts/*.d.ts.map dist/",
+    "terser": "node src/build_js/minify_bundles.js",
+    "dts": "cp build/ts/*.d.ts build/ts/*.d.ts.map dist/ && cp -r build/ts/tools dist/tools && rm -f dist/tools/*.js dist/tools/*.js.map",
     "rollup": "rollup -c",
     "viz_png": "node src/build_js/render_visualizations.js && cp build/rollup/visualizations/bundle_*.png . && cp build/rollup/visualizations/bundle_*.png docs/ && cp build/rollup/visualizations/bundle_*.png docs/docs/",
     "site": "cp src/html/* docs && cp src/html/.nojekyll docs && cp README.md docs/ && cp dist/index.mjs docs/docs/ && cp src/html/*.png docs/docs",

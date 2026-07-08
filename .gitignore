@@ -149,3 +149,6 @@ reports/*
 
 # Developer-local build config (per-machine overrides)
 build.config.local.json
+
+# Subagent-driven-development scratch (ledger, briefs, reports, review diffs)
+.superpowers/

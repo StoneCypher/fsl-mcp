@@ -6,26 +6,33 @@ import dts            from 'rollup-plugin-dts';
 
 
 
-// The MCP server surface (createServer/startServer, added in Task 9) pulls in
-// @modelcontextprotocol/sdk, which drags along Node-only server dependencies
-// (express, cors, ajv, cross-spawn, ...) — including an ajv .json schema file
-// that plain Rollup can't parse without @rollup/plugin-json. None of that is
-// meaningful to inline into the public library bundles (a stdio server can't
-// run in a browser regardless), so it's left external here the same way the
-// dedicated bin bundle below externalizes it. jssm/jssm/viz are unaffected and
-// stay inlined as before.
-const server_deps_external = [ '@modelcontextprotocol/sdk', /^@modelcontextprotocol\/sdk\//, 'zod', /^node:/ ];
 
-// jssm/viz's renderer (@viz-js/viz) does an internal `await import(...)` of its
-// wasm-loading module. That dynamic import is a pre-existing latent issue for
-// these single-file bundles (it predates Task 9 — index.ts already re-exported
-// fslRender/jssm-viz before this task) that only surfaces once the SDK's own
-// resolve error (above) is fixed: Rollup refuses to emit a dynamic-import
-// split as a single `output.file`. `inlineDynamicImports` folds that chunk
-// back into the one file these configs already expect.
-const inline_dynamic_imports = true;
-
-
+// fsl-mcp is a stdio MCP server. It ships three ESM/CJS outputs and nothing else:
+//
+//   - bin.mjs   — the `npx fsl-mcp` executable (what actually runs)
+//   - index.mjs — the importable ESM library (the five tool functions +
+//                 createServer/startServer), for `import`-ing the server or
+//                 calling the tools directly in a Node program
+//   - index.cjs — the same library for CommonJS consumers (`require`)
+//
+// There is deliberately no IIFE/browser build: a stdio server can't run in a
+// browser, so a browser global would be dead weight.
+//
+// Every runtime dependency is left EXTERNAL in all bundles. jssm, jssm/viz,
+// the MCP SDK, and zod are all declared dependencies, so a consumer installing
+// fsl-mcp already has them — inlining them would bloat the bundles and defeat
+// dependency dedup. Keeping jssm/viz external also means its internal
+// `await import('@viz-js/viz')` stays a normal dynamic import (no single-file
+// inlining hack needed). The ESM .d.ts is produced by `tsc --build` and copied
+// into dist/ by the `dts` npm script; the CJS .d.cts is bundled by cjs_cts below.
+const external = [
+  'jssm',
+  'jssm/viz',
+  '@modelcontextprotocol/sdk',
+  /^@modelcontextprotocol\/sdk\//,
+  'zod',
+  /^node:/
+];
 
 
 
@@ -34,22 +41,19 @@ const es_config = {
   input: 'build/ts/index.js',
 
   output: {
-    file                 : 'build/rollup/index.mjs',
-    format               : 'es',
-    name                 : 'fsl-mcp',
-    sourcemap            : true,
-    inlineDynamicImports : inline_dynamic_imports
+    file      : 'build/rollup/index.mjs',
+    format    : 'es',
+    sourcemap : true
   },
 
-  external: server_deps_external,
+  external,
 
   plugins : [
 
     nodeResolve({
-      mainFields     : ['module', 'main'],
-      browser        : true,
-      extensions     : [ '.ts' ],
-      preferBuiltins : false
+      exportConditions : ['node'],
+      extensions       : [ '.ts' ],
+      preferBuiltins   : true
     }),
 
     commonjs(),
@@ -65,29 +69,24 @@ const es_config = {
 
 
 
-
-
 const cjs_config = {
 
   input: 'build/ts/index.js',
 
   output: {
-    file                 : 'build/rollup/index.cjs',
-    format               : 'commonjs',
-    name                 : 'fsl-mcp',
-    sourcemap            : true,
-    inlineDynamicImports : inline_dynamic_imports
+    file      : 'build/rollup/index.cjs',
+    format    : 'commonjs',
+    sourcemap : true
   },
 
-  external: server_deps_external,
+  external,
 
   plugins : [
 
     nodeResolve({
-      mainFields     : ['module', 'main'],
-      browser        : true,
-      extensions     : [ '.ts' ],
-      preferBuiltins : false
+      exportConditions : ['node'],
+      extensions       : [ '.ts' ],
+      preferBuiltins   : true
     }),
 
     commonjs()
@@ -98,88 +97,9 @@ const cjs_config = {
 
 
 
-
-
-const iife_config = {
-
-  input: 'build/ts/index.js',
-
-  output: {
-    file      : 'build/rollup/index.iife.js',
-    // IIFE's `name` becomes a `var` declaration, so (unlike the ES/CJS builds
-    // above) it must be a legal JS identifier once externals are involved —
-    // 'fsl-mcp' isn't. createServer/startServer need stdio and Node's process
-    // and can never run in a browser regardless of bundling, so the externals
-    // below are given inert placeholder globals: the rest of the IIFE surface
-    // (fslValidate/fslLint/fslExplain/fslSimulate/fslRender) is unaffected,
-    // and only calling createServer/startServer in-browser would throw.
-    name      : 'fslMcp',
-    globals   : {
-      '@modelcontextprotocol/sdk/server/mcp.js'  : '__fsl_mcp_sdk_unavailable_in_browser__',
-      '@modelcontextprotocol/sdk/server/stdio.js': '__fsl_mcp_sdk_unavailable_in_browser__',
-      zod                                        : '__fsl_mcp_sdk_unavailable_in_browser__'
-    },
-    sourcemap            : true,
-    inlineDynamicImports : inline_dynamic_imports
-  },
-
-  external: server_deps_external,
-
-  plugins : [
-
-    nodeResolve({
-      mainFields     : ['module', 'main'],
-      browser        : true,
-      extensions     : [ '.ts' ],
-      preferBuiltins : false
-    }),
-
-    commonjs()
-
-  ]
-
-};
-
-
-
-
-
-// const cli_config = {
-
-//   input: 'build/ts/cli.js',
-
-//   output: {
-//     file   : 'build/rollup/cli.cjs',
-//     format : 'commonjs',
-//     banner : '#!/usr/bin/env node',
-//     name   : 'fsl-mcp-cli'
-//   },
-
-//   plugins : [
-
-//     nodeResolve({
-//       mainFields     : ['module', 'main'],
-//       browser        : false,
-//       extensions     : [ '.ts', '.js' ],
-//       preferBuiltins : true
-//     }),
-
-//     commonjs(),
-
-//     visualizer()
-
-//   ]
-
-// };
-
-
-
-
-// Emits the CommonJS .d.cts declaration that used to live in
-// rollup.ctsphase.config.js. Input is the freshly-emitted .d.ts from
-// `tsc --build` (build/ts/index.d.ts), so this config does not need
-// to wait for the build chain's `dts` step to copy declarations into
-// dist/ — it can run in the same Rollup invocation as the bundlers.
+// Emits the CommonJS .d.cts declaration bundle from the freshly-emitted .d.ts
+// (build/ts/index.d.ts from `tsc --build`), folding the tool/type declarations
+// into one file for the CJS `require` types entry.
 const cjs_cts = {
 
   input: 'build/ts/index.d.ts',
@@ -188,6 +108,8 @@ const cjs_cts = {
     file   : './dist/index.d.cts',
     format : 'es'
   },
+
+  external,
 
   plugins : [ dts() ]
 
@@ -206,7 +128,7 @@ const bin_config = {
     sourcemap : true
   },
 
-  external: [ 'jssm', 'jssm/viz', '@modelcontextprotocol/sdk', /^@modelcontextprotocol\/sdk\//, 'zod', /^node:/ ],
+  external,
 
   plugins : [
 
@@ -224,5 +146,4 @@ const bin_config = {
 
 
 
-
-export default [ es_config, cjs_config, iife_config, cjs_cts, bin_config ];  // , cli_config ];
+export default [ es_config, cjs_config, cjs_cts, bin_config ];

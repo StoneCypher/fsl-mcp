@@ -1,5 +1,7 @@
 // Public API surface for fsl-mcp. Tool exports are added by later tasks.
 
+export type { FslDiagnostic, FslSeverity } from './types.js';
+
 export { fslValidate } from './tools/validate.js';
 export type { ValidateResult } from './tools/validate.js';
 
