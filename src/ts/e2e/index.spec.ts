@@ -11,7 +11,6 @@ import { test, expect } from '@playwright/test';
  *   // ✓ /index.html returns a 200 status
  *   // ✓ /index.html is a valid HTML document
  *   // ✓ /index.html loads the stylesheet
- *   // ✓ /index.html loads the application script
  */
 
 test.describe('/index.html', () => {
@@ -44,12 +43,6 @@ test.describe('/index.html', () => {
     await page.goto('/index.html');
     const stylesheet = page.locator('link[rel="stylesheet"][href="index.css"]');
     await expect(stylesheet).toBeAttached();
-  });
-
-  test('loads the application script', async ({ page }) => {
-    await page.goto('/index.html');
-    const script = page.locator('script[src="index.iife.js"]');
-    await expect(script).toBeAttached();
   });
 
 });

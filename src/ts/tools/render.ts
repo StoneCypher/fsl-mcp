@@ -53,7 +53,7 @@ export async function fslRender(
       valid : true,
       format: 'png',
       svg,
-      note  : 'png rasterization is not yet supported in v1; returning svg. Tracked via the Wmcp sync items.',
+      note  : 'png rasterization is not yet supported in v1; returning the svg instead.',
     };
   }
 
