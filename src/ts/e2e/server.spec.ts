@@ -21,6 +21,35 @@ describe('fsl-mcp server', () => {
     const payload = JSON.parse((res.content as Array<{ type: string; text: string }>)[0]!.text);
     expect(payload.valid).toBe(true);
 
+    const source = 'a -> b -> c;';
+
+    const lintRes = await client.callTool({ name: 'fsl_lint', arguments: { source } });
+    const lintPayload = JSON.parse((lintRes.content as Array<{ type: string; text: string }>)[0]!.text);
+    expect(lintPayload.notes).toBeInstanceOf(Array);
+
+    const explainRes = await client.callTool({ name: 'fsl_explain', arguments: { source } });
+    const explainPayload = JSON.parse(
+      (explainRes.content as Array<{ type: string; text: string }>)[0]!.text,
+    );
+    expect(explainPayload.valid).toBe(true);
+    expect(explainPayload.states.sort()).toEqual(['a', 'b', 'c']);
+
+    const simulateRes = await client.callTool({
+      name: 'fsl_simulate',
+      arguments: { source, actions: ['b', 'c'] },
+    });
+    const simulatePayload = JSON.parse(
+      (simulateRes.content as Array<{ type: string; text: string }>)[0]!.text,
+    );
+    expect(simulatePayload.path).toEqual(['a', 'b', 'c']);
+    expect(simulatePayload.endState).toBe('c');
+
+    const renderRes = await client.callTool({ name: 'fsl_render', arguments: { source } });
+    const renderPayload = JSON.parse(
+      (renderRes.content as Array<{ type: string; text: string }>)[0]!.text,
+    );
+    expect(renderPayload.svg).toContain('<svg');
+
     await client.close();
   });
 });
