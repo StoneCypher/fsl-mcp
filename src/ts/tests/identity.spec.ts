@@ -4,9 +4,9 @@ import { readFileSync } from 'node:fs';
 describe('package identity', () => {
   const pkg = JSON.parse(readFileSync('package.json', 'utf8'));
 
-  it('is named fsl-mcp at version 0.1.0', () => {
+  it('is named fsl-mcp with a semver version', () => {
     expect(pkg.name).toBe('fsl-mcp');
-    expect(pkg.version).toBe('0.1.0');
+    expect(pkg.version).toMatch(/^\d+\.\d+\.\d+/);
   });
 
   it('carries no leftover template name in package.json', () => {

@@ -1,10 +1,10 @@
-# fsl-mcp v0.1.0
+# fsl-mcp v0.2.0
 
-> Version 0.1.0 was built on Tuesday, July 7, 2026 at GMT-07:00 `1783487778022` from hash `efed8a5`.
+> Version 0.2.0 was built on Wednesday, July 8, 2026 at GMT-07:00 `1783523087282` from hash `954fa93`.
 
 **fsl-mcp** is an MCP (Model Context Protocol) stdio server that lets an AI agent *author* [FSL](https://github.com/StoneCypher/jssm) finite-state machines — giving the model the same structured feedback the FSL editor gives a human (parse diagnostics, a rendered diagram, a plain-English explanation, a step-by-step simulation, and style lint notes) instead of leaving it to guess whether the FSL it just wrote is even valid. It wraps [`jssm`](https://github.com/StoneCypher/jssm), the reference FSL implementation, and exposes five tools over stdio via the official [`@modelcontextprotocol/sdk`](https://github.com/modelcontextprotocol/typescript-sdk).
 
-<!-- Supported embeds: 1783487778022 Tuesday, July 7, 2026 at GMT-07:00 94.73 62 33 efed8a5 4 10.12 4.16 10.76 5 72 88 91.3 95.16 67 0.1.0 -->
+<!-- Supported embeds: 1783523087282 Wednesday, July 8, 2026 at GMT-07:00 94.73 62 33 954fa93 4 10.12 4.16 10.76 5 72 88 91.3 95.16 67 0.2.0 -->
 
 &nbsp;
 
