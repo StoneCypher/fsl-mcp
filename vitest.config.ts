@@ -20,10 +20,12 @@ export default defineConfig({
       include: ['src/**/*.ts'],
       exclude: ['src/**/*.spec.ts', 'src/**/*.stoch.ts', 'src/**/*.mutat.ts', 'src/ts/bin.ts'],
       all: true,
-      lines: 80,
-      functions: 80,
-      branches: 80,
-      statements: 80
+      thresholds: {
+        lines: 80,
+        functions: 80,
+        branches: 80,
+        statements: 80
+      }
     },
     globals: true
   },
