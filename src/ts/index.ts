@@ -14,3 +14,5 @@ export type { SimulateResult, SimulateError } from './tools/simulate.js';
 
 export { fslRender } from './tools/render.js';
 export type { RenderFormat, RenderSvg, RenderUnsupported, RenderError } from './tools/render.js';
+
+export { createServer, startServer } from './server.js';

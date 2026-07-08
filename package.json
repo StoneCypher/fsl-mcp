@@ -37,6 +37,9 @@
   "directories": {
     "doc": "docs"
   },
+  "bin": {
+    "fsl-mcp": "dist/bin.mjs"
+  },
   "scripts": {
     "postinstall": "node src/build_js/postinstall.js",
     "clean": "node src/build_js/clean.js",
