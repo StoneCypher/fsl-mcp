@@ -59,6 +59,11 @@
     "build": "node src/build_js/run_build.js",
     "ci": "echo starting && node -e \"console.log(new Date().toLocaleString())\" && npm run build && echo finishing && node -e \"console.log(new Date().toLocaleString())\""
   },
+  "dependencies": {
+    "jssm": "^5.162.1",
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "zod": "^4.3.6"
+  },
   "devDependencies": {
     "@arethetypeswrong/cli": "^0.18.2",
     "@commitlint/config-conventional": "^20.5.0",
@@ -92,7 +97,6 @@
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.57.2",
     "typescript-language-server": "^5.1.3",
-    "vitest": "^4.1.2",
-    "zod": "^4.3.6"
+    "vitest": "^4.1.2"
   }
 }

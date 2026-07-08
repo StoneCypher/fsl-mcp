@@ -6,7 +6,7 @@ Base commit (fork from main): `1d72d80`
 
 ## Tasks
 
-- Task 1: De-template package identity — IN PROGRESS (user did rename; implementer finishes stub removal + guard test)
+- Task 1: complete (commits 538d28b..de8caea, review clean/Approved)
 - Task 2: Deps + jssm capability spike — pending
 - Task 3: analyze diagnostics core — pending
 - Task 4: fsl_validate — pending
@@ -16,10 +16,13 @@ Base commit (fork from main): `1d72d80`
 - Task 8: fsl_render — pending
 - Task 9: MCP server + bin — pending
 - Task 10: README + green build — pending
+- Task 11 (user request): GitHub Action — publish GitHub Pages via the `gh-pages` branch (not master/docs) — pending
+- Task 12 (user request): downgrade CI node runner to node 23 — pending
 
 ## Minor findings (for final review triage)
 
-(none yet)
+- T1: package-lock.json dev-transitive drift (259 lines) in de8caea — no action; Task 2 re-resolves the lock. Superseded.
+- T1: `.claude/settings.local.json` allowlist entry committed in de8caea — harness side effect, harmless.
 
 ## Notes
 
