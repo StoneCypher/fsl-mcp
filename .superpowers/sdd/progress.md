@@ -23,6 +23,10 @@ Base commit (fork from main): `1d72d80`
 
 - T1: package-lock.json dev-transitive drift (259 lines) in de8caea — no action; Task 2 re-resolves the lock. Superseded.
 - T1: `.claude/settings.local.json` allowlist entry committed in de8caea — harness side effect, harmless.
+- T3: `src/ts/tests/analyze.stoch.ts:1` imports `expect` from vitest but never uses it (fast-check properties return booleans). Inherited verbatim from the brief. FIX: drop `expect` from the import. Slips past build (tsconfig excludes *.stoch.ts; eslint ignores test files). TO FIX in batched Minor pass before final review.
+
+## Task 3 status
+- Task 3: complete (commits 0154e63..16d0e95, review Approved; one Minor recorded above).
 
 ## Notes
 
