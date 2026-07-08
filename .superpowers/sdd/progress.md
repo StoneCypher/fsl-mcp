@@ -7,8 +7,8 @@ Base commit (fork from main): `1d72d80`
 ## Tasks
 
 - Task 1: complete (commits 538d28b..de8caea, review clean/Approved)
-- Task 2: Deps + jssm capability spike — pending
-- Task 3: analyze diagnostics core — pending
+- Task 2: complete (commits de8caea..0154e63, review Approved). Key finding: @viz-js/viz NOT needed as direct dep — jssm dynamically import()s it at render time and declares it as its own optional dep; comes in transitively. Do NOT pin it. CI does a normal `npm install` (optional deps included by default).
+- Task 3: complete. analyze diagnostics core: `FslSeverity`/`FslDiagnostic` (src/ts/types.ts), `offsetToLineCol`/`analyze`/`hasErrors` (src/ts/analyze.ts) wrapping jssm's `fslDiagnostics`. TDD: analyze.spec.ts written first, confirmed RED (`Cannot find module '../analyze.js'`), then implementation made it GREEN (5/5 passing, 100% coverage on analyze.ts). Stochastic property tests (analyze.stoch.ts, fast-check) pass 2/2. Full regression: 50/50 unit + 5/5 stochastic tests pass repo-wide; `tsc --noEmit` clean; eslint clean. `src/ts/index.ts` left untouched per task scope.
 - Task 4: fsl_validate — pending
 - Task 5: fsl_lint — pending
 - Task 6: fsl_explain — pending
