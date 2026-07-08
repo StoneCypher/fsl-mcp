@@ -2,3 +2,6 @@
 
 export { fslValidate } from './tools/validate.js';
 export type { ValidateResult } from './tools/validate.js';
+
+export { fslLint } from './tools/lint.js';
+export type { LintResult, LintNote } from './tools/lint.js';
