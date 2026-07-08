@@ -1,19 +1,24 @@
 /**
- * Minifies the three Rollup output bundles (ESM, CJS, IIFE) in parallel using terser's Node API.
+ * Minifies the ESM and CJS Rollup output bundles in parallel using terser's Node API.
  *
  * Replaces the previous three-stage serial terser CLI chain. Each bundle is an
  * independent input/output pair with its own source map, so the work parallelizes
  * cleanly via Promise.all.
  *
- * Reads from build/rollup/index.{mjs,cjs,iife.js} (+ matching .map files) and
- * writes to dist/index.{mjs,cjs,iife.js} (+ matching .map files). The output
- * source maps preserve the input maps' content so debuggers can trace minified
- * code back through Rollup all the way to the original TypeScript source.
+ * fsl-mcp builds only the ESM and CJS library bundles (there is no IIFE/browser
+ * build — a stdio MCP server can't run in a browser). Both bundles keep every
+ * runtime dependency external (see rollup.config.js), so they are small and
+ * minify quickly.
+ *
+ * Reads from build/rollup/index.{mjs,cjs} (+ matching .map files) and writes to
+ * dist/index.{mjs,cjs} (+ matching .map files). The output source maps preserve
+ * the input maps' content so debuggers can trace minified code back through
+ * Rollup all the way to the original TypeScript source.
  *
  * @example
  *   // Invoked by the `terser` npm script:
  *   node src/build_js/minify_bundles.js
- *   // Writes the three minified bundles + source maps into dist/
+ *   // Writes minified index.mjs + index.cjs + source maps into dist/
  */
 
 import { readFile, writeFile } from 'fs/promises';
@@ -27,10 +32,10 @@ const PROJECT_ROOT = join(__dirname, '..', '..');
 const BUILD_ROLLUP = join(PROJECT_ROOT, 'build', 'rollup');
 const DIST = join(PROJECT_ROOT, 'dist');
 
+/** The library bundles minified with terser. */
 const BUNDLES = [
   { name: 'index.mjs' },
   { name: 'index.cjs' },
-  { name: 'index.iife.js' },
 ];
 
 /**

@@ -7,6 +7,34 @@ import dts            from 'rollup-plugin-dts';
 
 
 
+// fsl-mcp is a stdio MCP server. It ships three ESM/CJS outputs and nothing else:
+//
+//   - bin.mjs   — the `npx fsl-mcp` executable (what actually runs)
+//   - index.mjs — the importable ESM library (the five tool functions +
+//                 createServer/startServer), for `import`-ing the server or
+//                 calling the tools directly in a Node program
+//   - index.cjs — the same library for CommonJS consumers (`require`)
+//
+// There is deliberately no IIFE/browser build: a stdio server can't run in a
+// browser, so a browser global would be dead weight.
+//
+// Every runtime dependency is left EXTERNAL in all bundles. jssm, jssm/viz,
+// the MCP SDK, and zod are all declared dependencies, so a consumer installing
+// fsl-mcp already has them — inlining them would bloat the bundles and defeat
+// dependency dedup. Keeping jssm/viz external also means its internal
+// `await import('@viz-js/viz')` stays a normal dynamic import (no single-file
+// inlining hack needed). The ESM .d.ts is produced by `tsc --build` and copied
+// into dist/ by the `dts` npm script; the CJS .d.cts is bundled by cjs_cts below.
+const external = [
+  'jssm',
+  'jssm/viz',
+  '@modelcontextprotocol/sdk',
+  /^@modelcontextprotocol\/sdk\//,
+  'zod',
+  /^node:/
+];
+
+
 
 const es_config = {
 
@@ -15,17 +43,17 @@ const es_config = {
   output: {
     file      : 'build/rollup/index.mjs',
     format    : 'es',
-    name      : 'react_ts_with_claude_gh_template',
     sourcemap : true
   },
+
+  external,
 
   plugins : [
 
     nodeResolve({
-      mainFields     : ['module', 'main'],
-      browser        : true,
-      extensions     : [ '.ts' ],
-      preferBuiltins : false
+      exportConditions : ['node'],
+      extensions       : [ '.ts' ],
+      preferBuiltins   : true
     }),
 
     commonjs(),
@@ -41,8 +69,6 @@ const es_config = {
 
 
 
-
-
 const cjs_config = {
 
   input: 'build/ts/index.js',
@@ -50,17 +76,17 @@ const cjs_config = {
   output: {
     file      : 'build/rollup/index.cjs',
     format    : 'commonjs',
-    name      : 'react_ts_with_claude_gh_template',
     sourcemap : true
   },
+
+  external,
 
   plugins : [
 
     nodeResolve({
-      mainFields     : ['module', 'main'],
-      browser        : true,
-      extensions     : [ '.ts' ],
-      preferBuiltins : false
+      exportConditions : ['node'],
+      extensions       : [ '.ts' ],
+      preferBuiltins   : true
     }),
 
     commonjs()
@@ -71,74 +97,9 @@ const cjs_config = {
 
 
 
-
-
-const iife_config = {
-
-  input: 'build/ts/index.js',
-
-  output: {
-    file      : 'build/rollup/index.iife.js',
-    format    : 'iife',
-    name      : 'react_ts_with_claude_gh_template',
-    sourcemap : true
-  },
-
-  plugins : [
-
-    nodeResolve({
-      mainFields     : ['module', 'main'],
-      browser        : true,
-      extensions     : [ '.ts' ],
-      preferBuiltins : false
-    }),
-
-    commonjs()
-
-  ]
-
-};
-
-
-
-
-
-// const cli_config = {
-
-//   input: 'build/ts/cli.js',
-
-//   output: {
-//     file   : 'build/rollup/cli.cjs',
-//     format : 'commonjs',
-//     banner : '#!/usr/bin/env node',
-//     name   : 'react_ts_with_claude_gh_template-cli'
-//   },
-
-//   plugins : [
-
-//     nodeResolve({
-//       mainFields     : ['module', 'main'],
-//       browser        : false,
-//       extensions     : [ '.ts', '.js' ],
-//       preferBuiltins : true
-//     }),
-
-//     commonjs(),
-
-//     visualizer()
-
-//   ]
-
-// };
-
-
-
-
-// Emits the CommonJS .d.cts declaration that used to live in
-// rollup.ctsphase.config.js. Input is the freshly-emitted .d.ts from
-// `tsc --build` (build/ts/index.d.ts), so this config does not need
-// to wait for the build chain's `dts` step to copy declarations into
-// dist/ — it can run in the same Rollup invocation as the bundlers.
+// Emits the CommonJS .d.cts declaration bundle from the freshly-emitted .d.ts
+// (build/ts/index.d.ts from `tsc --build`), folding the tool/type declarations
+// into one file for the CJS `require` types entry.
 const cjs_cts = {
 
   input: 'build/ts/index.d.ts',
@@ -148,10 +109,41 @@ const cjs_cts = {
     format : 'es'
   },
 
+  external,
+
   plugins : [ dts() ]
 
 };
 
 
 
-export default [ es_config, cjs_config, iife_config, cjs_cts ];  // , cli_config ];
+const bin_config = {
+
+  input: 'build/ts/bin.js',
+
+  output: {
+    file      : 'dist/bin.mjs',
+    format    : 'es',
+    banner    : '#!/usr/bin/env node',
+    sourcemap : true
+  },
+
+  external,
+
+  plugins : [
+
+    nodeResolve({
+      exportConditions : ['node'],
+      preferBuiltins   : true,
+      extensions       : ['.ts', '.js']
+    }),
+
+    commonjs()
+
+  ]
+
+};
+
+
+
+export default [ es_config, cjs_config, cjs_cts, bin_config ];

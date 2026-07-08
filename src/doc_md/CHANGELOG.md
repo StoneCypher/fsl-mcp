@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-1 merge; Changelogging the last 10 commits; Full changelog at [CHANGELOG.long.md](CHANGELOG.long.md)
+Changelogging the last 10 commits; Full changelog at [CHANGELOG.long.md](CHANGELOG.long.md)
 
 
 
@@ -22,42 +22,14 @@ Published tags:
 
 &nbsp;
 
-## [Untagged] - Jun 5, 2026 10:30:48 PM
+## [Untagged] - Jul 7, 2026 11:01:16 PM
 
-Commit [34b4b4c2488ffa975def00e911168c49e9ceeab8](https://github.com/StoneCypher/react_ts_with_claude_gh_template/commit/34b4b4c2488ffa975def00e911168c49e9ceeab8)
-
-Author: `John Haugeland <stonecypher@gmail.com>`
-
-  * ci: guard remaining jobs with right-sized timeout-minutes
-  * Follow-up to the test-pr guard: cap the other jobs so a hung step fails
-fast instead of running toward GitHub's 360-minute default. Sized per job
-rather than a flat value:
-  * - test-main-full: 20 min (full canonical build, npm run ci)
-- test-main-matrix: 25 min (one ceiling across all cells; Windows/macOS
-  installs are slower than Ubuntu)
-- stryker: 45 min (mutation testing: install + full build + stryker run)
-
-
-
-
-&nbsp;
-
-&nbsp;
-
-## [Untagged] - Jun 5, 2026 10:27:57 PM
-
-Commit [507fc95fab255330246fc396342a94adce61ffcf](https://github.com/StoneCypher/react_ts_with_claude_gh_template/commit/507fc95fab255330246fc396342a94adce61ffcf)
+Commit [954fa93f8fa8bcdd9fc688b6229b17bb671e8b68](https://github.com/StoneCypher/fsl-mcp/commit/954fa93f8fa8bcdd9fc688b6229b17bb671e8b68)
 
 Author: `John Haugeland <stonecypher@gmail.com>`
 
-  * ci: add 6-minute timeout-minutes guard to PR check job
-  * The test-pr (ci-lite) job had no timeout, so a hung step inherited
-GitHub's 360-minute default. A stalled npm install / Playwright browser
-download just ran for 69 minutes before being cancelled by hand. Normal
-runtime is ~1.5 min, so cap the job at 6 minutes to fail fast.
-  * Scoped to test-pr only: 6 min would be too tight for stryker (mutation
-testing), the full build, and the Windows/macOS matrix cells, which need
-larger ceilings of their own.
+  * build: regenerate bundles for render note reword
+  * Claude-Session: https://claude.ai/code/session_01YQ2XHZixjbJyPBMBEXiK4Y
 
 
 
@@ -66,33 +38,24 @@ larger ceilings of their own.
 
 &nbsp;
 
-## [Untagged] - Jun 5, 2026 9:09:16 PM
+## [Untagged] - Jul 7, 2026 11:01:00 PM
 
-Commit [2d9c6c092c8d82ae41bacd6144f401440e3a6854](https://github.com/StoneCypher/react_ts_with_claude_gh_template/commit/2d9c6c092c8d82ae41bacd6144f401440e3a6854)
+Commit [236397a34138d22e8f4120ae9a788a99489102d3](https://github.com/StoneCypher/fsl-mcp/commit/236397a34138d22e8f4120ae9a788a99489102d3)
 
 Author: `John Haugeland <stonecypher@gmail.com>`
 
-  * build(deps): refresh lockfile; bump to 0.20.4
-  * Refresh package-lock.json to the transitive dependency versions
-currently installed in node_modules, and bump the package version
-0.20.3 -> 0.20.4 (PATCH; dependency/build maintenance, no source or
-API changes).
-  * Notable lockfile updates:
-- rolldown 1.0.0-rc.12 -> 1.0.3 (plus all @rolldown/binding-* and
-  @rolldown/pluginutils)
-- vite 8.0.3 -> 8.0.16
-- express 4.22.1 -> 4.22.2, body-parser 1.20.4 -> 1.20.5,
-  qs 6.14.2 -> 6.15.2
-- postcss 8.5.8 -> 8.5.15, nanoid 3.3.11 -> 3.3.12
-- brace-expansion 5.0.5 -> 5.0.6, tinyglobby 0.2.15 -> 0.2.17,
-  fast-uri 3.1.0 -> 3.1.2, @oxc-project/types 0.122.0 -> 0.133.0,
-  @napi-rs/wasm-runtime 1.1.2 -> 1.1.4, @tybys/wasm-util 0.10.1 -> 0.10.2
-- lockfile self-version caught up 0.10.9 -> 0.20.4
-  * Rebuilt all tracked artifacts against the refreshed deps so they match
-0.20.4: dist bundles, typedoc docs site, README madlibs, CHANGELOG,
-bundle visualization PNGs, and stochastic coverage reports. Full build
-is green: tsc and eslint clean, 29 unit + 4 stochastic tests pass, attw
-reports no problems.
+  * fix: clean up dead IIFE references and internal jargon in tool output
+  * Final-review follow-ups (no critical/important issues; these are the
+polish items):
+- render.ts: reword the png-degrade note to drop the internal 'Wmcp sync
+  items' roadmap jargon that was leaking into a user-facing tool result;
+  still matches /not yet supported/i so the test is unaffected.
+- src/html/index.html: drop the <script src=index.iife.js> tag left
+  dangling when the IIFE bundle was removed (would 404 on the published
+  gh-pages site).
+- e2e/index.spec.ts: remove the now-invalid 'loads the application
+  script' assertion for that removed bundle.
+  * Claude-Session: https://claude.ai/code/session_01YQ2XHZixjbJyPBMBEXiK4Y
 
 
 
@@ -101,22 +64,20 @@ reports no problems.
 
 &nbsp;
 
-## [Untagged] - May 23, 2026 12:01:02 PM
+## [Untagged] - Jul 7, 2026 10:44:00 PM
 
-Commit [7b1a0256a5abc1d88a8853d0332471336d349872](https://github.com/StoneCypher/react_ts_with_claude_gh_template/commit/7b1a0256a5abc1d88a8853d0332471336d349872)
+Commit [7f3e947e96473e1d137c47119adb229d5ec31f38](https://github.com/StoneCypher/fsl-mcp/commit/7f3e947e96473e1d137c47119adb229d5ec31f38)
 
 Author: `John Haugeland <stonecypher@gmail.com>`
 
-  * ci: add #fullbuild escape hatch for opt-in full matrix on PRs
-  * Adds a detect-fullbuild job that reads the PR head commit message and
-sets a `fullbuild` output. test-main-full, test-main-matrix, and
-stryker gate on (push event) OR (PR event with fullbuild=true). When
-opt-in is active, test-pr is skipped (test-main-full covers it).
-  * Default PR behavior unchanged: a single ci-lite job. Contributors who
-need cross-platform verification before merge add `#fullbuild` to the
-latest commit message on the PR branch.
-  * Detection job is PR-only (`if: github.event_name == 'pull_request'`),
-so push events incur no extra latency.
+  * ci: publish Pages via gh-pages branch, downgrade runner to Node 23
+  * - Add a deploy-pages job that pushes the committed docs/ (site + typedoc
+  API docs) to the gh-pages branch on push to main, gated behind
+  test-main-full, using peaceiris/actions-gh-pages. GitHub Pages must be
+  set (repo Settings > Pages) to serve from the gh-pages branch.
+- Downgrade every CI Node runner from 24 to 23 (PR check, main full,
+  cross-platform matrix, stryker, verify-version-bump, release).
+  * Claude-Session: https://claude.ai/code/session_01YQ2XHZixjbJyPBMBEXiK4Y
 
 
 
@@ -125,22 +86,18 @@ so push events incur no extra latency.
 
 &nbsp;
 
-## [Untagged] - May 23, 2026 12:01:02 PM
+## [Untagged] - Jul 7, 2026 10:39:47 PM
 
-Commit [5cc69d26eda16f93400553786fc22450ecc92d18](https://github.com/StoneCypher/react_ts_with_claude_gh_template/commit/5cc69d26eda16f93400553786fc22450ecc92d18)
+Commit [12747b61097279385d246784f57432cb88287c34](https://github.com/StoneCypher/fsl-mcp/commit/12747b61097279385d246784f57432cb88287c34)
 
 Author: `John Haugeland <stonecypher@gmail.com>`
 
-  * ci: add #fullbuild escape hatch for opt-in full matrix on PRs
-  * Adds a detect-fullbuild job that reads the PR head commit message and
-sets a `fullbuild` output. test-main-full, test-main-matrix, and
-stryker gate on (push event) OR (PR event with fullbuild=true). When
-opt-in is active, test-pr is skipped (test-main-full covers it).
-  * Default PR behavior unchanged: a single ci-lite job. Contributors who
-need cross-platform verification before merge add `#fullbuild` to the
-latest commit message on the PR branch.
-  * Detection job is PR-only (`if: github.event_name == 'pull_request'`),
-so push events incur no extra latency.
+  * fix(build): make dts copy idempotent, drop nested dist/tools/tools cruft
+  * The dts step ran 'cp -r build/ts/tools dist/tools' into an existing
+dist/tools, nesting a spurious dist/tools/tools/ (with stray .js files
+a types dir shouldn't carry). rm -rf dist/tools before the copy makes
+it idempotent. attw still clean across all four resolution modes.
+  * Claude-Session: https://claude.ai/code/session_01YQ2XHZixjbJyPBMBEXiK4Y
 
 
 
@@ -149,28 +106,19 @@ so push events incur no extra latency.
 
 &nbsp;
 
-## [Untagged] - May 23, 2026 11:57:47 AM
+## [Untagged] - Jul 7, 2026 10:38:21 PM
 
-Commit [4b7a3b2f13fbb2166a3e086c54aa0d655e5820f0](https://github.com/StoneCypher/react_ts_with_claude_gh_template/commit/4b7a3b2f13fbb2166a3e086c54aa0d655e5820f0)
+Commit [3d52577927c847211d5415918a4908c4d19e7e16](https://github.com/StoneCypher/fsl-mcp/commit/3d52577927c847211d5415918a4908c4d19e7e16)
 
 Author: `John Haugeland <stonecypher@gmail.com>`
 
-  * ci: lighten matrix and add cost optimizations; bump to 0.20.3
-  * Wrap-up commit for PR #44, summarizing the CI infrastructure work that
-landed in seven earlier commits on this branch:
-  * - Split test job into test-pr (PR-only, ci-lite, Ubuntu-current) and
-  test-main-full + test-main-matrix (push-only, full + lite split)
-- Concurrency cancellation for PR iterations; main pushes are never
-  cancelled (release safety)
-- Cache Playwright browsers via PLAYWRIGHT_BROWSERS_PATH
-- Drop Node 23 from non-Ubuntu cells (Ubuntu retains dual-Node)
-- PR check uses ci-lite profile (lint/docs/site caught on main instead)
-- paths-ignore for non-build documentation (specs, CONTRIBUTING,
-  LICENSE, CHANGELOG)
-- Add ci-lite profile to build.config.json (without eslint)
-  * Net effect on a typical iteration: PR token cost drops to ~0.6× of the
-original full build, concurrency cancellation kills superseded PR runs,
-and push-to-main matrix shrinks from 6 cells to 4 (~43% reduction).
+  * build: regenerate dist, docs, changelog, coverage artifacts
+  * Regenerated outputs for the ESM+CJS build: dist/index.{mjs,cjs} +
+index.d.{ts,cts} + bin.mjs + per-module .d.ts, typedoc site with the
+five tool + createServer/startServer pages, changelog, coverage, and
+the generated README.md. Removes the stale stub/double artifacts and
+the dropped IIFE bundle.
+  * Claude-Session: https://claude.ai/code/session_01YQ2XHZixjbJyPBMBEXiK4Y
 
 
 
@@ -179,24 +127,33 @@ and push-to-main matrix shrinks from 6 cells to 4 (~43% reduction).
 
 &nbsp;
 
-## [Untagged] - May 23, 2026 11:49:38 AM
+## [Untagged] - Jul 7, 2026 10:38:08 PM
 
-Commit [5266cbd16d5be96e6903baa7f464dab0272eae69](https://github.com/StoneCypher/react_ts_with_claude_gh_template/commit/5266cbd16d5be96e6903baa7f464dab0272eae69)
+Commit [eca3e4828ef517b1f51fc6c19b87d9e0d288bf37](https://github.com/StoneCypher/fsl-mcp/commit/eca3e4828ef517b1f51fc6c19b87d9e0d288bf37)
 
 Author: `John Haugeland <stonecypher@gmail.com>`
 
-  * ci: skip CI for PRs that only touch non-build documentation
-  * paths-ignore filter on pull_request trigger. If every file in a PR
-matches the ignore list, CI doesn't run. Any non-doc file in the PR
-flips it back on as usual.
-  * Conservative list — only files the build genuinely doesn't read:
-  src/superpowers/**/*.md  — planning specs/plans
-  CONTRIBUTING.md, CODE_OF_CONDUCT.md, LICENSE
-  CHANGELOG.md, CHANGELOG.long.md (generated; release reads main copy)
-  * NOT skipped (intentionally): base_README.md (template input to
-update_madlibs), src/doc_md/**/*.md (typedoc inputs), anything under
-src/ts/ or src/build_js/, package.json, build.config*.json.
-  * No paths-ignore on push: main pushes should always verify.
+  * build: real docs, ESM+CJS-only bundles, externalized deps
+  * Write the real base_README.md (what fsl-mcp is, npx/MCP-client install,
+the five tools, v1 ceilings) and a contributor CLAUDE.md (analyze-first
+architecture, strict TS/eslint gotchas, generated-README rule, real
+coverage gate, transitive viz-js note).
+  * Reshape the build to fit an MCP server:
+- Drop the IIFE/browser bundle entirely — a stdio server can't run in a
+  browser (its config had to stub the server deps with inert globals).
+- Keep ESM + CJS library bundles + the npx bin (all three ESM/CJS).
+- Externalize every runtime dep (jssm, jssm/viz, SDK, zod) in all
+  bundles instead of inlining jssm: smaller bundles, proper dedup, and
+  it removes the terser hang that inlining jssm+viz caused. minify only
+  ESM+CJS now.
+- package.json exports/main/types reduced to import+require (no browser).
+- update_madlibs.js: fill the unit/stoch branch/func/line README madlibs
+  the template left unreplaced.
+- index.ts: export the FslDiagnostic/FslSeverity public types.
+  * Verified: tsc clean, eslint clean, 67/67 tests, coverage gate green
+(94.73/88/91.3/95.16), attw clean (node10/node16-CJS/node16-ESM/bundler),
+bin smoke test OK.
+  * Claude-Session: https://claude.ai/code/session_01YQ2XHZixjbJyPBMBEXiK4Y
 
 
 
@@ -205,21 +162,13 @@ src/ts/ or src/build_js/, package.json, build.config*.json.
 
 &nbsp;
 
-## [Untagged] - May 23, 2026 11:49:14 AM
+## [Untagged] - Jul 7, 2026 9:11:35 PM
 
-Commit [47e6b95a808fcff766bdc60c987f3bca1929ff3b](https://github.com/StoneCypher/react_ts_with_claude_gh_template/commit/47e6b95a808fcff766bdc60c987f3bca1929ff3b)
+Commit [efed8a5d989426ef7e0c94d5f5b0154a8b6e369c](https://github.com/StoneCypher/fsl-mcp/commit/efed8a5d989426ef7e0c94d5f5b0154a8b6e369c)
 
 Author: `John Haugeland <stonecypher@gmail.com>`
 
-  * ci: PR check uses ci-lite profile instead of full build
-  * PR runs already pay for typecheck, tests, bundle, attw. The remaining
-optionals (docs, eslint, cloc, changelog, viz_png, site) are
-platform-invariant — test-main-full already produces them on every
-push to main, so duplicating them on every PR push is wasted tokens.
-  * Tradeoff: lint failures and docs/site rendering issues now surface on
-merge to main rather than on the PR itself. test-main-full will block
-the release job if anything regresses.
-  * Estimated PR token cost: ~0.6× of the previous full build.
+  * fix(coverage): enforce 80% gate via nested thresholds
 
 
 
@@ -228,19 +177,13 @@ the release job if anything regresses.
 
 &nbsp;
 
-## [Untagged] - May 23, 2026 11:45:44 AM
+## [Untagged] - Jul 7, 2026 9:05:35 PM
 
-Commit [1f6981d355649a1ae0478f37b51adb3343abb4e5](https://github.com/StoneCypher/react_ts_with_claude_gh_template/commit/1f6981d355649a1ae0478f37b51adb3343abb4e5)
+Commit [65240306462f6fbabda59968ad0cce6537143cc8](https://github.com/StoneCypher/fsl-mcp/commit/65240306462f6fbabda59968ad0cce6537143cc8)
 
 Author: `John Haugeland <stonecypher@gmail.com>`
 
-  * ci: drop Node 23 from non-Ubuntu cells in main matrix
-  * macOS bills ~10× ubuntu; Windows ~2×. Running Node 23 on those for
-"just in case" coverage is poor value per token. Keep Node 23 testing
-on the cheap Ubuntu platform; macOS and Windows verify only Node 24
-(the current release target).
-  * Push-to-main cell count drops from 6 (1 full + 5 lite) to 4 (1 full +
-3 lite). Token cost drops roughly 40% relative to the prior matrix.
+  * chore(coverage): exclude bin.ts entry shim from coverage
 
 
 
@@ -249,16 +192,25 @@ on the cheap Ubuntu platform; macOS and Windows verify only Node 24
 
 &nbsp;
 
-## [Untagged] - May 23, 2026 11:45:23 AM
+## [Untagged] - Jul 7, 2026 9:05:29 PM
 
-Commit [1c887e0cafa90b558fb04152387253c0d51a2f1f](https://github.com/StoneCypher/react_ts_with_claude_gh_template/commit/1c887e0cafa90b558fb04152387253c0d51a2f1f)
+Commit [c236d5b38c1b39df1704e679360dd44ee9bf21d2](https://github.com/StoneCypher/fsl-mcp/commit/c236d5b38c1b39df1704e679360dd44ee9bf21d2)
 
 Author: `John Haugeland <stonecypher@gmail.com>`
 
-  * ci: cache Playwright browsers via PLAYWRIGHT_BROWSERS_PATH
-  * The postinstall hook runs `npx playwright install --with-deps` on every
-install. With nothing cached, that re-downloads ~100MB of Chromium per
-cell per CI run. Cache hits skip the download entirely; only OS-level
-deps (handled by apt incrementally) still re-run.
-  * Cache key includes runner.os and a hash of package-lock.json so a
-Playwright version bump invalidates the cache automatically.
+  * chore(tests): drop unused expect import in analyze.stoch.ts
+
+
+
+
+&nbsp;
+
+&nbsp;
+
+## [Untagged] - Jul 7, 2026 9:05:22 PM
+
+Commit [592d7e84bf82c01b08ed0e63dbf6cda039228644](https://github.com/StoneCypher/fsl-mcp/commit/592d7e84bf82c01b08ed0e63dbf6cda039228644)
+
+Author: `John Haugeland <stonecypher@gmail.com>`
+
+  * test(explain): cover named-action edge (e.action branch)

@@ -1,6 +1,8 @@
+import { describe, it, expect } from 'vitest';
 
-describe('index tests are running', () => {
-  test('facile baseline', () => {
-    expect(true).toBe(true);
+describe('index module', () => {
+  it('imports without side effects', async () => {
+    const mod = await import('../index.js');
+    expect(mod).toBeTypeOf('object');
   });
 });
