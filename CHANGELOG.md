@@ -24,7 +24,7 @@ Published tags:
 
 ## [Untagged] - Jun 5, 2026 10:30:48 PM
 
-Commit [34b4b4c2488ffa975def00e911168c49e9ceeab8](https://github.com/StoneCypher/react_ts_with_claude_gh_template/commit/34b4b4c2488ffa975def00e911168c49e9ceeab8)
+Commit [34b4b4c2488ffa975def00e911168c49e9ceeab8](https://github.com/StoneCypher/fsl-mcp/commit/34b4b4c2488ffa975def00e911168c49e9ceeab8)
 
 Author: `John Haugeland <stonecypher@gmail.com>`
 
@@ -46,7 +46,7 @@ rather than a flat value:
 
 ## [Untagged] - Jun 5, 2026 10:27:57 PM
 
-Commit [507fc95fab255330246fc396342a94adce61ffcf](https://github.com/StoneCypher/react_ts_with_claude_gh_template/commit/507fc95fab255330246fc396342a94adce61ffcf)
+Commit [507fc95fab255330246fc396342a94adce61ffcf](https://github.com/StoneCypher/fsl-mcp/commit/507fc95fab255330246fc396342a94adce61ffcf)
 
 Author: `John Haugeland <stonecypher@gmail.com>`
 
@@ -68,7 +68,7 @@ larger ceilings of their own.
 
 ## [Untagged] - Jun 5, 2026 9:09:16 PM
 
-Commit [2d9c6c092c8d82ae41bacd6144f401440e3a6854](https://github.com/StoneCypher/react_ts_with_claude_gh_template/commit/2d9c6c092c8d82ae41bacd6144f401440e3a6854)
+Commit [2d9c6c092c8d82ae41bacd6144f401440e3a6854](https://github.com/StoneCypher/fsl-mcp/commit/2d9c6c092c8d82ae41bacd6144f401440e3a6854)
 
 Author: `John Haugeland <stonecypher@gmail.com>`
 
@@ -103,7 +103,7 @@ reports no problems.
 
 ## [Untagged] - May 23, 2026 12:01:02 PM
 
-Commit [7b1a0256a5abc1d88a8853d0332471336d349872](https://github.com/StoneCypher/react_ts_with_claude_gh_template/commit/7b1a0256a5abc1d88a8853d0332471336d349872)
+Commit [7b1a0256a5abc1d88a8853d0332471336d349872](https://github.com/StoneCypher/fsl-mcp/commit/7b1a0256a5abc1d88a8853d0332471336d349872)
 
 Author: `John Haugeland <stonecypher@gmail.com>`
 
@@ -127,7 +127,7 @@ so push events incur no extra latency.
 
 ## [Untagged] - May 23, 2026 12:01:02 PM
 
-Commit [5cc69d26eda16f93400553786fc22450ecc92d18](https://github.com/StoneCypher/react_ts_with_claude_gh_template/commit/5cc69d26eda16f93400553786fc22450ecc92d18)
+Commit [5cc69d26eda16f93400553786fc22450ecc92d18](https://github.com/StoneCypher/fsl-mcp/commit/5cc69d26eda16f93400553786fc22450ecc92d18)
 
 Author: `John Haugeland <stonecypher@gmail.com>`
 
@@ -151,7 +151,7 @@ so push events incur no extra latency.
 
 ## [Untagged] - May 23, 2026 11:57:47 AM
 
-Commit [4b7a3b2f13fbb2166a3e086c54aa0d655e5820f0](https://github.com/StoneCypher/react_ts_with_claude_gh_template/commit/4b7a3b2f13fbb2166a3e086c54aa0d655e5820f0)
+Commit [4b7a3b2f13fbb2166a3e086c54aa0d655e5820f0](https://github.com/StoneCypher/fsl-mcp/commit/4b7a3b2f13fbb2166a3e086c54aa0d655e5820f0)
 
 Author: `John Haugeland <stonecypher@gmail.com>`
 
@@ -181,7 +181,7 @@ and push-to-main matrix shrinks from 6 cells to 4 (~43% reduction).
 
 ## [Untagged] - May 23, 2026 11:49:38 AM
 
-Commit [5266cbd16d5be96e6903baa7f464dab0272eae69](https://github.com/StoneCypher/react_ts_with_claude_gh_template/commit/5266cbd16d5be96e6903baa7f464dab0272eae69)
+Commit [5266cbd16d5be96e6903baa7f464dab0272eae69](https://github.com/StoneCypher/fsl-mcp/commit/5266cbd16d5be96e6903baa7f464dab0272eae69)
 
 Author: `John Haugeland <stonecypher@gmail.com>`
 
@@ -207,7 +207,7 @@ src/ts/ or src/build_js/, package.json, build.config*.json.
 
 ## [Untagged] - May 23, 2026 11:49:14 AM
 
-Commit [47e6b95a808fcff766bdc60c987f3bca1929ff3b](https://github.com/StoneCypher/react_ts_with_claude_gh_template/commit/47e6b95a808fcff766bdc60c987f3bca1929ff3b)
+Commit [47e6b95a808fcff766bdc60c987f3bca1929ff3b](https://github.com/StoneCypher/fsl-mcp/commit/47e6b95a808fcff766bdc60c987f3bca1929ff3b)
 
 Author: `John Haugeland <stonecypher@gmail.com>`
 
@@ -230,7 +230,7 @@ the release job if anything regresses.
 
 ## [Untagged] - May 23, 2026 11:45:44 AM
 
-Commit [1f6981d355649a1ae0478f37b51adb3343abb4e5](https://github.com/StoneCypher/react_ts_with_claude_gh_template/commit/1f6981d355649a1ae0478f37b51adb3343abb4e5)
+Commit [1f6981d355649a1ae0478f37b51adb3343abb4e5](https://github.com/StoneCypher/fsl-mcp/commit/1f6981d355649a1ae0478f37b51adb3343abb4e5)
 
 Author: `John Haugeland <stonecypher@gmail.com>`
 
@@ -251,7 +251,7 @@ on the cheap Ubuntu platform; macOS and Windows verify only Node 24
 
 ## [Untagged] - May 23, 2026 11:45:23 AM
 
-Commit [1c887e0cafa90b558fb04152387253c0d51a2f1f](https://github.com/StoneCypher/react_ts_with_claude_gh_template/commit/1c887e0cafa90b558fb04152387253c0d51a2f1f)
+Commit [1c887e0cafa90b558fb04152387253c0d51a2f1f](https://github.com/StoneCypher/fsl-mcp/commit/1c887e0cafa90b558fb04152387253c0d51a2f1f)
 
 Author: `John Haugeland <stonecypher@gmail.com>`
 

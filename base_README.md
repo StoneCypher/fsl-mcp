@@ -1,4 +1,4 @@
-# react_ts_with_claude_gh_template v{{version}}
+# fsl-mcp v{{version}}
 
 > Version {{version}} was built on {{built_text}} `{{built}}` from hash `{{gh_hash}}`.
 
@@ -56,12 +56,12 @@ TODO Put the project description here, please.
   </tr>
 </table>
 
-* [Site](https://stonecypher.github.io/react_ts_with_claude_gh_template/index.html)
-* [Documentation](https://stonecypher.github.io/react_ts_with_claude_gh_template/docs/index.html)
-* [Builds](https://www.github.com/stonecypher/react_ts_with_claude_gh_template/actions)
-* [Source](https://www.github.com/stonecypher/react_ts_with_claude_gh_template/)
+* [Site](https://stonecypher.github.io/fsl-mcp/index.html)
+* [Documentation](https://stonecypher.github.io/fsl-mcp/docs/index.html)
+* [Builds](https://www.github.com/stonecypher/fsl-mcp/actions)
+* [Source](https://www.github.com/stonecypher/fsl-mcp/)
 
-<img alt="star_chart" src="https://starchart.cc/StoneCypher/react_ts_with_claude_gh_template.svg" />
+<img alt="star_chart" src="https://starchart.cc/StoneCypher/fsl-mcp.svg" />
 
 <table>
   <tr>
@@ -73,54 +73,6 @@ TODO Put the project description here, please.
     <td><img alt="flamegraph visualization" src="bundle_flamegraph.png" /></td>
   </tr>
 </table>
-
-
-
-
-
-&nbsp;
-
-&nbsp;
-
-## How to use this template
-
-
-
-&nbsp;
-
-### Before invoking it
-
-1. [ ] Decide whether to
-    1. Update the deps in the template ***recommended***
-    1. Update the deps post-install
-    1. Let the deps be out of date
-
-
-
-&nbsp;
-
-### After invoking it
-
-1. [ ] Reset package version
-1. [ ] Turn Github Pages on, and point it at `master`/`/docs`
-1. [ ] Set up the auth token `TODO_TOKEN_FOR_GH_CI_CD` after renaming it in ci.yml
-1. [ ] Change all the `react_ts_with_claude_gh_template`s in this file's top block links
-1. [ ] Change all the `react_ts_with_claude_gh_template`s in `package.json`
-1. [ ] Change the `react_ts_with_claude_gh_template` in `verify_version_bump.js`
-1. [ ] Write or copy-paste the description in `package.json`
-1. [ ] Search for all remaining TODOs
-1. [ ] Update meta tags and TODOs in `src/html/index.html`
-1. [ ] Write a `base-README.md`
-1. [ ] Change all the `react_ts_with_claude_gh_template`s in `rollup.config.js`
-1. [ ] Decide whether to
-    1. re-add a `bin` block to `package.json`, or
-    2. remove the `bin` config from `rollup.config.js`
-1. [ ] `npm install && npm run build`
-    1. Maybe update the deps?
-1. Handle the MAYBE-REMOVEs in the HTML HEAD
-    1. [ ] Change src/html/index.html 's <title>
-    1. [ ] Maybe replace src/html/favicon.png
-1. [ ] commit and vroom
 
 
 

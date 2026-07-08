@@ -1,18 +1,18 @@
 {
-  "name": "react_ts_with_claude_gh_template",
-  "version": "0.20.4",
-  "description": "react_ts_with_claude_gh_template",
+  "name": "fsl-mcp",
+  "version": "0.1.0",
+  "description": "MCP for FSL - Model Context Protocol for Finite State Language",
   "keywords": [
-    "react_ts_with_claude_gh_template",
+    "fsl-mcp",
     "stonecypher"
   ],
-  "homepage": "https://github.com/StoneCypher/react_ts_with_claude_gh_template#readme",
+  "homepage": "https://github.com/StoneCypher/fsl-mcp#readme",
   "bugs": {
-    "url": "https://github.com/StoneCypher/react_ts_with_claude_gh_template/issues"
+    "url": "https://github.com/StoneCypher/fsl-mcp/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/StoneCypher/react_ts_with_claude_gh_template.git"
+    "url": "git+https://github.com/StoneCypher/fsl-mcp.git"
   },
   "license": "MIT",
   "author": "John Haugeland <stonecypher@gmail.com>",
