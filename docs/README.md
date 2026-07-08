@@ -1,16 +1,53 @@
-# fsl-mcp v0.20.4
+# fsl-mcp v0.1.0
 
-> Version 0.20.4 was built on Friday, June 5, 2026 at GMT-07:00 `1780725270359` from hash `34b4b4c`.
+> Version 0.1.0 was built on Tuesday, July 7, 2026 at GMT-07:00 `1783487778022` from hash `efed8a5`.
 
-TODO Put the project description here, please.
+**fsl-mcp** is an MCP (Model Context Protocol) stdio server that lets an AI agent *author* [FSL](https://github.com/StoneCypher/jssm) finite-state machines — giving the model the same structured feedback the FSL editor gives a human (parse diagnostics, a rendered diagram, a plain-English explanation, a step-by-step simulation, and style lint notes) instead of leaving it to guess whether the FSL it just wrote is even valid. It wraps [`jssm`](https://github.com/StoneCypher/jssm), the reference FSL implementation, and exposes five tools over stdio via the official [`@modelcontextprotocol/sdk`](https://github.com/modelcontextprotocol/typescript-sdk).
 
-<!-- Supported embeds: 1780725270359 Friday, June 5, 2026 at GMT-07:00 66.66 2 50 34b4b4c {{stochbranch}} 66.66 {{stochfunc}} {{stochline}} 4 43 {{unitbranch}} {{unitfunc}} {{unitline}} 39 0.20.4 -->
-
-
-
-
+<!-- Supported embeds: 1783487778022 Tuesday, July 7, 2026 at GMT-07:00 94.73 62 33 efed8a5 4 10.12 4.16 10.76 5 72 88 91.3 95.16 67 0.1.0 -->
 
 &nbsp;
+
+## Install / run
+
+fsl-mcp ships as a standalone package and runs with no local install:
+
+```sh
+npx fsl-mcp
+```
+
+Point any MCP-speaking client at it with a stdio server entry:
+
+```json
+{
+  "mcpServers": {
+    "fsl": { "command": "npx", "args": ["fsl-mcp"] }
+  }
+}
+```
+
+&nbsp;
+
+## The five tools
+
+Every tool takes FSL `source` (a string) and returns structured JSON — never a thrown error for bad FSL, always diagnostics.
+
+| Tool | Input | Returns |
+|---|---|---|
+| `fsl_validate` | `source` | `{ valid, diagnostics: [{severity, message, line, col}] }` |
+| `fsl_render` | `source`, `format?: "svg" \| "png"` | an SVG diagram (`format:"png"` degrades to svg + a note in v1), or diagnostics if invalid |
+| `fsl_explain` | `source` | `{ states, transitions, start, terminals, summary }`, or diagnostics if invalid |
+| `fsl_simulate` | `source`, `actions: string[]` | `{ endState, path, legalNext, rejected? }`, or diagnostics if invalid |
+| `fsl_lint` | `source` | `{ notes: [{rule, message, line}] }` |
+
+Under the hood, every tool runs the same non-throwing `analyze()` pass first and short-circuits to diagnostics on a compile error, so a model can always find out *why* its FSL didn't work instead of getting an exception.
+
+&nbsp;
+
+## Ceilings (v1)
+
+- **Rendering** is SVG-only. `format:"png"` is accepted but returns the SVG plus a `note` explaining that rasterization isn't shipped yet — there's no bundled rasterizer in v1.
+- **Simulation** matches `fsl_simulate`'s `actions` against edge *action labels* first, then falls back to target-state names. Machines whose edges carry no action labels will report an empty `legalNext` even where target-state transitions are legal — this is a labeling ceiling, not a bug in the walk itself.
 
 &nbsp;
 
@@ -27,19 +64,19 @@ TODO Put the project description here, please.
   </tr>
   <tr>
     <th>Unit</th>
-    <td>39</td>
-    <td>66.66<small>%</small></td>
-    <td>{{unitbranch}}<small>%</small></td>
-    <td>{{unitfunc}}<small>%</small></td>
-    <td>{{unitline}}<small>%</small></td>
+    <td>67</td>
+    <td>94.73<small>%</small></td>
+    <td>88<small>%</small></td>
+    <td>91.3<small>%</small></td>
+    <td>95.16<small>%</small></td>
   </tr>
   <tr>
     <th>Stochastic</th>
-    <td>4</td>
-    <td>66.66<small>%</small></td>
-    <td>{{stochbranch}}<small>%</small></td>
-    <td>{{stochfunc}}<small>%</small></td>
-    <td>{{stochline}}<small>%</small></td>
+    <td>5</td>
+    <td>94.73<small>%</small></td>
+    <td>4<small>%</small></td>
+    <td>4.16<small>%</small></td>
+    <td>10.76<small>%</small></td>
   </tr>
 </table>
 
@@ -47,12 +84,12 @@ TODO Put the project description here, please.
   <tr>
     <th></th>
     <th>Docblock count</th>
-    <th>50<small>%</small></th>
+    <th>33<small>%</small></th>
   </tr>
   <tr>
     <th>Docblock coverage</th>
-    <td>2</td>
-    <td>50<small>%</small></td>
+    <td>62</td>
+    <td>33<small>%</small></td>
   </tr>
 </table>
 
@@ -73,60 +110,6 @@ TODO Put the project description here, please.
     <td><img alt="flamegraph visualization" src="bundle_flamegraph.png" /></td>
   </tr>
 </table>
-
-
-
-
-
-&nbsp;
-
-&nbsp;
-
-## How to use this template
-
-
-
-&nbsp;
-
-### Before invoking it
-
-1. [ ] Decide whether to
-    1. Update the deps in the template ***recommended***
-    1. Update the deps post-install
-    1. Let the deps be out of date
-
-
-
-&nbsp;
-
-### After invoking it
-
-1. [ ] Reset package version
-1. [ ] Turn Github Pages on, and point it at `master`/`/docs`
-1. [ ] Set up the auth token `TODO_TOKEN_FOR_GH_CI_CD` after renaming it in ci.yml
-1. [ ] Change all the `fsl-mcp`s in this file's top block links
-1. [ ] Change all the `fsl-mcp`s in `package.json`
-1. [ ] Change the `fsl-mcp` in `verify_version_bump.js`
-1. [ ] Write or copy-paste the description in `package.json`
-1. [ ] Search for all remaining TODOs
-1. [ ] Update meta tags and TODOs in `src/html/index.html`
-1. [ ] Write a `base-README.md`
-1. [ ] Change all the `fsl-mcp`s in `rollup.config.js`
-1. [ ] Decide whether to
-    1. re-add a `bin` block to `package.json`, or
-    2. remove the `bin` config from `rollup.config.js`
-1. [ ] `npm install && npm run build`
-    1. Maybe update the deps?
-1. Handle the MAYBE-REMOVEs in the HTML HEAD
-    1. [ ] Change src/html/index.html 's <title>
-    1. [ ] Maybe replace src/html/favicon.png
-1. [ ] commit and vroom
-
-
-
-
-
-&nbsp;
 
 &nbsp;
 

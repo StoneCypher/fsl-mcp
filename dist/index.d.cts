@@ -187,4 +187,4 @@ declare function createServer(): McpServer;
 declare function startServer(): Promise<void>;
 
 export { createServer, fslExplain, fslLint, fslRender, fslSimulate, fslValidate, startServer };
-export type { ExplainError, ExplainResult, ExplainTransition, LintNote, LintResult, RenderError, RenderFormat, RenderSvg, RenderUnsupported, SimulateError, SimulateResult, ValidateResult };
+export type { ExplainError, ExplainResult, ExplainTransition, FslDiagnostic, FslSeverity, LintNote, LintResult, RenderError, RenderFormat, RenderSvg, RenderUnsupported, SimulateError, SimulateResult, ValidateResult };

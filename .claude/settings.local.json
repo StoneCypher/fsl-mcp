@@ -65,7 +65,25 @@
       "Bash(bash \"C:/Users/john/.claude/plugins/cache/claude-plugins-official/superpowers/6.1.1/skills/subagent-driven-development/scripts/review-package\" 0154e63 16d0e95)",
       "Bash(bash \"C:/Users/john/.claude/plugins/cache/claude-plugins-official/superpowers/6.1.1/skills/subagent-driven-development/scripts/task-brief\" \"C:/Users/john/projects/fsl-mcp/src/superpowers/plans/2026-07-07-fsl-mcp-authoring.md\" 4)",
       "Bash(bash \"C:/Users/john/.claude/plugins/cache/claude-plugins-official/superpowers/6.1.1/skills/subagent-driven-development/scripts/review-package\" 16d0e95 af3e90d)",
-      "Bash(bash \"C:/Users/john/.claude/plugins/cache/claude-plugins-official/superpowers/6.1.1/skills/subagent-driven-development/scripts/task-brief\" \"C:/Users/john/projects/fsl-mcp/src/superpowers/plans/2026-07-07-fsl-mcp-authoring.md\" 5)"
+      "Bash(bash \"C:/Users/john/.claude/plugins/cache/claude-plugins-official/superpowers/6.1.1/skills/subagent-driven-development/scripts/task-brief\" \"C:/Users/john/projects/fsl-mcp/src/superpowers/plans/2026-07-07-fsl-mcp-authoring.md\" 5)",
+      "Bash(bash \"C:/Users/john/.claude/plugins/cache/claude-plugins-official/superpowers/6.1.1/skills/subagent-driven-development/scripts/review-package\" af3e90d eefd8c4)",
+      "Bash(bash \"C:/Users/john/.claude/plugins/cache/claude-plugins-official/superpowers/6.1.1/skills/subagent-driven-development/scripts/task-brief\" \"C:/Users/john/projects/fsl-mcp/src/superpowers/plans/2026-07-07-fsl-mcp-authoring.md\" 6)",
+      "Bash(node *)",
+      "Bash(bash \"C:/Users/john/.claude/plugins/cache/claude-plugins-official/superpowers/6.1.1/skills/subagent-driven-development/scripts/review-package\" eefd8c4 bd89d56)",
+      "Bash(bash \"C:/Users/john/.claude/plugins/cache/claude-plugins-official/superpowers/6.1.1/skills/subagent-driven-development/scripts/task-brief\" \"C:/Users/john/projects/fsl-mcp/src/superpowers/plans/2026-07-07-fsl-mcp-authoring.md\" 7)",
+      "Bash(bash \"C:/Users/john/.claude/plugins/cache/claude-plugins-official/superpowers/6.1.1/skills/subagent-driven-development/scripts/review-package\" 24e6712 3594913)",
+      "Bash(bash \"C:/Users/john/.claude/plugins/cache/claude-plugins-official/superpowers/6.1.1/skills/subagent-driven-development/scripts/task-brief\" \"C:/Users/john/projects/fsl-mcp/src/superpowers/plans/2026-07-07-fsl-mcp-authoring.md\" 8)",
+      "Bash(bash \"C:/Users/john/.claude/plugins/cache/claude-plugins-official/superpowers/6.1.1/skills/subagent-driven-development/scripts/review-package\" 34d0eff c8e50bc)",
+      "Bash(bash \"C:/Users/john/.claude/plugins/cache/claude-plugins-official/superpowers/6.1.1/skills/subagent-driven-development/scripts/task-brief\" \"C:/Users/john/projects/fsl-mcp/src/superpowers/plans/2026-07-07-fsl-mcp-authoring.md\" 9)",
+      "Bash(npx rollup *)",
+      "Bash(bash \"C:/Users/john/.claude/plugins/cache/claude-plugins-official/superpowers/6.1.1/skills/subagent-driven-development/scripts/review-package\" c8e50bc 4d2dd80)",
+      "Bash(bash \"C:/Users/john/.claude/plugins/cache/claude-plugins-official/superpowers/6.1.1/skills/subagent-driven-development/scripts/task-brief\" \"C:/Users/john/projects/fsl-mcp/src/superpowers/plans/2026-07-07-fsl-mcp-authoring.md\" 10)",
+      "Bash(bash \"C:/Users/john/.claude/plugins/cache/claude-plugins-official/superpowers/6.1.1/skills/subagent-driven-development/scripts/review-package\" 4d2dd80 efed8a5)",
+      "Bash(timeout 1 cmd /c \"\")",
+      "Bash(npm config *)",
+      "Bash(kill -0 247831)",
+      "Bash(tasklist *)",
+      "Bash(kill -0 249394)"
     ]
   }
 }
