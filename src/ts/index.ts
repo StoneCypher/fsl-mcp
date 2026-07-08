@@ -8,3 +8,6 @@ export type { LintResult, LintNote } from './tools/lint.js';
 
 export { fslExplain } from './tools/explain.js';
 export type { ExplainResult, ExplainError, ExplainTransition } from './tools/explain.js';
+
+export { fslSimulate } from './tools/simulate.js';
+export type { SimulateResult, SimulateError } from './tools/simulate.js';
