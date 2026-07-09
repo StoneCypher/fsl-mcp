@@ -14,4 +14,8 @@ describe('captureReference', () => {
     const fakeSpawn = () => { throw new Error('ENOENT'); };
     expect(captureReference(fakeSpawn)).toBeNull();
   });
+  it('returns null when the CLI succeeds but output is empty/whitespace', () => {
+    const fakeSpawn = () => ({ stdout: '  ', status: 0 });
+    expect(captureReference(fakeSpawn)).toBeNull();
+  });
 });

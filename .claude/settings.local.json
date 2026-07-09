@@ -83,7 +83,19 @@
       "Bash(npm config *)",
       "Bash(kill -0 247831)",
       "Bash(tasklist *)",
-      "Bash(kill -0 249394)"
+      "Bash(kill -0 249394)",
+      "Bash(git ls-remote *)",
+      "Bash(gh run *)",
+      "Bash(git fetch *)",
+      "Bash(git cherry-pick *)",
+      "Bash(bash \"C:/Users/john/.claude/plugins/cache/claude-plugins-official/superpowers/6.1.1/skills/subagent-driven-development/scripts/task-brief\" \"C:/Users/john/projects/fsl-mcp/src/superpowers/plans/2026-07-08-fsl-mcp-eval-harness.md\" 1)",
+      "Bash(bash \"C:/Users/john/.claude/plugins/cache/claude-plugins-official/superpowers/6.1.1/skills/subagent-driven-development/scripts/review-package\" a5ca7f2 78d3b92)",
+      "Bash(bash \"C:/Users/john/.claude/plugins/cache/claude-plugins-official/superpowers/6.1.1/skills/subagent-driven-development/scripts/task-brief\" \"C:/Users/john/projects/fsl-mcp/src/superpowers/plans/2026-07-08-fsl-mcp-eval-harness.md\" 2)",
+      "Bash(bash \"C:/Users/john/.claude/plugins/cache/claude-plugins-official/superpowers/6.1.1/skills/subagent-driven-development/scripts/review-package\" 78d3b92 6ea1406)",
+      "Bash(git *)",
+      "Bash(bash \"C:/Users/john/.claude/plugins/cache/claude-plugins-official/superpowers/6.1.1/skills/subagent-driven-development/scripts/task-brief\" \"C:/Users/john/projects/fsl-mcp/src/superpowers/plans/2026-07-08-fsl-mcp-eval-harness.md\" 3)",
+      "Bash(Test-Path *)",
+      "Bash(bash \"C:/Users/john/.claude/plugins/cache/claude-plugins-official/superpowers/6.1.1/skills/subagent-driven-development/scripts/review-package\" 6ea1406 4f273e2)"
     ]
   }
 }
