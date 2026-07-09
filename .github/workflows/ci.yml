@@ -85,7 +85,7 @@ jobs:
   test-pr:
     needs: [detect-fullbuild]
     if: github.event_name == 'pull_request' && needs.detect-fullbuild.outputs.fullbuild != 'true'
-    name: PR check (Ubuntu, Node 23, ci-lite)
+    name: PR check (Ubuntu, Node 22, ci-lite)
     runs-on: ubuntu-latest
     # Guard against a hung install/build (e.g. a stalled Playwright browser
     # download). Normal runtime is ~1.5 min; 6 min is a generous ceiling that
@@ -103,7 +103,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v5
         with:
-          node-version: 23
+          node-version: 22
           cache: 'npm'
 
       - name: Cache Playwright browsers
@@ -126,7 +126,7 @@ jobs:
   test-main-full:
     needs: [detect-fullbuild]
     if: github.event_name == 'push' || needs.detect-fullbuild.outputs.fullbuild == 'true'
-    name: Main full build (Ubuntu, Node 23)
+    name: Main full build (Ubuntu, Node 22)
     runs-on: ubuntu-latest
     # Full canonical build (npm run ci). Cap well above its normal runtime so a
     # hung step fails fast instead of running toward the 360-minute default.
@@ -139,7 +139,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v5
         with:
-          node-version: 23
+          node-version: 22
           cache: 'npm'
 
       - name: Cache Playwright browsers
@@ -176,14 +176,14 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # Cross-platform verification on Node 23 across all three OSes.
+        # Cross-platform verification on Node 22 across all three OSes.
         include:
           - os: ubuntu-latest
-            node_version: 23
+            node_version: 22
           - os: macos-latest
-            node_version: 23
+            node_version: 22
           - os: windows-latest
-            node_version: 23
+            node_version: 22
 
     steps:
       - name: Checkout code
@@ -223,7 +223,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        node_version: [23]
+        node_version: [22]
 
     steps:
       - name: Checkout code
@@ -262,10 +262,10 @@ jobs:
     steps:
     - uses: actions/checkout@v5
 
-    - name: Use Node.js 23.x
+    - name: Use Node.js 22.x
       uses: actions/setup-node@v5
       with:
-        node-version: 23.x
+        node-version: 22.x
 
     - name: Cache Playwright browsers
       uses: actions/cache@v4
@@ -329,10 +329,10 @@ jobs:
         echo "TAG=$TAG" >> $GITHUB_ENV
         echo $TAG
 
-    - name: Use Node.js 23.x
+    - name: Use Node.js 22.x
       uses: actions/setup-node@v5
       with:
-        node-version: 23.x
+        node-version: 22.x
         registry-url: https://registry.npmjs.org/
 
     - name: Push tags
