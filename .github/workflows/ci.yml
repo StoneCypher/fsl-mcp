@@ -116,7 +116,9 @@ jobs:
         run: npm install
 
       - name: Run lite build
-        run: npm run build -- --profile=ci-lite
+        env:
+          BUILD_PROFILE: ci-lite
+        run: npm run build
 
 
 
@@ -205,7 +207,9 @@ jobs:
         run: npm install
 
       - name: Run lite build (no artifact production)
-        run: npm run build -- --profile=ci-lite
+        env:
+          BUILD_PROFILE: ci-lite
+        run: npm run build
 
 
 
