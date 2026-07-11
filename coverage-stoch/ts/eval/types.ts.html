@@ -3,7 +3,7 @@
 <html lang="en">
 
 <head>
-    <title>Code coverage report for ts/tools/lint.ts</title>
+    <title>Code coverage report for ts/eval/types.ts</title>
     <meta charset="utf-8" />
     <link rel="stylesheet" href="../../prettify.css" />
     <link rel="stylesheet" href="../../base.css" />
@@ -19,13 +19,13 @@
 <body>
 <div class='wrapper'>
     <div class='pad1'>
-        <h1><a href="../../index.html">All files</a> / <a href="index.html">ts/tools</a> lint.ts</h1>
+        <h1><a href="../../index.html">All files</a> / <a href="index.html">ts/eval</a> types.ts</h1>
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/4</span>
+                <span class='fraction'>0/1</span>
             </div>
         
             
@@ -37,16 +37,16 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/3</span>
+                <span class='fraction'>0/0</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/4</span>
+                <span class='fraction'>0/1</span>
             </div>
         
             
@@ -97,7 +97,38 @@
 <a name='L32'></a><a href='#L32'>32</a>
 <a name='L33'></a><a href='#L33'>33</a>
 <a name='L34'></a><a href='#L34'>34</a>
-<a name='L35'></a><a href='#L35'>35</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L35'></a><a href='#L35'>35</a>
+<a name='L36'></a><a href='#L36'>36</a>
+<a name='L37'></a><a href='#L37'>37</a>
+<a name='L38'></a><a href='#L38'>38</a>
+<a name='L39'></a><a href='#L39'>39</a>
+<a name='L40'></a><a href='#L40'>40</a>
+<a name='L41'></a><a href='#L41'>41</a>
+<a name='L42'></a><a href='#L42'>42</a>
+<a name='L43'></a><a href='#L43'>43</a>
+<a name='L44'></a><a href='#L44'>44</a>
+<a name='L45'></a><a href='#L45'>45</a>
+<a name='L46'></a><a href='#L46'>46</a>
+<a name='L47'></a><a href='#L47'>47</a>
+<a name='L48'></a><a href='#L48'>48</a>
+<a name='L49'></a><a href='#L49'>49</a>
+<a name='L50'></a><a href='#L50'>50</a>
+<a name='L51'></a><a href='#L51'>51</a>
+<a name='L52'></a><a href='#L52'>52</a>
+<a name='L53'></a><a href='#L53'>53</a>
+<a name='L54'></a><a href='#L54'>54</a>
+<a name='L55'></a><a href='#L55'>55</a>
+<a name='L56'></a><a href='#L56'>56</a>
+<a name='L57'></a><a href='#L57'>57</a>
+<a name='L58'></a><a href='#L58'>58</a>
+<a name='L59'></a><a href='#L59'>59</a>
+<a name='L60'></a><a href='#L60'>60</a>
+<a name='L61'></a><a href='#L61'>61</a>
+<a name='L62'></a><a href='#L62'>62</a>
+<a name='L63'></a><a href='#L63'>63</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -127,43 +158,96 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { analyze } from '../analyze.js';
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">/** Task difficulty tier; the tool/reference value is expected to grow with difficulty. */
+export type Difficulty = 'easy' | 'medium' | 'harder';
 &nbsp;
-/** One lint note: a non-error diagnostic, keyed by its severity as `rule`. */
-export interface LintNote {
-  rule    : string;
-  message : string;
-  line    : number;
+/** A behavioral expectation: applying `actions` in order must end on `endState`;
+ *  if `rejectedAt` is set, the move at that index must be rejected (walk stops there). */
+export interface Walk {
+  actions    : string[];
+  endState   : string;
+  rejectedAt?: number;
 }
 &nbsp;
-/** Result of linting FSL source. */
-export interface LintResult {
-  notes : LintNote[];
+/** Machine-checkable expectations for a task's produced FSL. All present checks must pass. */
+export interface Expect {
+  states?      : string[];
+  transitions? : [string, string][];
+  start?       : string[];
+  terminals?   : string[];
+  walks?       : Walk[];
 }
 &nbsp;
-/**
- * Lint FSL source: surface warning/info/hint diagnostics as style notes.
- * Error-severity problems are the province of `fslValidate` and are excluded.
- *
- * @param source - the FSL source text
- * @returns the non-error notes; `notes: []` when the source is clean
- *
- * @example
- *   fslLint('a -&gt; b;')  // =&gt; { notes: [] }
- */
-export function <span class="fstat-no" title="function not covered" >fslLint(s</span>ource: string): LintResult {
-  // map() runs before filter() (rather than the more obvious filter-then-map)
-  // so every diagnostic — errors included — passes through the mapping step;
-  // only the exclusion happens after. Diagnostics that survive to fslLint's
-  // callers are always non-error, so the two orderings are equivalent.
-  const <span class="cstat-no" title="statement not covered" >notes = analyze(source)</span>
-    .<span class="fstat-no" title="function not covered" >map(d</span> =&gt; (<span class="cstat-no" title="statement not covered" >{ rule: d.severity, message: d.message, line: d.line }))</span>
-    .<span class="fstat-no" title="function not covered" >filter(n</span> =&gt; <span class="cstat-no" title="statement not covered" >n.rule !== 'error')</span>;
-<span class="cstat-no" title="statement not covered" >  return { notes };</span>
+/** One eval task: a natural-language spec plus how to check the result. */
+export interface Task {
+  id         : string;
+  difficulty : Difficulty;
+  prompt     : string;
+  expect     : Expect;
+}
+&nbsp;
+/** The four experimental conditions. */
+export type Condition = 'bare' | 'reference' | 'tools' | 'reference+tools';
+&nbsp;
+/** The conditions evaluated, in report order. */
+export const CONDITIONS: readonly Condition[] = <span class="cstat-no" title="statement not covered" >['bare', 'reference', 'tools', 'reference+tools'];</span>
+&nbsp;
+/** A fully-built `claude -p` invocation: CLI args plus the prompt fed on stdin. */
+export interface Invocation {
+  args   : string[];
+  prompt : string;
+}
+&nbsp;
+/** The outcome of one trial's model call: the extracted FSL, or null with an error note. */
+export interface TrialResult {
+  fsl    : string | null;
+  error? : string;
+}
+&nbsp;
+/** One scored trial. */
+export interface ScoredTrial {
+  task       : string;
+  difficulty : Difficulty;
+  condition  : Condition;
+  valid      : boolean;
+  correct    : boolean;
+}
+&nbsp;
+/** Aggregate rates for one condition across all its trials. */
+export interface ConditionSummary {
+  condition       : Condition;
+  n               : number;
+  validityRate    : number;
+  correctnessRate : number;
 }
 &nbsp;</pre></td></tr></table></pre>
 

@@ -3,7 +3,7 @@
 <html lang="en">
 
 <head>
-    <title>Code coverage report for ts/tools/explain.ts</title>
+    <title>Code coverage report for ts/eval/conditions.ts</title>
     <meta charset="utf-8" />
     <link rel="stylesheet" href="../../prettify.css" />
     <link rel="stylesheet" href="../../base.css" />
@@ -19,34 +19,34 @@
 <body>
 <div class='wrapper'>
     <div class='pad1'>
-        <h1><a href="../../index.html">All files</a> / <a href="index.html">ts/tools</a> explain.ts</h1>
+        <h1><a href="../../index.html">All files</a> / <a href="index.html">ts/eval</a> conditions.ts</h1>
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/18</span>
-            </div>
-        
-            
-            <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
-                <span class="quiet">Branches</span>
                 <span class='fraction'>0/10</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
+                <span class="quiet">Branches</span>
+                <span class='fraction'>0/8</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/4</span>
+                <span class='fraction'>0/2</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/13</span>
+                <span class='fraction'>0/10</span>
             </div>
         
             
@@ -118,16 +118,11 @@
 <a name='L53'></a><a href='#L53'>53</a>
 <a name='L54'></a><a href='#L54'>54</a>
 <a name='L55'></a><a href='#L55'>55</a>
-<a name='L56'></a><a href='#L56'>56</a>
-<a name='L57'></a><a href='#L57'>57</a>
-<a name='L58'></a><a href='#L58'>58</a>
-<a name='L59'></a><a href='#L59'>59</a>
-<a name='L60'></a><a href='#L60'>60</a>
-<a name='L61'></a><a href='#L61'>61</a>
-<a name='L62'></a><a href='#L62'>62</a>
-<a name='L63'></a><a href='#L63'>63</a>
-<a name='L64'></a><a href='#L64'>64</a>
-<a name='L65'></a><a href='#L65'>65</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L56'></a><a href='#L56'>56</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -139,15 +134,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -173,14 +160,6 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -188,72 +167,66 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { from } from 'jssm';
-import { analyze, hasErrors } from '../analyze.js';
-import type { FslDiagnostic } from '../types.js';
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import type { Task, Condition, Invocation } from './types.js';
 &nbsp;
-/** A transition in the explained structure. */
-export interface ExplainTransition {
-  from    : string;
-  to      : string;
-  kind    : string;
-  action? : string;
-  name?   : string;
-}
+/** Instruction appended to every task prompt: emit exactly one fenced fsl block. */
+export const PROMPT_PREAMBLE: string =
+<span class="cstat-no" title="statement not covered" >  'You are authoring an FSL (finite state language) machine. Output your final machine as a single fenced code block tagged fsl, like:\n' +</span>
+  '```fsl\na -&gt; b;\n```\n' +
+  'Output only that one fsl block as your machine; no other code blocks.';
 &nbsp;
-/** Structural explanation of a valid machine. */
-export interface ExplainResult {
-  valid       : true;
-  states      : string[];
-  transitions : ExplainTransition[];
-  start       : string[];
-  terminals   : string[];
-  summary     : string;
-}
-&nbsp;
-/** Returned instead of a structure when the source does not compile. */
-export interface ExplainError {
-  valid       : false;
-  diagnostics : FslDiagnostic[];
+/**
+ * The `--mcp-config` file contents wiring the fsl-mcp stdio server at `binPath`.
+ *
+ * @example
+ *   mcpConfigJson('/repo/dist/bin.mjs')
+ *   // =&gt; '{"mcpServers":{"fsl":{"command":"node","args":["/repo/dist/bin.mjs"]}}}'
+ */
+export function <span class="fstat-no" title="function not covered" >mcpConfigJson(b</span>inPath: string): string {
+<span class="cstat-no" title="statement not covered" >  return JSON.stringify({ mcpServers: { fsl: { command: 'node', args: [binPath] } } });</span>
 }
 &nbsp;
 /**
- * Explain an FSL machine's structure: its states, transitions, start state(s),
- * terminal state(s), and a one-line summary. Invalid source yields diagnostics.
+ * Build the `claude -p` invocation (args + stdin prompt) for one task under one
+ * condition. Reference conditions prepend the primer; tools conditions add
+ * `--mcp-config` and auto-allow the fsl_* tools. `--strict-mcp-config` is always
+ * set so the user's own MCP servers never leak into a condition.
  *
- * @param source - the FSL source text
- * @returns an `ExplainResult` for valid source, or an `ExplainError` otherwise
+ * @param task - the task being authored
+ * @param condition - which of the four conditions
+ * @param opts - the model id, the reference primer text, and the temp mcp-config path
+ * @returns the argv (excluding the `claude` program itself) and the stdin prompt
  *
  * @example
- *   fslExplain('a -&gt; b;')
- *   // =&gt; { valid: true, states: ['a','b'], transitions: [{from:'a',to:'b',kind:...}],
- *   //      start: ['a'], terminals: ['b'], summary: '2 states, 1 transitions; ...' }
+ *   buildInvocation(task, 'tools', { model: 'claude-opus-4-8', primer, mcpConfigPath })
  */
-export function <span class="fstat-no" title="function not covered" >fslExplain(s</span>ource: string): ExplainResult | ExplainError {
-  const <span class="cstat-no" title="statement not covered" >diagnostics = analyze(source);</span>
-<span class="cstat-no" title="statement not covered" >  if (hasErrors(diagnostics)) { <span class="cstat-no" title="statement not covered" >return { valid: false, diagnostics }; }</span></span>
+export function <span class="fstat-no" title="function not covered" >buildInvocation(</span>
+  task: Task,
+  condition: Condition,
+  opts: { model: string; primer: string; mcpConfigPath: string },
+): Invocation {
+  const usesReference = <span class="cstat-no" title="statement not covered" >condition === 'reference' || condition === 'reference+tools';</span>
+  const usesTools     = <span class="cstat-no" title="statement not covered" >condition === 'tools'     || condition === 'reference+tools';</span>
 &nbsp;
-  const <span class="cstat-no" title="statement not covered" >m      = from(source);</span>
-  const states = <span class="cstat-no" title="statement not covered" >m.states().map(String);</span>
+  const args: string[] = <span class="cstat-no" title="statement not covered" >['-p', '--output-format', 'json', '--model', opts.model, '--strict-mcp-config'];</span>
 &nbsp;
-  const transitions = <span class="cstat-no" title="statement not covered" >m.list_edges().<span class="fstat-no" title="function not covered" >map(e</span> =&gt; {</span>
-    const t: ExplainTransition = <span class="cstat-no" title="statement not covered" >{ from: e.from, to: e.to, kind: e.kind };</span>
-<span class="cstat-no" title="statement not covered" >    if (e.action !== undefined) { <span class="cstat-no" title="statement not covered" >t.action = e.action; }</span></span>
-<span class="cstat-no" title="statement not covered" >    if (e.name   !== undefined) { <span class="cstat-no" title="statement not covered" >t.name   = e.name; }</span></span>
-<span class="cstat-no" title="statement not covered" >    return t;</span>
-  });
+<span class="cstat-no" title="statement not covered" >  if (usesTools) {</span>
+<span class="cstat-no" title="statement not covered" >    args.push('--mcp-config', opts.mcpConfigPath);</span>
+    // Auto-allow the server's tools so the run never blocks on a permission prompt.
+<span class="cstat-no" title="statement not covered" >    args.push('--allowedTools', 'mcp__fsl__fsl_validate,mcp__fsl__fsl_render,mcp__fsl__fsl_explain,mcp__fsl__fsl_simulate,mcp__fsl__fsl_lint');</span>
+  }
 &nbsp;
-  const start     = <span class="cstat-no" title="statement not covered" >states.<span class="fstat-no" title="function not covered" >filter((s</span>: string) =&gt; <span class="cstat-no" title="statement not covered" >m.is_start_state(s))</span>;</span>
-  const terminals = <span class="cstat-no" title="statement not covered" >states.<span class="fstat-no" title="function not covered" >filter((s</span>: string) =&gt; <span class="cstat-no" title="statement not covered" >m.state_is_terminal(s))</span>;</span>
-  const summary   =
-<span class="cstat-no" title="statement not covered" >    `${String(states.length)} states, ${String(transitions.length)} transitions; ` +</span>
-    `start: ${start.join(', ') || '(none)'}; ` +
-    `terminal: ${terminals.join(', ') || '(none)'}.`;
+  const prompt = <span class="cstat-no" title="statement not covered" >usesReference</span>
+    ? `${opts.primer}\n\n---\n\n${PROMPT_PREAMBLE}\n\n${task.prompt}`
+    : `${PROMPT_PREAMBLE}\n\n${task.prompt}`;
 &nbsp;
-<span class="cstat-no" title="statement not covered" >  return { valid: true, states, transitions, start, terminals, summary };</span>
+<span class="cstat-no" title="statement not covered" >  return { args, prompt };</span>
 }
 &nbsp;</pre></td></tr></table></pre>
 
