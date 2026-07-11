@@ -324,6 +324,11 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    # Pushing the version tag and creating the release require write access
+    # to repo contents; the default GITHUB_TOKEN here is read-only.
+    permissions:
+      contents: write
+
     steps:
     - uses: actions/checkout@v4
 
