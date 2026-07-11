@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { aggregate, computeDeltas, renderReport } from '../report.js';
-import type { ScoredTrial, ConditionSummary, Delta } from '../types.js';
+import type { ScoredTrial, ConditionSummary } from '../types.js';
+import type { Delta } from '../report.js';
 
 const trials: ScoredTrial[] = [
   { task: 't1', difficulty: 'easy', condition: 'bare',  valid: true,  correct: false },

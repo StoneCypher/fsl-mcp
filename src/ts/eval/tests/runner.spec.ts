@@ -52,4 +52,25 @@ describe('runTrial', () => {
     expect(r.fsl).toBeNull();
     expect(r.error).toContain('boom-string');
   });
+  it('reports a timeout error and resolves instead of hanging when the spawn never settles', async () => {
+    const neverSettles = () => new Promise<{ stdout: string; code: number }>(() => { /* hung child */ });
+    const r = await runTrial(inv, neverSettles, 20);
+    expect(r.fsl).toBeNull();
+    expect(r.error).toContain('timeout after');
+  });
+  it('does not time out when the spawn resolves within the limit', async () => {
+    const envelope = JSON.stringify({ type: 'result', is_error: false, result: 'sure:\n```fsl\na -> b;\n```' });
+    const r = await runTrial(inv, fakeSpawn(envelope), 500);
+    expect(r.fsl).toBe('a -> b;');
+    expect(r.error).toBeUndefined();
+  });
+  it('passes an AbortSignal as the third spawn argument, for cancelling a timed-out child', async () => {
+    let receivedSignal: AbortSignal | undefined;
+    const spy = async (_args: string[], _stdin: string, signal?: AbortSignal) => {
+      receivedSignal = signal;
+      return { stdout: JSON.stringify({ type: 'result', is_error: false, result: '' }), code: 0 };
+    };
+    await runTrial(inv, spy);
+    expect(receivedSignal).toBeInstanceOf(AbortSignal);
+  });
 });
