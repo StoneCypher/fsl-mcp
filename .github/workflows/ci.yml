@@ -330,7 +330,7 @@ jobs:
       contents: write
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
 
     - name: Export tag to envvars
       run: |
@@ -338,23 +338,25 @@ jobs:
         echo "TAG=$TAG" >> $GITHUB_ENV
         echo $TAG
 
-    - name: Use Node.js 22.x
-      uses: actions/setup-node@v5
-      with:
-        node-version: 22.x
-        registry-url: https://registry.npmjs.org/
+    # setup-node is no longer needed here — nothing left in this job runs
+    # node/npm now that release creation uses the preinstalled gh CLI. If
+    # the "Publish to npm" step below is ever revived, restore this step
+    # ahead of it:
+    #   - name: Use Node.js 22.x
+    #     uses: actions/setup-node@v5
+    #     with:
+    #       node-version: 22.x
+    #       registry-url: https://registry.npmjs.org/
 
-    - name: Push tags
-      run: git push origin --tags
-
-    - name: Create the release
-      uses: actions/create-release@v1
+    - name: Create GitHub release
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: ${{ env.TAG }}
-        release_name: ${{ env.TAG }}
-        body_path: CHANGELOG.md
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        if gh release view "$TAG" >/dev/null 2>&1; then
+          echo "Release $TAG already exists — skipping (no version bump since last release)."
+        else
+          gh release create "$TAG" --title "$TAG" --notes-file CHANGELOG.md
+        fi
 
     # - name: Publish to npm
     #   run: |
