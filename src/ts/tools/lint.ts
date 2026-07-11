@@ -23,8 +23,12 @@ export interface LintResult {
  *   fslLint('a -> b;')  // => { notes: [] }
  */
 export function fslLint(source: string): LintResult {
+  // map() runs before filter() (rather than the more obvious filter-then-map)
+  // so every diagnostic — errors included — passes through the mapping step;
+  // only the exclusion happens after. Diagnostics that survive to fslLint's
+  // callers are always non-error, so the two orderings are equivalent.
   const notes = analyze(source)
-    .filter(d => d.severity !== 'error')
-    .map(d => ({ rule: d.severity, message: d.message, line: d.line }));
+    .map(d => ({ rule: d.severity, message: d.message, line: d.line }))
+    .filter(n => n.rule !== 'error');
   return { notes };
 }

@@ -36,4 +36,20 @@ describe('runTrial', () => {
     const r = await runTrial(inv, fakeSpawn(envelope));
     expect(r.fsl).toBeNull();
   });
+  it('reports null fsl (no error) when the envelope omits the result field', async () => {
+    const envelope = JSON.stringify({ type: 'result', is_error: false });
+    const r = await runTrial(inv, fakeSpawn(envelope));
+    expect(r.fsl).toBeNull();
+    expect(r.error).toBeUndefined();
+  });
+  it('reports a spawn-failed error when the spawn rejects with an Error', async () => {
+    const r = await runTrial(inv, () => Promise.reject(new Error('ENOENT')));
+    expect(r.fsl).toBeNull();
+    expect(r.error).toContain('ENOENT');
+  });
+  it('reports a spawn-failed error when the spawn rejects with a non-Error value', async () => {
+    const r = await runTrial(inv, () => Promise.reject('boom-string'));
+    expect(r.fsl).toBeNull();
+    expect(r.error).toContain('boom-string');
+  });
 });
