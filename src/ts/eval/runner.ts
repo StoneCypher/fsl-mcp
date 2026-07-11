@@ -7,6 +7,7 @@ export type ClaudeSpawn = (args: string[], stdin: string) => Promise<{ stdout: s
 
 /** Default spawn: run the real `claude` CLI, feeding the prompt on stdin. */
 function defaultSpawn(args: string[], stdin: string): Promise<{ stdout: string; code: number }> {
+  /* v8 ignore start -- shells out to the real claude CLI; untestable without a live process */
   return new Promise((resolve, reject) => {
     const child = nodeSpawn('claude', args, { stdio: ['pipe', 'pipe', 'inherit'] });
     let stdout = '';
@@ -15,6 +16,7 @@ function defaultSpawn(args: string[], stdin: string): Promise<{ stdout: string; 
     child.on('close', code => { resolve({ stdout, code: code ?? 1 }); });
     child.stdin.end(stdin);
   });
+  /* v8 ignore stop */
 }
 
 /**

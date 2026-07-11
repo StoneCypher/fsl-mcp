@@ -5,9 +5,11 @@ export type PrimerSpawn = (cmd: string, args: string[]) => { stdout: string; sta
 
 /** Default spawn: run the installed jssm `fsl-export-system-prompt` CLI via npx. */
 function defaultSpawn(cmd: string, args: string[]): { stdout: string; status: number } {
+  /* v8 ignore start -- shells out to a real CLI; untestable without a live process */
   const r = spawnSync(cmd, args, { encoding: 'utf8' });
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   return { stdout: r.stdout ?? '', status: r.status ?? 1 };
+  /* v8 ignore stop */
 }
 
 /**

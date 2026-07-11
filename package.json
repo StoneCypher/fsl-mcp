@@ -58,7 +58,8 @@
     "cloc": "node src/build_js/run_cloc.js && node ./src/build_js/cloc_report.cjs",
     "changelog": "rm -f CHANGELOG.md && rm -f CHANGELOG.long.md && rm -f ./src/doc_md/CHANGELOG.md && rm -f ./src/doc_md/CHANGELOG.long.md && better_git_changelog -b && cp CHANGELOG.* ./src/doc_md/",
     "build": "node src/build_js/run_build.js",
-    "ci": "echo starting && node -e \"console.log(new Date().toLocaleString())\" && npm run build && echo finishing && node -e \"console.log(new Date().toLocaleString())\""
+    "ci": "echo starting && node -e \"console.log(new Date().toLocaleString())\" && npm run build && echo finishing && node -e \"console.log(new Date().toLocaleString())\"",
+    "eval": "jiti src/ts/eval/eval.ts"
   },
   "dependencies": {
     "jssm": "^5.162.1",

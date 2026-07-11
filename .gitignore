@@ -152,3 +152,6 @@ build.config.local.json
 
 # Subagent-driven-development scratch (ledger, briefs, reports, review diffs)
 .superpowers/
+
+# eval harness run artifact (npm run eval output), not source
+eval-results.json
