@@ -42,7 +42,7 @@ describe('computeDeltas', () => {
 });
 
 describe('renderReport', () => {
-  it('formats percentages correctly with two decimal places', () => {
+  it('formats percentages correctly with one decimal place', () => {
     const summaries: ConditionSummary[] = [
       { condition: 'bare', n: 10, validityRate: 0.5, correctnessRate: 0 },
     ];
@@ -131,9 +131,8 @@ describe('renderReport', () => {
     const bareNDigitPos = bareDataLine.indexOf(bareMatch![0]) + bareMatch![0].lastIndexOf('1');
     const toolsNDigitPos = toolsDataLine.indexOf(toolsMatch![0]) + toolsMatch![0].lastIndexOf('9');
 
-    // The header 'n' should align closely with the data column n values
-    // They should be within 1 position of each other
-    expect(Math.abs(nHeaderPos - bareNDigitPos)).toBeLessThanOrEqual(1);
-    expect(Math.abs(nHeaderPos - toolsNDigitPos)).toBeLessThanOrEqual(1);
+    // The header 'n' should align exactly with the data column n values
+    expect(Math.abs(nHeaderPos - bareNDigitPos)).toBe(0);
+    expect(Math.abs(nHeaderPos - toolsNDigitPos)).toBe(0);
   });
 });

@@ -25,6 +25,28 @@ function parseFlags(argv: string[]): Map<string, string> {
 }
 
 /**
+ * Read a `--flag` as a finite positive integer, or `fallback` when the flag is
+ * absent. Guards against a mistyped value (e.g. `--trials abc`) silently
+ * becoming `NaN` and cascading into a zero/infinite trial sweep: prints a
+ * clear message to stderr and exits(1) instead.
+ *
+ * @param flags - the parsed flag lookup
+ * @param name - the flag name, without the leading `--`
+ * @param fallback - the value to use when the flag was not supplied
+ * @returns the flag's positive-integer value, or `fallback`
+ */
+function parsePositiveIntFlag(flags: Map<string, string>, name: string, fallback: number): number {
+  const raw = flags.get(name);
+  if (raw === undefined) { return fallback; }
+  const n = Number(raw);
+  if (!Number.isFinite(n) || !Number.isInteger(n) || n <= 0) {
+    console.error(`[eval] --${name} must be a positive integer, got ${JSON.stringify(raw)}`);
+    process.exit(1);
+  }
+  return n;
+}
+
+/**
  * CLI entry point for the fsl-mcp eval harness. Parses `--model` / `--trials` /
  * `--tasks` / `--conditions` flags, captures the FSL reference primer once,
  * writes a temp `--mcp-config` pointing at the built `dist/bin.mjs` server,
@@ -39,8 +61,8 @@ function parseFlags(argv: string[]): Map<string, string> {
 async function main(): Promise<void> {
   const flags   = parseFlags(process.argv.slice(2));
   const model   = flags.get('model') ?? 'claude-opus-4-8';
-  const trials  = Number(flags.get('trials') ?? '3');
-  const taskCap = flags.has('tasks') ? Number(flags.get('tasks')) : TASKS.length;
+  const trials  = parsePositiveIntFlag(flags, 'trials', 3);
+  const taskCap = parsePositiveIntFlag(flags, 'tasks', TASKS.length);
   const tasks   = TASKS.slice(0, taskCap);
 
   const primer = captureReference();
