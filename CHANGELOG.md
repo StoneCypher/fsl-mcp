@@ -22,40 +22,13 @@ Published tags:
 
 &nbsp;
 
-## [Untagged] - Jul 7, 2026 11:01:16 PM
+## [Untagged] - Jul 10, 2026 10:13:47 PM
 
-Commit [954fa93f8fa8bcdd9fc688b6229b17bb671e8b68](https://github.com/StoneCypher/fsl-mcp/commit/954fa93f8fa8bcdd9fc688b6229b17bb671e8b68)
-
-Author: `John Haugeland <stonecypher@gmail.com>`
-
-  * build: regenerate bundles for render note reword
-  * Claude-Session: https://claude.ai/code/session_01YQ2XHZixjbJyPBMBEXiK4Y
-
-
-
-
-&nbsp;
-
-&nbsp;
-
-## [Untagged] - Jul 7, 2026 11:01:00 PM
-
-Commit [236397a34138d22e8f4120ae9a788a99489102d3](https://github.com/StoneCypher/fsl-mcp/commit/236397a34138d22e8f4120ae9a788a99489102d3)
+Commit [0019b7dc5ae8f564392fc178ec6f847d0334feef](https://github.com/StoneCypher/fsl-mcp/commit/0019b7dc5ae8f564392fc178ec6f847d0334feef)
 
 Author: `John Haugeland <stonecypher@gmail.com>`
 
-  * fix: clean up dead IIFE references and internal jargon in tool output
-  * Final-review follow-ups (no critical/important issues; these are the
-polish items):
-- render.ts: reword the png-degrade note to drop the internal 'Wmcp sync
-  items' roadmap jargon that was leaking into a user-facing tool result;
-  still matches /not yet supported/i so the test is unaffected.
-- src/html/index.html: drop the <script src=index.iife.js> tag left
-  dangling when the IIFE bundle was removed (would 404 on the published
-  gh-pages site).
-- e2e/index.spec.ts: remove the now-invalid 'loads the application
-  script' assertion for that removed bundle.
-  * Claude-Session: https://claude.ai/code/session_01YQ2XHZixjbJyPBMBEXiK4Y
+  * chore: untrack per-machine .claude/settings.local.json
 
 
 
@@ -64,20 +37,13 @@ polish items):
 
 &nbsp;
 
-## [Untagged] - Jul 7, 2026 10:44:00 PM
+## [Untagged] - Jul 10, 2026 10:10:20 PM
 
-Commit [7f3e947e96473e1d137c47119adb229d5ec31f38](https://github.com/StoneCypher/fsl-mcp/commit/7f3e947e96473e1d137c47119adb229d5ec31f38)
+Commit [505621fdf879055c3960d4de354af383ce8f427f](https://github.com/StoneCypher/fsl-mcp/commit/505621fdf879055c3960d4de354af383ce8f427f)
 
 Author: `John Haugeland <stonecypher@gmail.com>`
 
-  * ci: publish Pages via gh-pages branch, downgrade runner to Node 23
-  * - Add a deploy-pages job that pushes the committed docs/ (site + typedoc
-  API docs) to the gh-pages branch on push to main, gated behind
-  test-main-full, using peaceiris/actions-gh-pages. GitHub Pages must be
-  set (repo Settings > Pages) to serve from the gh-pages branch.
-- Downgrade every CI Node runner from 24 to 23 (PR check, main full,
-  cross-platform matrix, stryker, verify-version-bump, release).
-  * Claude-Session: https://claude.ai/code/session_01YQ2XHZixjbJyPBMBEXiK4Y
+  * docs: add fence languages and fix emphasis in eval spec/plan
 
 
 
@@ -86,18 +52,24 @@ Author: `John Haugeland <stonecypher@gmail.com>`
 
 &nbsp;
 
-## [Untagged] - Jul 7, 2026 10:39:47 PM
+## [Untagged] - Jul 10, 2026 9:53:51 PM
 
-Commit [12747b61097279385d246784f57432cb88287c34](https://github.com/StoneCypher/fsl-mcp/commit/12747b61097279385d246784f57432cb88287c34)
+Commit [c47959d585130a5a736e7c38927daa8cd11a0212](https://github.com/StoneCypher/fsl-mcp/commit/c47959d585130a5a736e7c38927daa8cd11a0212)
 
 Author: `John Haugeland <stonecypher@gmail.com>`
 
-  * fix(build): make dts copy idempotent, drop nested dist/tools/tools cruft
-  * The dts step ran 'cp -r build/ts/tools dist/tools' into an existing
-dist/tools, nesting a spurious dist/tools/tools/ (with stray .js files
-a types dir shouldn't carry). rm -rf dist/tools before the copy makes
-it idempotent. attw still clean across all four resolution modes.
-  * Claude-Session: https://claude.ai/code/session_01YQ2XHZixjbJyPBMBEXiK4Y
+  * fix(eval): windows-safe primer spawn and per-trial timeout
+  * - reference.ts: on win32, spawnSync npx via a joined shell command string
+  instead of shell:true + args array (avoids ENOENT and Node's DEP0190
+  warning); other platforms unchanged.
+- runner.ts: runTrial now races the spawn against a timeoutMs (default
+  DEFAULT_TRIAL_TIMEOUT_MS = 600_000ms), killing the child via an
+  AbortSignal passed as ClaudeSpawn's new optional third argument, and
+  resolving a timeout as a normal error result instead of hanging.
+- eval.ts: wire a --timeout flag through the existing
+  parsePositiveIntFlag guard.
+- tests: cover the timeout and non-timeout paths in runner.spec.ts, and
+  fix report.spec.ts's Delta import (declared in report.ts, not types.ts).
 
 
 
@@ -106,19 +78,37 @@ it idempotent. attw still clean across all four resolution modes.
 
 &nbsp;
 
-## [Untagged] - Jul 7, 2026 10:38:21 PM
+## [Untagged] - Jul 10, 2026 9:07:59 PM
 
-Commit [3d52577927c847211d5415918a4908c4d19e7e16](https://github.com/StoneCypher/fsl-mcp/commit/3d52577927c847211d5415918a4908c4d19e7e16)
+Commit [99e039ffcdcce2c0d876fc4fbfdc4cfa8398ddd9](https://github.com/StoneCypher/fsl-mcp/commit/99e039ffcdcce2c0d876fc4fbfdc4cfa8398ddd9)
 
 Author: `John Haugeland <stonecypher@gmail.com>`
 
-  * build: regenerate dist, docs, changelog, coverage artifacts
-  * Regenerated outputs for the ESM+CJS build: dist/index.{mjs,cjs} +
-index.d.{ts,cts} + bin.mjs + per-module .d.ts, typedoc site with the
-five tool + createServer/startServer pages, changelog, coverage, and
-the generated README.md. Removes the stale stub/double artifacts and
-the dropped IIFE bundle.
-  * Claude-Session: https://claude.ai/code/session_01YQ2XHZixjbJyPBMBEXiK4Y
+  * test: raise coverage gate to 95%
+  * Raises all four coverage.thresholds (statements/branches/functions/lines)
+in vitest.config.ts from 80 to 95, closing the gap with real behavior
+tests:
+  * - server.ts: startServer now accepts an injectable Transport (defaulting
+  to a real StdioServerTransport, unchanged for the fsl-mcp bin entry).
+  server.spec.ts exercises it end-to-end over a real stdio JSON-RPC
+  round-trip, backed by injected PassThrough streams instead of the
+  actual process stdin/stdout — so the previously-untestable process
+  wiring is now genuinely covered without hijacking the test process.
+- lint.ts: reorder analyze(source).filter().map() to .map().filter().
+  Same output, but the map callback now runs over every diagnostic
+  (errors included) instead of only the ones that already survived
+  filtering, so it is genuinely exercised by the existing invalid-FSL
+  test rather than only reachable via a non-error diagnostic that the
+  installed jssm never emits.
+- runner.spec.ts: cover the spawn-throws (Error and non-Error) catch
+  branch and the non-string envelope.result fallback.
+  * Full-suite coverage after these changes: 98.4% statements, 95.74%
+branches, 95.55% functions, 100% lines — all four thresholds pass.
+  * A few branches remain intentionally uncovered because they are not
+reachable through real behavior with the installed jssm version (no FSL
+input produces a non-error diagnostic, sets an edge's .name, or yields a
+machine with zero start states), on top of the pre-existing defaultSpawn
+process shims in reference.ts/runner.ts.
 
 
 
@@ -127,33 +117,23 @@ the dropped IIFE bundle.
 
 &nbsp;
 
-## [Untagged] - Jul 7, 2026 10:38:08 PM
+## [Untagged] - Jul 10, 2026 9:07:39 PM
 
-Commit [eca3e4828ef517b1f51fc6c19b87d9e0d288bf37](https://github.com/StoneCypher/fsl-mcp/commit/eca3e4828ef517b1f51fc6c19b87d9e0d288bf37)
+Commit [f85fdba4682fc4d559b4fb6c520237967818d44b](https://github.com/StoneCypher/fsl-mcp/commit/f85fdba4682fc4d559b4fb6c520237967818d44b)
 
 Author: `John Haugeland <stonecypher@gmail.com>`
 
-  * build: real docs, ESM+CJS-only bundles, externalized deps
-  * Write the real base_README.md (what fsl-mcp is, npx/MCP-client install,
-the five tools, v1 ceilings) and a contributor CLAUDE.md (analyze-first
-architecture, strict TS/eslint gotchas, generated-README rule, real
-coverage gate, transitive viz-js note).
-  * Reshape the build to fit an MCP server:
-- Drop the IIFE/browser bundle entirely — a stdio server can't run in a
-  browser (its config had to stub the server deps with inert globals).
-- Keep ESM + CJS library bundles + the npx bin (all three ESM/CJS).
-- Externalize every runtime dep (jssm, jssm/viz, SDK, zod) in all
-  bundles instead of inlining jssm: smaller bundles, proper dedup, and
-  it removes the terser hang that inlining jssm+viz caused. minify only
-  ESM+CJS now.
-- package.json exports/main/types reduced to import+require (no browser).
-- update_madlibs.js: fill the unit/stoch branch/func/line README madlibs
-  the template left unreplaced.
-- index.ts: export the FslDiagnostic/FslSeverity public types.
-  * Verified: tsc clean, eslint clean, 67/67 tests, coverage gate green
-(94.73/88/91.3/95.16), attw clean (node10/node16-CJS/node16-ESM/bundler),
-bin smoke test OK.
-  * Claude-Session: https://claude.ai/code/session_01YQ2XHZixjbJyPBMBEXiK4Y
+  * test(eval): close recorded review gaps and extend scoreCorrectness coverage
+  * - score.spec.ts: cover the unexpected-rejection branch (walk rejected with
+  no rejectedAt expected), an empty-body fsl fence, an invalid-source
+  short-circuit, and the states/start/rejectedAt-index mismatch branches
+  of scoreCorrectness.
+- report.spec.ts: tighten the column-alignment assertions from a +/-1
+  tolerance to exact equality, and rename the percentage-formatting test
+  to match pct's actual one-decimal-place output.
+- eval.ts: guard --trials/--tasks against a non-finite/non-positive
+  Number() result (e.g. --trials abc) with a clear stderr message and
+  exit(1), instead of silently cascading a NaN through the trial sweep.
 
 
 
@@ -162,13 +142,27 @@ bin smoke test OK.
 
 &nbsp;
 
-## [Untagged] - Jul 7, 2026 9:11:35 PM
+## [Untagged] - Jul 10, 2026 8:34:53 PM
 
-Commit [efed8a5d989426ef7e0c94d5f5b0154a8b6e369c](https://github.com/StoneCypher/fsl-mcp/commit/efed8a5d989426ef7e0c94d5f5b0154a8b6e369c)
+Commit [f37efb564e51b64cd05586bfa1afb84238016d38](https://github.com/StoneCypher/fsl-mcp/commit/f37efb564e51b64cd05586bfa1afb84238016d38)
 
 Author: `John Haugeland <stonecypher@gmail.com>`
 
-  * fix(coverage): enforce 80% gate via nested thresholds
+  * feat(eval): task corpus, CLI orchestrator, and npm run eval
+  * - src/ts/eval/tasks.ts: 10-task corpus (3 easy, 4 medium, 3 harder), each
+  with a private _reference solution verified against its own expect via
+  real jssm (src/ts/eval/tests/tasks.spec.ts).
+- src/ts/eval/eval.ts: CLI orchestrator - parses flags, captures the
+  reference primer once, writes a temp --mcp-config, sweeps
+  tasks x conditions x trials through runTrial, scores, aggregates, prints
+  the report, writes eval-results.json. Excluded from coverage (shells to
+  claude, not unit-testable).
+- package.json: add npm run eval (jiti src/ts/eval/eval.ts).
+- vitest.config.ts: exclude src/ts/eval/eval.ts from coverage.
+- .gitignore: ignore eval-results.json (run artifact).
+- reference.ts / runner.ts: wrap the untestable defaultSpawn shims in
+  v8 ignore hints so only those bodies are excluded, keeping
+  captureReference/runTrial themselves covered.
 
 
 
@@ -177,13 +171,20 @@ Author: `John Haugeland <stonecypher@gmail.com>`
 
 &nbsp;
 
-## [Untagged] - Jul 7, 2026 9:05:35 PM
+## [Untagged] - Jul 10, 2026 8:05:15 PM
 
-Commit [65240306462f6fbabda59968ad0cce6537143cc8](https://github.com/StoneCypher/fsl-mcp/commit/65240306462f6fbabda59968ad0cce6537143cc8)
+Commit [182c37f900859fc7bffa4352a0a09926ba89bc57](https://github.com/StoneCypher/fsl-mcp/commit/182c37f900859fc7bffa4352a0a09926ba89bc57)
 
 Author: `John Haugeland <stonecypher@gmail.com>`
 
-  * chore(coverage): exclude bin.ts entry shim from coverage
+  * test(eval): cover renderReport and no-baseline deltas
+  * - Add comprehensive tests for renderReport with synthetic data:
+  - Test percentage formatting (e.g., 0.5 -> 50.0%)
+  - Test positive and negative delta sign rendering
+  - Test header and data row rendering
+  - Test column alignment with single-digit n values
+- Add test for computeDeltas returning [] when no bare baseline exists
+- Fix one-character column drift in renderReport header by adding space before n label
 
 
 
@@ -192,13 +193,13 @@ Author: `John Haugeland <stonecypher@gmail.com>`
 
 &nbsp;
 
-## [Untagged] - Jul 7, 2026 9:05:29 PM
+## [Untagged] - Jul 10, 2026 6:10:57 AM
 
-Commit [c236d5b38c1b39df1704e679360dd44ee9bf21d2](https://github.com/StoneCypher/fsl-mcp/commit/c236d5b38c1b39df1704e679360dd44ee9bf21d2)
+Commit [6784ea60ad447708d8d1703080675f0b9b32e58c](https://github.com/StoneCypher/fsl-mcp/commit/6784ea60ad447708d8d1703080675f0b9b32e58c)
 
 Author: `John Haugeland <stonecypher@gmail.com>`
 
-  * chore(tests): drop unused expect import in analyze.stoch.ts
+  * feat(eval): aggregation, deltas, and report rendering
 
 
 
@@ -207,10 +208,25 @@ Author: `John Haugeland <stonecypher@gmail.com>`
 
 &nbsp;
 
-## [Untagged] - Jul 7, 2026 9:05:22 PM
+## [Untagged] - Jul 9, 2026 2:43:43 PM
 
-Commit [592d7e84bf82c01b08ed0e63dbf6cda039228644](https://github.com/StoneCypher/fsl-mcp/commit/592d7e84bf82c01b08ed0e63dbf6cda039228644)
+Commit [68059a7e8c3f0349a1c58a00922ae42e4edb07f9](https://github.com/StoneCypher/fsl-mcp/commit/68059a7e8c3f0349a1c58a00922ae42e4edb07f9)
 
 Author: `John Haugeland <stonecypher@gmail.com>`
 
-  * test(explain): cover named-action edge (e.action branch)
+  * feat(eval): claude -p trial runner (injectable spawn)
+
+
+
+
+&nbsp;
+
+&nbsp;
+
+## [Untagged] - Jul 9, 2026 12:52:39 PM
+
+Commit [59b5df6ff79f79e9b975f66d522d84811298f999](https://github.com/StoneCypher/fsl-mcp/commit/59b5df6ff79f79e9b975f66d522d84811298f999)
+
+Author: `John Haugeland <stonecypher@gmail.com>`
+
+  * feat(eval): condition -> claude -p invocation builder

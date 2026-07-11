@@ -85,9 +85,13 @@ function fslValidate(source) {
  *   fslLint('a -> b;')  // => { notes: [] }
  */
 function fslLint(source) {
+    // map() runs before filter() (rather than the more obvious filter-then-map)
+    // so every diagnostic — errors included — passes through the mapping step;
+    // only the exclusion happens after. Diagnostics that survive to fslLint's
+    // callers are always non-error, so the two orderings are equivalent.
     const notes = analyze(source)
-        .filter(d => d.severity !== 'error')
-        .map(d => ({ rule: d.severity, message: d.message, line: d.line }));
+        .map(d => ({ rule: d.severity, message: d.message, line: d.line }))
+        .filter(n => n.rule !== 'error');
     return { notes };
 }
 
@@ -235,15 +239,24 @@ function createServer() {
     return server;
 }
 /**
- * Start the fsl-mcp server on stdio. Resolves once the transport is connected;
- * the process then serves requests until stdin closes.
+ * Start the fsl-mcp server on a transport. Resolves once the transport is
+ * connected; the process then serves requests until the transport closes.
+ *
+ * Defaults to a real stdio transport wired to the process's actual
+ * `stdin`/`stdout` — that default is what the `fsl-mcp` bin entry relies on
+ * in production. Pass an explicit transport (e.g. an in-memory transport, or
+ * a `StdioServerTransport` wired to injected streams) to run the server
+ * without touching the real process streams — this is how tests exercise
+ * `startServer` itself without hijacking the test process's stdio.
+ *
+ * @param transport - the MCP transport to connect (defaults to real stdio)
  *
  * @example
  *   await startServer();   // used by the `fsl-mcp` bin entry
  */
-async function startServer() {
+async function startServer(transport = new StdioServerTransport()) {
     const server = createServer();
-    await server.connect(new StdioServerTransport());
+    await server.connect(transport);
 }
 
 startServer().catch((err) => {

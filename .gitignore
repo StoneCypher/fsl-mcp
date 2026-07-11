@@ -152,3 +152,9 @@ build.config.local.json
 
 # Subagent-driven-development scratch (ledger, briefs, reports, review diffs)
 .superpowers/
+
+# eval harness run artifact (npm run eval output), not source
+eval-results.json
+
+# Per-machine Claude Code permission grants (session churn, never commit)
+.claude/settings.local.json

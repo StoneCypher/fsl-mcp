@@ -1,4 +1,5 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+import { Transport } from '@modelcontextprotocol/sdk/shared/transport.js';
 
 /** Severity of an FSL diagnostic, aligned with LSP / jssm's DiagnosticSeverity. */
 type FslSeverity = 'error' | 'warning' | 'info' | 'hint';
@@ -178,13 +179,22 @@ declare function fslRender(source: string, format?: RenderFormat): Promise<Rende
  */
 declare function createServer(): McpServer;
 /**
- * Start the fsl-mcp server on stdio. Resolves once the transport is connected;
- * the process then serves requests until stdin closes.
+ * Start the fsl-mcp server on a transport. Resolves once the transport is
+ * connected; the process then serves requests until the transport closes.
+ *
+ * Defaults to a real stdio transport wired to the process's actual
+ * `stdin`/`stdout` — that default is what the `fsl-mcp` bin entry relies on
+ * in production. Pass an explicit transport (e.g. an in-memory transport, or
+ * a `StdioServerTransport` wired to injected streams) to run the server
+ * without touching the real process streams — this is how tests exercise
+ * `startServer` itself without hijacking the test process's stdio.
+ *
+ * @param transport - the MCP transport to connect (defaults to real stdio)
  *
  * @example
  *   await startServer();   // used by the `fsl-mcp` bin entry
  */
-declare function startServer(): Promise<void>;
+declare function startServer(transport?: Transport): Promise<void>;
 
 export { createServer, fslExplain, fslLint, fslRender, fslSimulate, fslValidate, startServer };
 export type { ExplainError, ExplainResult, ExplainTransition, FslDiagnostic, FslSeverity, LintNote, LintResult, RenderError, RenderFormat, RenderSvg, RenderUnsupported, SimulateError, SimulateResult, ValidateResult };

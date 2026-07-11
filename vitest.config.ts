@@ -18,13 +18,13 @@ export default defineConfig({
       provider: 'v8',
       reporter: ['text', 'html', 'json'],
       include: ['src/**/*.ts'],
-      exclude: ['src/**/*.spec.ts', 'src/**/*.stoch.ts', 'src/**/*.mutat.ts', 'src/ts/bin.ts'],
+      exclude: ['src/**/*.spec.ts', 'src/**/*.stoch.ts', 'src/**/*.mutat.ts', 'src/ts/bin.ts', 'src/ts/eval/eval.ts'],
       all: true,
       thresholds: {
-        lines: 80,
-        functions: 80,
-        branches: 80,
-        statements: 80
+        lines: 95,
+        functions: 95,
+        branches: 95,
+        statements: 95
       }
     },
     globals: true

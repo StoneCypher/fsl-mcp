@@ -1,7 +1,9 @@
 import { describe, it, expect } from 'vitest';
+import { PassThrough } from 'node:stream';
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { InMemoryTransport } from '@modelcontextprotocol/sdk/inMemory.js';
-import { createServer } from '../server.js';
+import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
+import { createServer, startServer } from '../server.js';
 
 describe('fsl-mcp server', () => {
   it('lists the five tools and validates FSL over the protocol', async () => {
@@ -51,5 +53,32 @@ describe('fsl-mcp server', () => {
     expect(renderPayload.svg).toContain('<svg');
 
     await client.close();
+  });
+});
+
+describe('startServer', () => {
+  it('wires a real stdio transport and answers a JSON-RPC request over it', async () => {
+    // Real StdioServerTransport, real newline-delimited JSON-RPC framing —
+    // just backed by injected streams instead of the actual process
+    // stdin/stdout, so the test never touches (or hijacks) real process IO.
+    const stdin  = new PassThrough();
+    const stdout = new PassThrough();
+    const transport = new StdioServerTransport(stdin, stdout);
+
+    await startServer(transport);
+
+    const response = new Promise<{ result: { tools: { name: string }[] } }>(resolve => {
+      stdout.once('data', (chunk: Buffer) => {
+        resolve(JSON.parse(chunk.toString()) as { result: { tools: { name: string }[] } });
+      });
+    });
+    stdin.write(`${JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'tools/list' })}\n`);
+
+    const { result } = await response;
+    expect(result.tools.map(t => t.name).sort()).toEqual(
+      ['fsl_explain', 'fsl_lint', 'fsl_render', 'fsl_simulate', 'fsl_validate'].sort(),
+    );
+
+    await transport.close();
   });
 });
