@@ -147,6 +147,10 @@ stats.html
 .stryker-tmp
 reports/*
 
+# vitest-mutat's own coverage output (run artifact, not source; the bare
+# "coverage" entry above doesn't cover this differently-named directory)
+coverage-mutat/
+
 # Developer-local build config (per-machine overrides)
 build.config.local.json
 

@@ -6,7 +6,7 @@
     "clear-text",
     "progress"
   ],
-  "ignorePatterns": ["build", "dist", "docs", "coverage", "reports", "**/*.spec.*", "**/*.stoch.*", "**/generated_code/**", "src/build_js/**" ],
+  "ignorePatterns": ["build", "dist", "docs", "coverage", "reports", "**/generated_code/**", "src/build_js/**" ],
   "clearTextReporter": {
     "reportMutants": false,
     "reportTests": false,
