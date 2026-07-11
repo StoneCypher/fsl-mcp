@@ -6,7 +6,7 @@ import { defineConfig } from 'vitest/config';
 export default defineConfig({
 
   test: {
-    include: ['src/**/*.mutat.ts'],
+    include: ['src/**/*.spec.ts', 'src/**/*.mutat.ts'],
     exclude: ['dist/**', 'node_modules/**', 'src/ts/e2e/**'],
     coverage: {
       enabled: true,
