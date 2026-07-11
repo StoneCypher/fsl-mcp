@@ -95,7 +95,19 @@
       "Bash(git *)",
       "Bash(bash \"C:/Users/john/.claude/plugins/cache/claude-plugins-official/superpowers/6.1.1/skills/subagent-driven-development/scripts/task-brief\" \"C:/Users/john/projects/fsl-mcp/src/superpowers/plans/2026-07-08-fsl-mcp-eval-harness.md\" 3)",
       "Bash(Test-Path *)",
-      "Bash(bash \"C:/Users/john/.claude/plugins/cache/claude-plugins-official/superpowers/6.1.1/skills/subagent-driven-development/scripts/review-package\" 6ea1406 4f273e2)"
+      "Bash(bash \"C:/Users/john/.claude/plugins/cache/claude-plugins-official/superpowers/6.1.1/skills/subagent-driven-development/scripts/review-package\" 6ea1406 4f273e2)",
+      "Bash(bash \"C:/Users/john/.claude/plugins/cache/claude-plugins-official/superpowers/6.1.1/skills/subagent-driven-development/scripts/task-brief\" \"C:/Users/john/projects/fsl-mcp/src/superpowers/plans/2026-07-08-fsl-mcp-eval-harness.md\" 4)",
+      "Bash(bash \"C:/Users/john/.claude/plugins/cache/claude-plugins-official/superpowers/6.1.1/skills/subagent-driven-development/scripts/review-package\" c2834fe 59b5df6)",
+      "Bash(bash \"C:/Users/john/.claude/plugins/cache/claude-plugins-official/superpowers/6.1.1/skills/subagent-driven-development/scripts/task-brief\" \"C:/Users/john/projects/fsl-mcp/src/superpowers/plans/2026-07-08-fsl-mcp-eval-harness.md\" 5)",
+      "Bash(bash \"C:/Users/john/.claude/plugins/cache/claude-plugins-official/superpowers/6.1.1/skills/subagent-driven-development/scripts/review-package\" 59b5df6 68059a7)",
+      "PowerShell(npx eslint src/ts/eval/runner.ts src/ts/eval/tests/runner.spec.ts 2>&1 | Out-String)",
+      "PowerShell(npx vitest run src/ts/eval/tests/runner.spec.ts 2>&1 | Out-String)",
+      "PowerShell(npx eslint src/ts/eval/runner.ts 2>&1 | Out-String)",
+      "PowerShell(npx tsc --noEmit -p tsconfig.json 2>&1 | Out-String)",
+      "Bash(bash \"C:/Users/john/.claude/plugins/cache/claude-plugins-official/superpowers/6.1.1/skills/subagent-driven-development/scripts/task-brief\" \"C:/Users/john/projects/fsl-mcp/src/superpowers/plans/2026-07-08-fsl-mcp-eval-harness.md\" 6)",
+      "PowerShell($f = \"C:\\\\Users\\\\john\\\\.claude\\\\projects\\\\C--Users-john-projects-fsl-mcp\\\\2b338b77-6135-4513-b6ec-d275126b72af.jsonl\"; $lines = Get-Content $f -Tail 200; foreach \\($l in $lines\\) { try { $o = $l | ConvertFrom-Json } catch { continue }; if \\($o.type -eq 'user' -or $o.type -eq 'assistant'\\) { $c = $o.message.content; if \\($c -is [string]\\) { $txt = $c } else { $txt = \\($c | Where-Object { $_.type -eq 'text' } | ForEach-Object { $_.text }\\) -join ' ' }; if \\($txt\\) { $t = $txt -replace \"`n\", ' / '; if \\($t.Length -gt 400\\) { $t = $t.Substring\\(0,400\\) + '...' }; Write-Output \\(\"[\" + $o.type + \"] \" + $t\\); Write-Output '---' } } })",
+      "PowerShell($f = \"C:\\\\Users\\\\john\\\\.claude\\\\projects\\\\C--Users-john-projects-fsl-mcp\\\\2b338b77-6135-4513-b6ec-d275126b72af.jsonl\"; $lines = Get-Content $f -Tail 40; foreach \\($l in $lines\\) { try { $o = $l | ConvertFrom-Json } catch { continue }; if \\($o.type -eq 'assistant'\\) { $c = $o.message.content; if \\($c -isnot [string]\\) { foreach \\($b in $c\\) { if \\($b.type -eq 'tool_use'\\) { $inp = \\($b.input | ConvertTo-Json -Compress -Depth 3\\); if \\($inp.Length -gt 300\\) { $inp = $inp.Substring\\(0,300\\) + '...' }; Write-Output \\(\"[tool:\" + $b.name + \"] \" + $inp\\); Write-Output '---' } } } } })",
+      "Bash(bash \"C:/Users/john/.claude/plugins/cache/claude-plugins-official/superpowers/6.1.1/skills/subagent-driven-development/scripts/review-package\" 68059a7 6784ea6)"
     ]
   }
 }

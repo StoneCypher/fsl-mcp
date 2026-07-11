@@ -61,7 +61,7 @@ export function computeDeltas(summaries: ConditionSummary[]): Delta[] {
 export function renderReport(summaries: ConditionSummary[], deltas: Delta[]): string {
   const pct = (x: number): string => `${(x * 100).toFixed(1)}%`;
   const lines: string[] = [];
-  lines.push('condition          n   validity   correctness');
+  lines.push('condition           n   validity   correctness');
   for (const s of summaries) {
     lines.push(`${s.condition.padEnd(18)} ${String(s.n).padStart(2)}   ${pct(s.validityRate).padStart(8)}   ${pct(s.correctnessRate).padStart(8)}`);
   }
