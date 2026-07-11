@@ -150,7 +150,7 @@ Expected: PASS.
 
 - [ ] **Step 5: Commit**
 
-```
+```bash
 git add src/ts/eval/types.ts src/ts/eval/tests/types.spec.ts
 git commit -m "feat(eval): shared types for the eval harness"
 ```
@@ -336,7 +336,7 @@ Expected: PASS. If a `scoreCorrectness` case disagrees with jssm's actual behavi
 
 - [ ] **Step 5: Commit**
 
-```
+```bash
 git add src/ts/eval/score.ts src/ts/eval/tests/score.spec.ts
 git commit -m "feat(eval): jssm-backed scoring (extract, validity, correctness)"
 ```
@@ -432,7 +432,7 @@ Expected: PASS.
 
 - [ ] **Step 5: Commit**
 
-```
+```bash
 git add src/ts/eval/reference.ts src/ts/eval/tests/reference.spec.ts
 git commit -m "feat(eval): capture version-locked FSL reference primer"
 ```
@@ -581,7 +581,7 @@ Expected: PASS.
 
 - [ ] **Step 5: Commit**
 
-```
+```bash
 git add src/ts/eval/conditions.ts src/ts/eval/tests/conditions.spec.ts
 git commit -m "feat(eval): condition -> claude -p invocation builder"
 ```
@@ -720,7 +720,7 @@ Expected: PASS.
 
 - [ ] **Step 5: Commit**
 
-```
+```bash
 git add src/ts/eval/runner.ts src/ts/eval/tests/runner.spec.ts
 git commit -m "feat(eval): claude -p trial runner (injectable spawn)"
 ```
@@ -878,7 +878,7 @@ Expected: PASS.
 
 - [ ] **Step 5: Commit**
 
-```
+```bash
 git add src/ts/eval/report.ts src/ts/eval/tests/report.spec.ts
 git commit -m "feat(eval): aggregation, deltas, and report rendering"
 ```
@@ -1085,7 +1085,7 @@ Expected: it completes, prints a report table, and writes `eval-results.json`. T
 
 - [ ] **Step 9: Commit**
 
-```
+```bash
 git add src/ts/eval/tasks.ts src/ts/eval/eval.ts src/ts/eval/tests/tasks.spec.ts package.json vitest.config.ts .gitignore
 git commit -m "feat(eval): task corpus, CLI orchestrator, and npm run eval"
 ```

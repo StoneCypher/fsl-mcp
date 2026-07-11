@@ -20,7 +20,7 @@ The harness MUST run on a user's ordinary **Claude Code subscription**, with **n
 
 For each `(task × condition × trial)`, the runner spawns:
 
-```
+```bash
 claude -p "<prompt>" --output-format json --model <model> --strict-mcp-config [--mcp-config <path>]
 ```
 
@@ -28,7 +28,7 @@ claude -p "<prompt>" --output-format json --model <model> --strict-mcp-config [-
 - `--strict-mcp-config` guarantees ONLY the MCP servers we pass are loaded — so the user's own globally-configured MCP servers never leak into a condition and pollute results.
 - The **tools** conditions pass `--mcp-config <temp config>` pointing at the real built server (`node dist/bin.mjs`), so the eval measures the actual shipped MCP as a user would install it — not a hand-rolled tool loop.
 - `--model` selects the tier (default `claude-opus-4-8`; FSL becomes challenging quickly, so even the top tier is worth measuring).
-- The five fsl_* tools are read-only, so the run uses a permission mode that auto-approves them (e.g. `--permission-mode bypassPermissions` or an `--allowedTools` allowlist scoped to the fsl_* tools) — no interactive prompts.
+- The five `fsl_*` tools are read-only, so the run uses a permission mode that auto-approves them (e.g. `--permission-mode bypassPermissions` or an `--allowedTools` allowlist scoped to the `fsl_*` tools) — no interactive prompts.
 
 ### Caveats (documented, not solved away)
 - Draws on the user's **subscription usage**, like any Claude Code work. That is the deliberate tradeoff versus per-token API billing.
@@ -87,7 +87,7 @@ Curated across a difficulty gradient, stored as data so it extends as FSL adds s
 
 Each task record:
 
-```
+```ts
 {
   id: string,
   difficulty: 'easy' | 'medium' | 'harder',
