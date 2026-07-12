@@ -47,11 +47,37 @@ function parsePositiveIntFlag(flags: Map<string, string>, name: string, fallback
 }
 
 /**
+ * Read the `--conditions` flag as an ordered list of {@link Condition}s, or
+ * all four (in canonical order) when the flag is absent. Guards against a
+ * mistyped token (e.g. `tool` instead of `tools`) silently shrinking the
+ * sweep — possibly to empty — with no indication anything was dropped: on the
+ * first unrecognized token, prints a clear message naming the bad token and
+ * the valid set, and exits(1), mirroring {@link parsePositiveIntFlag}'s guard.
+ *
+ * @param flags - the parsed flag lookup
+ * @returns the requested conditions, in the order given, or all four when unset
+ */
+function parseConditionsFlag(flags: Map<string, string>): Condition[] {
+  const raw = flags.get('conditions');
+  if (raw === undefined) { return [...CONDITIONS]; }
+  const known  = CONDITIONS as readonly string[];
+  const tokens = raw.split(',');
+  for (const token of tokens) {
+    if (!known.includes(token)) {
+      console.error(`[eval] --conditions has unknown condition ${JSON.stringify(token)}; valid conditions are: ${known.join(', ')}`);
+      process.exit(1);
+    }
+  }
+  return tokens as Condition[];
+}
+
+/**
  * CLI entry point for the fsl-mcp eval harness. Parses `--model` / `--trials` /
- * `--tasks` / `--conditions` / `--timeout` flags, captures the FSL reference primer once,
- * writes a temp `--mcp-config` pointing at the built `dist/bin.mjs` server,
- * then runs every `task x condition x trial` combination through `claude -p`,
- * scores each result, prints an aggregate report, and writes `eval-results.json`.
+ * `--tasks` / `--conditions` / `--timeout` (milliseconds) flags, captures the
+ * FSL reference primer once, writes a temp `--mcp-config` pointing at the
+ * built `dist/bin.mjs` server, then runs every `task x condition x trial`
+ * combination through `claude -p`, scores each result, prints an aggregate
+ * report, and writes `eval-results.json`.
  * Never throws on an individual trial failure — a bad trial is recorded and the
  * sweep continues; only a fatal setup error (e.g. no `claude` on PATH) aborts.
  *
@@ -59,17 +85,15 @@ function parsePositiveIntFlag(flags: Map<string, string>, name: string, fallback
  *   // npm run eval -- --trials 1 --tasks 2 --conditions bare,tools
  */
 async function main(): Promise<void> {
-  const flags     = parseFlags(process.argv.slice(2));
-  const model     = flags.get('model') ?? 'claude-opus-4-8';
-  const trials    = parsePositiveIntFlag(flags, 'trials', 3);
-  const taskCap   = parsePositiveIntFlag(flags, 'tasks', TASKS.length);
-  const tasks     = TASKS.slice(0, taskCap);
-  const timeoutMs = parsePositiveIntFlag(flags, 'timeout', DEFAULT_TRIAL_TIMEOUT_MS);
+  const flags      = parseFlags(process.argv.slice(2));
+  const model      = flags.get('model') ?? 'claude-opus-4-8';
+  const trials     = parsePositiveIntFlag(flags, 'trials', 3);
+  const taskCap    = parsePositiveIntFlag(flags, 'tasks', TASKS.length);
+  const tasks      = TASKS.slice(0, taskCap);
+  const timeoutMs  = parsePositiveIntFlag(flags, 'timeout', DEFAULT_TRIAL_TIMEOUT_MS);
+  let conditions: Condition[] = parseConditionsFlag(flags);
 
   const primer = captureReference();
-  let conditions: Condition[] = flags.has('conditions')
-    ? (flags.get('conditions') ?? '').split(',').filter((c): c is Condition => (CONDITIONS as readonly string[]).includes(c))
-    : [...CONDITIONS];
   if (primer === null) {
     conditions = conditions.filter(c => c === 'bare' || c === 'tools');
     console.warn('[eval] FSL reference primer unavailable (fsl-export-system-prompt) — skipping reference conditions.');

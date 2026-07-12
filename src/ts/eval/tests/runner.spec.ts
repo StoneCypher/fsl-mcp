@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { runTrial } from '../runner.js';
+import { runTrial, TrialTimeoutError } from '../runner.js';
 import type { Invocation } from '../types.js';
 
 const inv: Invocation = { args: ['-p', '--output-format', 'json'], prompt: 'make a machine' };
@@ -7,6 +7,15 @@ const inv: Invocation = { args: ['-p', '--output-format', 'json'], prompt: 'make
 function fakeSpawn(stdout: string, code = 0) {
   return async () => ({ stdout, code });
 }
+
+describe('TrialTimeoutError', () => {
+  it('carries a "timeout after <seconds>s" message derived from the millisecond ceiling', () => {
+    const err = new TrialTimeoutError(1500);
+    expect(err).toBeInstanceOf(Error);
+    expect(err.message).toBe('timeout after 1.5s');
+    expect(err.name).toBe('TrialTimeoutError');
+  });
+});
 
 describe('runTrial', () => {
   it('extracts fsl from the claude json result field', async () => {
@@ -72,5 +81,17 @@ describe('runTrial', () => {
     };
     await runTrial(inv, spy);
     expect(receivedSignal).toBeInstanceOf(AbortSignal);
+  });
+  it('actually fires the AbortSignal when a spawn times out, killing the hung child', async () => {
+    let receivedSignal: AbortSignal | undefined;
+    const neverSettles = (_args: string[], _stdin: string, signal?: AbortSignal) => {
+      receivedSignal = signal;
+      return new Promise<{ stdout: string; code: number }>(() => { /* hung child, never resolves */ });
+    };
+    const r = await runTrial(inv, neverSettles, 20);
+    expect(r.fsl).toBeNull();
+    expect(r.error).toContain('timeout after');
+    expect(receivedSignal).toBeInstanceOf(AbortSignal);
+    expect(receivedSignal?.aborted).toBe(true);
   });
 });
