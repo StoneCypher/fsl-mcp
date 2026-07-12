@@ -44,13 +44,17 @@ export interface TrialResult {
   error? : string;
 }
 
-/** One scored trial. */
+/** One scored trial, pairing the score with the trial's own generated FSL
+ *  (and any error note) so a failing/miscored trial can be inspected directly
+ *  from the results file, without re-running the sweep. */
 export interface ScoredTrial {
   task       : string;
   difficulty : Difficulty;
   condition  : Condition;
   valid      : boolean;
   correct    : boolean;
+  fsl        : string | null;
+  error?     : string;
 }
 
 /** Aggregate rates for one condition across all its trials. Each rate is a

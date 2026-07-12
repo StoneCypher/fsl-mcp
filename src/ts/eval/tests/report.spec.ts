@@ -4,10 +4,10 @@ import type { ScoredTrial, ConditionSummary } from '../types.js';
 import type { Delta } from '../report.js';
 
 const trials: ScoredTrial[] = [
-  { task: 't1', difficulty: 'easy', condition: 'bare',  valid: true,  correct: false },
-  { task: 't1', difficulty: 'easy', condition: 'bare',  valid: false, correct: false },
-  { task: 't1', difficulty: 'easy', condition: 'tools', valid: true,  correct: true },
-  { task: 't1', difficulty: 'easy', condition: 'tools', valid: true,  correct: true },
+  { task: 't1', difficulty: 'easy', condition: 'bare',  valid: true,  correct: false, fsl: 'a -> b;' },
+  { task: 't1', difficulty: 'easy', condition: 'bare',  valid: false, correct: false, fsl: null },
+  { task: 't1', difficulty: 'easy', condition: 'tools', valid: true,  correct: true,  fsl: 'a -> b;' },
+  { task: 't1', difficulty: 'easy', condition: 'tools', valid: true,  correct: true,  fsl: 'a -> b;' },
 ];
 
 describe('stderr', () => {

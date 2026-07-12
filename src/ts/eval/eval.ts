@@ -144,7 +144,9 @@ async function main(): Promise<void> {
         const res = await runTrial(inv, undefined, timeoutMs);
         const valid   = res.fsl !== null && scoreValidity(res.fsl);
         const correct = valid && res.fsl !== null && scoreCorrectness(res.fsl, task.expect);
-        scored.push({ task: task.id, difficulty: task.difficulty, condition, valid, correct });
+        const row: ScoredTrial = { task: task.id, difficulty: task.difficulty, condition, valid, correct, fsl: res.fsl };
+        if (res.error !== undefined) { row.error = res.error; }
+        scored.push(row);
         console.error(`[eval] ${task.id} ${condition} trial ${String(t + 1)}/${String(trials)}: valid=${String(valid)} correct=${String(correct)}${res.error !== undefined ? ` (${res.error})` : ''}`);
       }
     }
