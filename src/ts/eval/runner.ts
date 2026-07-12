@@ -34,25 +34,37 @@ function defaultSpawn(args: string[], stdin: string, signal?: AbortSignal): Prom
 }
 
 /**
+ * Sentinel thrown by {@link withTimeout} when its timer fires first. A
+ * dedicated subclass lets {@link runTrial} detect a timeout with `instanceof`
+ * rather than sniffing the error message, while still carrying the same
+ * `timeout after <seconds>s` message that callers of `runTrial` observe in
+ * its `{ fsl: null, error }` result.
+ */
+export class TrialTimeoutError extends Error {
+  constructor(ms: number) {
+    super(`timeout after ${String(ms / 1000)}s`);
+    this.name = 'TrialTimeoutError';
+  }
+}
+
+/**
  * Race `work` against a `ms`-millisecond timer. Calls `onTimeout` once and
- * rejects with an `Error` whose message starts with `timeout after` if the
- * timer fires first; always clears the timer afterward so neither outcome
- * leaves a dangling handle open.
+ * rejects with a {@link TrialTimeoutError} if the timer fires first; always
+ * clears the timer afterward so neither outcome leaves a dangling handle open.
  *
  * @param work - the promise being bounded
  * @param ms - the timeout, in milliseconds
  * @param onTimeout - invoked synchronously when the timer fires, before the
  *   race rejects (used to signal cancellation to the loser)
  * @returns `work`'s resolution, when it settles before the timer
- * @throws {Error} with a `timeout after <seconds>s` message, when the timer
- *   fires first
+ * @throws {TrialTimeoutError} when the timer fires first
  */
 async function withTimeout<T>(work: Promise<T>, ms: number, onTimeout: () => void): Promise<T> {
   let timer: ReturnType<typeof setTimeout> | undefined;
   const limit = new Promise<never>((_resolve, reject) => {
     timer = setTimeout(() => {
       onTimeout();
-      reject(new Error(`timeout after ${String(ms / 1000)}s`));
+      reject(new TrialTimeoutError(ms));
     }, ms);
   });
   try {
@@ -66,7 +78,9 @@ async function withTimeout<T>(work: Promise<T>, ms: number, onTimeout: () => voi
  * Run one trial: spawn `claude -p`, parse the JSON envelope, extract the FSL.
  * Never throws — failures (a spawn error, or exceeding `timeoutMs`, in which
  * case the child is killed) surface as `{ fsl: null, error }` so the sweep
- * continues.
+ * continues. A timeout is detected via `instanceof {@link TrialTimeoutError}`
+ * (not by matching the error message), but still yields the same
+ * `timeout after <seconds>s` message text in the returned `error`.
  *
  * @param inv - the built invocation (args + stdin prompt)
  * @param spawn - injectable spawn (defaults to the real `claude` CLI)
@@ -92,7 +106,7 @@ export async function runTrial(
       () => { controller.abort(); },
     ));
   } catch (err) {
-    if (err instanceof Error && err.message.startsWith('timeout after')) {
+    if (err instanceof TrialTimeoutError) {
       return { fsl: null, error: err.message };
     }
     return { fsl: null, error: `spawn failed: ${err instanceof Error ? err.message : String(err)}` };
