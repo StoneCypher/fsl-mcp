@@ -53,10 +53,15 @@ export interface ScoredTrial {
   correct    : boolean;
 }
 
-/** Aggregate rates for one condition across all its trials. */
+/** Aggregate rates for one condition across all its trials. Each rate is a
+ *  Bernoulli mean over `n` trials; the paired `*Stderr` field is its standard
+ *  error (`sqrt(p*(1-p)/n)`), the honest spread figure for that kind of mean —
+ *  not a sample standard deviation, which doesn't apply to a 0/1 outcome. */
 export interface ConditionSummary {
-  condition       : Condition;
-  n               : number;
-  validityRate    : number;
-  correctnessRate : number;
+  condition          : Condition;
+  n                  : number;
+  validityRate       : number;
+  correctnessRate    : number;
+  validityStderr     : number;
+  correctnessStderr  : number;
 }
