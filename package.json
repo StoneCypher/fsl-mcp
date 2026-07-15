@@ -62,8 +62,8 @@
     "eval": "jiti src/ts/eval/eval.ts"
   },
   "dependencies": {
-    "jssm": "^5.162.1",
     "@modelcontextprotocol/sdk": "^1.0.0",
+    "jssm": "^5.162.10",
     "zod": "^4.3.6"
   },
   "devDependencies": {
