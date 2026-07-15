@@ -1,4 +1,4 @@
-import { writeFileSync, mkdtempSync } from 'node:fs';
+import { writeFileSync, mkdtempSync, readFileSync } from 'node:fs';
 import { tmpdir }                      from 'node:os';
 import { join }                        from 'node:path';
 import { fileURLToPath }               from 'node:url';
@@ -72,17 +72,47 @@ function parseConditionsFlag(flags: Map<string, string>): Condition[] {
 }
 
 /**
+ * Read the `--primer-file` flag as primer text loaded from disk, standing in
+ * for {@link captureReference}'s live `npx fsl-export-system-prompt` call —
+ * lets an A/B run substitute a draft primer without touching reference.ts.
+ * Guards against a typo'd path or an empty file silently producing an
+ * empty-primer run (indistinguishable from the bare condition): on read
+ * failure or whitespace-only contents, prints a clear message to stderr and
+ * exits(1), mirroring {@link parsePositiveIntFlag}'s guard.
+ *
+ * @param flags - the parsed flag lookup
+ * @returns the file's trimmed primer text, or null when the flag was not supplied
+ */
+function readPrimerFileFlag(flags: Map<string, string>): string | null {
+  const path = flags.get('primer-file');
+  if (path === undefined) { return null; }
+  let text = '';
+  try {
+    text = readFileSync(path, 'utf8').trim();
+  } catch {
+    text = '';
+  }
+  if (text.length === 0) {
+    console.error(`[eval] --primer-file could not be read or is empty: ${JSON.stringify(path)}`);
+    process.exit(1);
+  }
+  return text;
+}
+
+/**
  * CLI entry point for the fsl-mcp eval harness. Parses `--model` / `--trials` /
- * `--tasks` / `--conditions` / `--timeout` (milliseconds) flags, captures the
- * FSL reference primer once, writes a temp `--mcp-config` pointing at the
- * built `dist/bin.mjs` server, then runs every `task x condition x trial`
- * combination through `claude -p`, scores each result, prints an aggregate
- * report, and writes `eval-results.json`.
+ * `--tasks` / `--conditions` / `--timeout` (milliseconds) / `--primer-file`
+ * (path) flags, captures the FSL reference primer once — from `--primer-file`
+ * when given, otherwise from a live capture — writes a temp `--mcp-config`
+ * pointing at the built `dist/bin.mjs` server, then runs every
+ * `task x condition x trial` combination through `claude -p`, scores each
+ * result, prints an aggregate report, and writes `eval-results.json`.
  * Never throws on an individual trial failure — a bad trial is recorded and the
  * sweep continues; only a fatal setup error (e.g. no `claude` on PATH) aborts.
  *
  * @example
  *   // npm run eval -- --trials 1 --tasks 2 --conditions bare,tools
+ *   // npm run eval -- --conditions reference --primer-file draft-primer.md
  */
 async function main(): Promise<void> {
   const flags      = parseFlags(process.argv.slice(2));
@@ -93,7 +123,8 @@ async function main(): Promise<void> {
   const timeoutMs  = parsePositiveIntFlag(flags, 'timeout', DEFAULT_TRIAL_TIMEOUT_MS);
   let conditions: Condition[] = parseConditionsFlag(flags);
 
-  const primer = captureReference();
+  const primerFile = readPrimerFileFlag(flags);
+  const primer = primerFile ?? captureReference();
   if (primer === null) {
     conditions = conditions.filter(c => c === 'bare' || c === 'tools');
     console.warn('[eval] FSL reference primer unavailable (fsl-export-system-prompt) — skipping reference conditions.');
@@ -113,7 +144,9 @@ async function main(): Promise<void> {
         const res = await runTrial(inv, undefined, timeoutMs);
         const valid   = res.fsl !== null && scoreValidity(res.fsl);
         const correct = valid && res.fsl !== null && scoreCorrectness(res.fsl, task.expect);
-        scored.push({ task: task.id, difficulty: task.difficulty, condition, valid, correct });
+        const row: ScoredTrial = { task: task.id, difficulty: task.difficulty, condition, valid, correct, fsl: res.fsl };
+        if (res.error !== undefined) { row.error = res.error; }
+        scored.push(row);
         console.error(`[eval] ${task.id} ${condition} trial ${String(t + 1)}/${String(trials)}: valid=${String(valid)} correct=${String(correct)}${res.error !== undefined ? ` (${res.error})` : ''}`);
       }
     }
