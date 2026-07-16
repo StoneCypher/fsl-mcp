@@ -83,12 +83,28 @@ describe('fslRender', () => {
     } else { expect.unreachable(); }
   });
 
-  it('renders a real jpeg (SOI marker)', async () => {
-    const r = await fslRender(SRC, 'jpeg');
+  // NOTE (plan amendment, verified by probe): jssm throws
+  // RasterizationUnsupportedError for jpeg in non-Canvas runtimes -
+  // resvg-wasm covers png/gif only. So jpeg's byte mapping is tested through
+  // the stub engine, and the real engine is held to the degrade contract.
+  it('maps jpeg raster results to image/jpeg (stub engine)', async () => {
+    const engine = async () => ({ kind: 'raster' as const, buffer: new Uint8Array([0xff, 0xd8, 0xff, 0xe0]) });
+    const r = await fslRender(SRC, 'jpeg', {}, engine);
     if (r.valid && r.format === 'jpeg' && 'bytes' in r) {
       expect(r.mimeType).toBe('image/jpeg');
       expect(r.bytes[0]).toBe(0xff);
       expect(r.bytes[1]).toBe(0xd8);
+    } else { expect.unreachable(); }
+  });
+
+  it('jpeg with the real engine never hard-fails: real bytes or svg degrade', async () => {
+    const r = await fslRender(SRC, 'jpeg');
+    expect(r.valid).toBe(true);
+    if (r.valid && 'bytes' in r) {
+      expect(r.mimeType).toBe('image/jpeg');
+    } else if (r.valid && 'note' in r) {
+      expect(r.svg).toContain('<svg');
+      expect(r.note).toContain('raster');
     } else { expect.unreachable(); }
   });
 
@@ -460,9 +476,10 @@ Render FSL to a diagram.
 
 Raster options: `width`, `height`, `scale` (zoom %, 100 = 3x natural), `quality`
 (jpeg 1-100), `delay` (gif centiseconds/frame), `maxFrames` (gif frame ceiling -
-keep it at or under 20 in chat contexts). If no rasterizer backend is available
-the tool degrades to SVG plus a note. Invalid source returns diagnostics, as
-everywhere else.
+keep it at or under 20 in chat contexts). PNG and GIF work in plain Node (via
+jssm's bundled resvg-wasm); JPEG needs a Canvas-capable runtime and otherwise
+degrades to SVG plus a note, as does any raster format when no backend is
+available. Invalid source returns diagnostics, as everywhere else.
 ```
 
 - [ ] **Step 4: Full verification**
