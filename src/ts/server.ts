@@ -7,7 +7,7 @@ import { fslValidate } from './tools/validate.js';
 import { fslLint     } from './tools/lint.js';
 import { fslExplain  } from './tools/explain.js';
 import { fslSimulate } from './tools/simulate.js';
-import { fslRender } from './tools/render.js';
+import { fslRender  } from './tools/render.js';
 import type { RenderRasterOptions } from './tools/render.js';
 
 /** Wrap any JSON-serializable value as an MCP text-content tool result. */
@@ -68,7 +68,7 @@ export function createServer(): McpServer {
     ({ source, actions }) => jsonResult(fslSimulate(source, actions)));
 
   server.registerTool('fsl_render',
-    { description: 'Render FSL to a diagram. format: svg (default) | dot (text) | png | jpeg | gif (returned as an image content block; gif animates a random walk). Raster options: width, height, scale (zoom %, 100 = 3x), quality (jpeg 1-100), delay (gif centiseconds/frame), maxFrames (gif; keep <= 20 for chat).',
+    { description: 'Render FSL to a diagram. format: svg (default) | dot (text) | png | jpeg | gif (returned as an image content block when a raster backend is available, otherwise degraded to svg text plus a note; gif animates a random walk). Raster options: width, height, scale (zoom %, 100 = 3x), quality (jpeg 1-100), delay (gif centiseconds/frame), maxFrames (gif; keep <= 20 for chat).',
       inputSchema: {
         source    : z.string(),
         format    : z.enum(['svg', 'dot', 'png', 'jpeg', 'gif']).optional(),
