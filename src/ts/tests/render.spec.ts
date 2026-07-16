@@ -97,4 +97,37 @@ describe('fslRender', () => {
     const r = await fslRender(SRC, 'svg', {}, engine);
     if (!r.valid && 'error' in r) { expect(r.error).toContain('viz exploded'); } else { expect.unreachable(); }
   });
+
+  it('forwards only the defined raster options to the engine', async () => {
+    let seen: Record<string, unknown> = {};
+    const engine = async (fsl: string, opts: Record<string, unknown>) => {
+      seen = opts;
+      return { kind: 'raster' as const, buffer: new Uint8Array([0x47]) };
+    };
+    await fslRender(SRC, 'gif', { height: 100, scale: 50, quality: 80, delay: 5, maxFrames: 3 }, engine);
+    expect(seen.height).toBe(100);
+    expect(seen.scale).toBe(50);
+    expect(seen.quality).toBe(80);
+    expect(seen.delay).toBe(5);
+    expect(seen.maxFrames).toBe(3);
+    expect('width' in seen).toBe(false);
+  });
+
+  it('returns RenderFailure carrying the original error when the svg fallback also throws', async () => {
+    const engine = async (fsl: string, opts: Record<string, unknown>) => {
+      if (opts.target === 'png') { throw new RasterizationUnsupportedError('no backend'); }
+      throw new Error('viz missing');
+    };
+    const r = await fslRender(SRC, 'png', {}, engine);
+    if (!r.valid && 'error' in r) { expect(r.error).toContain('no backend'); } else { expect.unreachable(); }
+  });
+
+  it('returns RenderFailure when the svg fallback yields a non-text result', async () => {
+    const engine = async (fsl: string, opts: Record<string, unknown>) => {
+      if (opts.target === 'gif') { throw new RasterizationUnsupportedError('nope'); }
+      return { kind: 'raster' as const, buffer: new Uint8Array([1]) };
+    };
+    const r = await fslRender(SRC, 'gif', {}, engine);
+    expect(r.valid).toBe(false);
+  });
 });
