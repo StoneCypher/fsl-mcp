@@ -15,6 +15,6 @@ export { fslSimulate } from './tools/simulate.js';
 export type { SimulateResult, SimulateError } from './tools/simulate.js';
 
 export { fslRender } from './tools/render.js';
-export type { RenderFormat, RenderSvg, RenderUnsupported, RenderError } from './tools/render.js';
+export type { RenderFormat, RenderRasterOptions, RenderEngine, RenderSvg, RenderDot, RenderImage, RenderUnsupported, RenderFailure, RenderError } from './tools/render.js';
 
 export { createServer, startServer } from './server.js';
