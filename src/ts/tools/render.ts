@@ -2,6 +2,10 @@ import { render as jssmRender, RasterizationUnsupportedError } from 'jssm/cli';
 import { analyze, hasErrors } from '../analyze.js';
 import type { FslDiagnostic } from '../types.js';
 
+/**
+ * jssm's error for raster requests in runtimes with no rasterizer backend;
+ * re-exported so engine stubs and callers can detect the degrade path.
+ */
 export { RasterizationUnsupportedError };
 
 /** Requested render format: two text targets and three raster targets. */
