@@ -54,6 +54,30 @@ describe('fsl-mcp server', () => {
 
     await client.close();
   });
+
+  it('returns an image content block for png renders', async () => {
+    const server = createServer();
+    const [clientTx, serverTx] = InMemoryTransport.createLinkedPair();
+    const client = new Client({ name: 'test', version: '0.0.0' });
+
+    await Promise.all([server.connect(serverTx), client.connect(clientTx)]);
+
+    const result = await client.callTool({
+      name: 'fsl_render',
+      arguments: { source: 'a -> b;', format: 'png', width: 320 },
+    });
+    const content = result.content as ({ type: string; data?: string; mimeType?: string })[];
+    const image = content.find((c) => c.type === 'image');
+    expect(image).toBeDefined();
+    expect(image?.mimeType).toBe('image/png');
+    const bytes = Buffer.from(image?.data ?? '', 'base64');
+    expect(bytes[0]).toBe(0x89);
+    expect(bytes[1]).toBe(0x50);
+    const summary = content.find((c) => c.type === 'text');
+    expect(summary).toBeDefined();
+
+    await client.close();
+  });
 });
 
 describe('startServer', () => {

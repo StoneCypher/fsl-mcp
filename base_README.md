@@ -35,12 +35,29 @@ Every tool takes FSL `source` (a string) and returns structured JSON — never a
 | Tool | Input | Returns |
 |---|---|---|
 | `fsl_validate` | `source` | `{ valid, diagnostics: [{severity, message, line, col}] }` |
-| `fsl_render` | `source`, `format?: "svg" \| "png"` | an SVG diagram (`format:"png"` degrades to svg + a note in v1), or diagnostics if invalid |
 | `fsl_explain` | `source` | `{ states, transitions, start, terminals, summary }`, or diagnostics if invalid |
 | `fsl_simulate` | `source`, `actions: string[]` | `{ endState, path, legalNext, rejected? }`, or diagnostics if invalid |
 | `fsl_lint` | `source` | `{ notes: [{rule, message, line}] }` |
 
 Under the hood, every tool runs the same non-throwing `analyze()` pass first and short-circuits to diagnostics on a compile error, so a model can always find out *why* its FSL didn't work instead of getting an exception.
+
+### fsl_render
+
+Render FSL to a diagram.
+
+| format | returns |
+|--------|---------|
+| `svg` (default) | SVG text |
+| `dot` | Graphviz DOT text |
+| `png` / `jpeg` | an MCP image content block (the model can see it) |
+| `gif` | an animated random walk as an image content block |
+
+Raster options: `width`, `height`, `scale` (zoom %, 100 = 3x natural), `quality`
+(jpeg 1-100), `delay` (gif centiseconds/frame), `maxFrames` (gif frame ceiling -
+keep it at or under 20 in chat contexts). PNG and GIF work in plain Node (via
+jssm's bundled resvg-wasm); JPEG needs a Canvas-capable runtime and otherwise
+degrades to SVG plus a note, as does any raster format when no backend is
+available. Invalid source returns diagnostics, as everywhere else.
 
 &nbsp;
 
