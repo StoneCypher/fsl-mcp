@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-
+1 release
 
 
 
@@ -12,8 +12,715 @@ All notable changes to this project will be documented in this file.
 
 Published tags:
 
+<a href="#0__3__0">0.3.0</a>
 
 
+
+
+
+&nbsp;
+
+&nbsp;
+
+## [Untagged] - Jul 15, 2026 10:26:16 AM
+
+Commit [faecb5d2d86d6ece30b38601d7a910c86590c037](https://github.com/StoneCypher/fsl-mcp/commit/faecb5d2d86d6ece30b38601d7a910c86590c037)
+
+Author: `John Haugeland <stonecypher@gmail.com>`
+
+  * docs: prompt artifacts - FSL LLM primer draft and ambient-context spec (#15)
+  * - src/prompts/fsl-llms-draft.md: the grammar-verified FSL primer (A/B-tested;
+  100% validity over 70 trials; exact-names directive from failure autopsy),
+  staged here ahead of its jssm handoff.
+- src/prompts/ambient-context-spec.md: portable spec of the ambient-context
+  injection hook (time, context gauge, git, tasks, heartbeats, affect tail)
+  for reimplementation in other harnesses.
+
+
+
+
+&nbsp;
+
+&nbsp;
+
+## [Untagged] - Jul 15, 2026 7:57:04 AM
+
+Commit [f5730bdb2fdb7895e2366e81032fe8bbe70ff00f](https://github.com/StoneCypher/fsl-mcp/commit/f5730bdb2fdb7895e2366e81032fe8bbe70ff00f)
+
+Author: `John Haugeland <stonecypher@gmail.com>`
+
+  * docs: prompt artifacts - FSL LLM primer draft and ambient-context spec
+  * - src/prompts/fsl-llms-draft.md: the grammar-verified FSL primer (A/B-tested;
+  100% validity over 70 trials; exact-names directive from failure autopsy),
+  staged here ahead of its jssm handoff.
+- src/prompts/ambient-context-spec.md: portable spec of the ambient-context
+  injection hook (time, context gauge, git, tasks, heartbeats, affect tail)
+  for reimplementation in other harnesses.
+
+
+
+
+&nbsp;
+
+&nbsp;
+
+## [Untagged] - Jul 15, 2026 7:07:09 AM
+
+Commit [673d7dab739b4d98bda59eb2508d3f3aa699f82f](https://github.com/StoneCypher/fsl-mcp/commit/673d7dab739b4d98bda59eb2508d3f3aa699f82f)
+
+Author: `John Haugeland <stonecypher@gmail.com>`
+
+  * chore: bump jssm to 5.162.10 for upstream fixes (#11)
+  * Full suite green against the new version: 128/128, coverage
+98.56/95.95/96.15/100 vs the 95 gate.
+
+
+
+
+&nbsp;
+
+&nbsp;
+
+## [Untagged] - Jul 15, 2026 7:06:55 AM
+
+Commit [add6910383c77cec167886d4ec05cfe188b12f90](https://github.com/StoneCypher/fsl-mcp/commit/add6910383c77cec167886d4ec05cfe188b12f90)
+
+Author: `John Haugeland <stonecypher@gmail.com>`
+
+  * feat(eval): primer A/B tooling - --primer-file, case-fold scoring, per-trial capture (#8)
+  * * feat(eval): --primer-file flag for A/B testing alternative primers
+  * * fix(eval): case-insensitive name matching in the scorer
+  * scoreCorrectness now folds case on every name comparison: states,
+transition endpoints, start/terminal states, and a walk's endState.
+A/B runs showed models writing On/Off for tasks specifying on/off -
+structurally correct FSL that only differed in identifier case, which
+should not fail a trial.
+  * Because jssm's own action()/transition() lookups are case-sensitive, a
+walk's actions are resolved case-insensitively against the machine's
+own action labels and state names before being simulated, so a
+differently-cased action label in the expectation still walks
+correctly. Only the resolved copy is ever passed to jssm; nothing
+jssm returns is mutated.
+  * Extends score.spec.ts with a case-insensitive-matching describe block
+covering states/transitions/start/terminals, a walk endState, a
+capitalized action label resolved against a lowercase expected action,
+and a negative control confirming a genuinely wrong name still fails.
+  * * feat(eval): capture per-trial FSL and error in results
+  * ScoredTrial gains fsl (the trial's extracted FSL, null when extraction
+failed) and an optional error, populated from the TrialResult when
+eval.ts pushes each scored row. Lets a failing or miscored trial be
+inspected directly from eval-results.json instead of re-running the
+sweep.
+  * report.ts's aggregate/computeDeltas only read task/condition/valid/
+correct, so they're unaffected; report.spec.ts's hand-built
+ScoredTrial fixtures gained the now-required fsl field to keep
+typechecking.
+
+
+
+
+&nbsp;
+
+&nbsp;
+
+## [Untagged] - Jul 15, 2026 5:59:52 AM
+
+Commit [c718dd15d224867217bb8b6130c10d46e20920a0](https://github.com/StoneCypher/fsl-mcp/commit/c718dd15d224867217bb8b6130c10d46e20920a0)
+
+Author: `John Haugeland <stonecypher@gmail.com>`
+
+  * docs: prompt artifacts - FSL LLM primer draft, ambient-context spec, system prompt capture
+  * - src/prompts/fsl-llms-draft.md: the grammar-verified FSL primer (A/B-tested;
+  100% validity over 70 trials; exact-names directive from failure autopsy),
+  staged here ahead of its jssm handoff.
+- src/prompts/ambient-context-spec.md: portable spec of the ambient-context
+  injection hook (time, context gauge, git, tasks, heartbeats, affect tail)
+  for reimplementation in other harnesses.
+- src/prompts/claude-code-system-prompt-2026-07-12.md: verbatim capture of a
+  Claude Code session system prompt, kept as reference; contains
+  machine-specific paths and a session UUID - drop from this PR if that
+  bothers anyone.
+
+
+
+
+&nbsp;
+
+&nbsp;
+
+## [Untagged] - Jul 12, 2026 8:55:55 AM
+
+Commit [dc4219a37af83238a918aec2b08e6ce0ed00aafc](https://github.com/StoneCypher/fsl-mcp/commit/dc4219a37af83238a918aec2b08e6ce0ed00aafc)
+
+Author: `John Haugeland <stonecypher@gmail.com>`
+
+  * chore: bump jssm to 5.162.10 for upstream fixes
+  * Full suite green against the new version: 128/128, coverage
+98.56/95.95/96.15/100 vs the 95 gate.
+
+
+
+
+&nbsp;
+
+&nbsp;
+
+## [Untagged] - Jul 12, 2026 6:07:47 AM
+
+Commit [773f4a5534dff842063f8a584a7895dbebbb1ae1](https://github.com/StoneCypher/fsl-mcp/commit/773f4a5534dff842063f8a584a7895dbebbb1ae1)
+
+Author: `John Haugeland <stonecypher@gmail.com>`
+
+  * feat(eval): capture per-trial FSL and error in results
+  * ScoredTrial gains fsl (the trial's extracted FSL, null when extraction
+failed) and an optional error, populated from the TrialResult when
+eval.ts pushes each scored row. Lets a failing or miscored trial be
+inspected directly from eval-results.json instead of re-running the
+sweep.
+  * report.ts's aggregate/computeDeltas only read task/condition/valid/
+correct, so they're unaffected; report.spec.ts's hand-built
+ScoredTrial fixtures gained the now-required fsl field to keep
+typechecking.
+
+
+
+
+&nbsp;
+
+&nbsp;
+
+## [Untagged] - Jul 12, 2026 3:58:20 AM
+
+Commit [701af28fd1b24f014754057abe7f5a0afe45330b](https://github.com/StoneCypher/fsl-mcp/commit/701af28fd1b24f014754057abe7f5a0afe45330b)
+
+Author: `John Haugeland <stonecypher@gmail.com>`
+
+  * feat(eval): --primer-file flag for A/B testing alternative primers
+
+
+
+
+&nbsp;
+
+&nbsp;
+
+## [Untagged] - Jul 12, 2026 6:07:37 AM
+
+Commit [0c59f6c683760251d51eb7dd3e452105c74cd9a9](https://github.com/StoneCypher/fsl-mcp/commit/0c59f6c683760251d51eb7dd3e452105c74cd9a9)
+
+Author: `John Haugeland <stonecypher@gmail.com>`
+
+  * fix(eval): case-insensitive name matching in the scorer
+  * scoreCorrectness now folds case on every name comparison: states,
+transition endpoints, start/terminal states, and a walk's endState.
+A/B runs showed models writing On/Off for tasks specifying on/off -
+structurally correct FSL that only differed in identifier case, which
+should not fail a trial.
+  * Because jssm's own action()/transition() lookups are case-sensitive, a
+walk's actions are resolved case-insensitively against the machine's
+own action labels and state names before being simulated, so a
+differently-cased action label in the expectation still walks
+correctly. Only the resolved copy is ever passed to jssm; nothing
+jssm returns is mutated.
+  * Extends score.spec.ts with a case-insensitive-matching describe block
+covering states/transitions/start/terminals, a walk endState, a
+capitalized action label resolved against a lowercase expected action,
+and a negative control confirming a genuinely wrong name still fails.
+
+
+
+
+&nbsp;
+
+&nbsp;
+
+## [Untagged] - Jul 12, 2026 6:36:36 AM
+
+Commit [df036980c892936b466bc1f156cc66ae2d6c0e44](https://github.com/StoneCypher/fsl-mcp/commit/df036980c892936b466bc1f156cc66ae2d6c0e44)
+
+Author: `John Haugeland <stonecypher@gmail.com>`
+
+  * ci: replace archived create-release action with gh release create (#6)
+  * The release job (`.github/workflows/ci.yml`) still used
+`actions/create-release@v1`, which is archived upstream and emits three
+deprecated `set-output` warnings on every run. It also checked out with
+`actions/checkout@v4` while every other job already uses `@v5`, and ran
+a `Push tags` step (`git push origin --tags`) that has always been a
+no-op: checkout runs with `fetch-tags: false` and no local tag is ever
+created, so there was nothing for that step to push — the tag has
+always been created by `create-release` itself. That leftover step used
+to mask the same-shaped 403 permissions bug this job hit before
+`contents: write` was added.
+  * - Bump checkout to `actions/checkout@v5` to match the rest of the
+  workflow.
+- Drop the now-dead `Push tags` step and the `Use Node.js 22.x` setup
+  step (nothing left in the job runs node/npm since release creation no
+  longer needs `actions/setup-node`'s npm registry auth). Left a comment
+  showing how to restore setup-node ahead of the commented-out
+  `Publish to npm` step if that's ever revived.
+- Replace `actions/create-release@v1` with a single step that shells out
+  to the preinstalled `gh` CLI: `gh release create "$TAG" --title "$TAG"
+  --notes-file CHANGELOG.md`. Guarded with `gh release view "$TAG"`
+  first so a re-run of a main push without a version bump skips
+  gracefully instead of failing on a duplicate release/tag.
+  * `permissions: contents: write` and the job's `if:`/`needs:` are
+unchanged. No other job was touched.
+
+
+
+
+&nbsp;
+
+&nbsp;
+
+## [Untagged] - Jul 12, 2026 6:36:19 AM
+
+Commit [a15907563e0c61b2ca3350c40e58fd18b9924c4f](https://github.com/StoneCypher/fsl-mcp/commit/a15907563e0c61b2ca3350c40e58fd18b9924c4f)
+
+Author: `John Haugeland <stonecypher@gmail.com>`
+
+  * fix(eval): spread in report, conditions guard, typed timeout sentinel (#7)
+  * * feat(eval): add per-condition stderr spread to report
+  * The design spec calls for spread across trials so noise is visible
+against real regressions. validityRate/correctnessRate are Bernoulli
+means over n trials, so the honest spread figure is the standard
+error sqrt(p*(1-p)/n) per metric -- not a sample stddev, which does
+not apply to a 0/1 outcome.
+  * - types.ts: add validityStderr/correctnessStderr to ConditionSummary.
+- report.ts: export a pure stderr(p, n) helper, compute it in
+  aggregate(), and render each rate as "50.0% ±15.8%" in renderReport.
+- report.spec.ts: dedicated stderr() unit tests plus hand-derived
+  expected values (sqrt(2)/4, sqrt(0.025), etc.) for every updated
+  fixture -- never pasted from running the code.
+  * * fix(eval): guard --conditions against unrecognized tokens
+  * Previously an unmatched token (e.g. a typo like 'tool' for 'tools')
+was silently filtered out, which could shrink --conditions bare,tool
+down to just ['bare'] -- or empty the sweep entirely -- with no
+indication anything was wrong.
+  * parseConditionsFlag now checks every comma-separated token against
+the known Condition set and, on the first miss, prints the bad token
+and the valid set to stderr and exits(1), mirroring the existing
+parsePositiveIntFlag guard. The check now runs before captureReference
+so a bad --conditions value fails before any subprocess is spawned.
+  * Also documents that --timeout is milliseconds in main's DocBlock, so
+it isn't mistaken for seconds.
+  * * fix(eval): detect trial timeouts by type, not by message text
+  * withTimeout previously rejected with a plain Error whose message
+happened to start with 'timeout after', and runTrial detected a
+timeout by checking that string prefix. Introduce TrialTimeoutError,
+a dedicated Error subclass, thrown from the timeout race and detected
+via instanceof in runTrial. The message text and runTrial's public
+contract are unchanged: a timeout still yields
+{ fsl: null, error: 'timeout after Ns' }.
+  * Also adds a runner.spec.ts test proving the AbortSignal passed to an
+injected spawn actually fires (signal.aborted === true) once runTrial
+resolves with a timeout, plus a small direct test of
+TrialTimeoutError's message/name.
+
+
+
+
+&nbsp;
+
+&nbsp;
+
+## [Untagged] - Jul 12, 2026 6:07:47 AM
+
+Commit [3e59e17e1ab6792c94ca7b260bc5e6fc0f4794b1](https://github.com/StoneCypher/fsl-mcp/commit/3e59e17e1ab6792c94ca7b260bc5e6fc0f4794b1)
+
+Author: `John Haugeland <stonecypher@gmail.com>`
+
+  * feat(eval): capture per-trial FSL and error in results
+  * ScoredTrial gains fsl (the trial's extracted FSL, null when extraction
+failed) and an optional error, populated from the TrialResult when
+eval.ts pushes each scored row. Lets a failing or miscored trial be
+inspected directly from eval-results.json instead of re-running the
+sweep.
+  * report.ts's aggregate/computeDeltas only read task/condition/valid/
+correct, so they're unaffected; report.spec.ts's hand-built
+ScoredTrial fixtures gained the now-required fsl field to keep
+typechecking.
+
+
+
+
+&nbsp;
+
+&nbsp;
+
+## [Untagged] - Jul 12, 2026 6:07:37 AM
+
+Commit [218a98804503c97e2585b40663a1399bce8b7c7f](https://github.com/StoneCypher/fsl-mcp/commit/218a98804503c97e2585b40663a1399bce8b7c7f)
+
+Author: `John Haugeland <stonecypher@gmail.com>`
+
+  * fix(eval): case-insensitive name matching in the scorer
+  * scoreCorrectness now folds case on every name comparison: states,
+transition endpoints, start/terminal states, and a walk's endState.
+A/B runs showed models writing On/Off for tasks specifying on/off -
+structurally correct FSL that only differed in identifier case, which
+should not fail a trial.
+  * Because jssm's own action()/transition() lookups are case-sensitive, a
+walk's actions are resolved case-insensitively against the machine's
+own action labels and state names before being simulated, so a
+differently-cased action label in the expectation still walks
+correctly. Only the resolved copy is ever passed to jssm; nothing
+jssm returns is mutated.
+  * Extends score.spec.ts with a case-insensitive-matching describe block
+covering states/transitions/start/terminals, a walk endState, a
+capitalized action label resolved against a lowercase expected action,
+and a negative control confirming a genuinely wrong name still fails.
+
+
+
+
+&nbsp;
+
+&nbsp;
+
+## [Untagged] - Jul 12, 2026 3:58:20 AM
+
+Commit [6f81455382cea6c173ac402132b167d4cf6e7e1b](https://github.com/StoneCypher/fsl-mcp/commit/6f81455382cea6c173ac402132b167d4cf6e7e1b)
+
+Author: `John Haugeland <stonecypher@gmail.com>`
+
+  * feat(eval): --primer-file flag for A/B testing alternative primers
+
+
+
+
+&nbsp;
+
+&nbsp;
+
+## [Untagged] - Jul 12, 2026 2:08:36 AM
+
+Commit [02c0abd126dde60d59ea660b4b73af6aecac9156](https://github.com/StoneCypher/fsl-mcp/commit/02c0abd126dde60d59ea660b4b73af6aecac9156)
+
+Author: `John Haugeland <stonecypher@gmail.com>`
+
+  * fix(eval): detect trial timeouts by type, not by message text
+  * withTimeout previously rejected with a plain Error whose message
+happened to start with 'timeout after', and runTrial detected a
+timeout by checking that string prefix. Introduce TrialTimeoutError,
+a dedicated Error subclass, thrown from the timeout race and detected
+via instanceof in runTrial. The message text and runTrial's public
+contract are unchanged: a timeout still yields
+{ fsl: null, error: 'timeout after Ns' }.
+  * Also adds a runner.spec.ts test proving the AbortSignal passed to an
+injected spawn actually fires (signal.aborted === true) once runTrial
+resolves with a timeout, plus a small direct test of
+TrialTimeoutError's message/name.
+
+
+
+
+&nbsp;
+
+&nbsp;
+
+## [Untagged] - Jul 12, 2026 2:08:18 AM
+
+Commit [e39ccec1e7d33fac5947e8fdca152905f3f867e4](https://github.com/StoneCypher/fsl-mcp/commit/e39ccec1e7d33fac5947e8fdca152905f3f867e4)
+
+Author: `John Haugeland <stonecypher@gmail.com>`
+
+  * fix(eval): guard --conditions against unrecognized tokens
+  * Previously an unmatched token (e.g. a typo like 'tool' for 'tools')
+was silently filtered out, which could shrink --conditions bare,tool
+down to just ['bare'] -- or empty the sweep entirely -- with no
+indication anything was wrong.
+  * parseConditionsFlag now checks every comma-separated token against
+the known Condition set and, on the first miss, prints the bad token
+and the valid set to stderr and exits(1), mirroring the existing
+parsePositiveIntFlag guard. The check now runs before captureReference
+so a bad --conditions value fails before any subprocess is spawned.
+  * Also documents that --timeout is milliseconds in main's DocBlock, so
+it isn't mistaken for seconds.
+
+
+
+
+&nbsp;
+
+&nbsp;
+
+## [Untagged] - Jul 12, 2026 2:07:39 AM
+
+Commit [d33fd06d8c501fb2c012bd108360aa4493419fd1](https://github.com/StoneCypher/fsl-mcp/commit/d33fd06d8c501fb2c012bd108360aa4493419fd1)
+
+Author: `John Haugeland <stonecypher@gmail.com>`
+
+  * feat(eval): add per-condition stderr spread to report
+  * The design spec calls for spread across trials so noise is visible
+against real regressions. validityRate/correctnessRate are Bernoulli
+means over n trials, so the honest spread figure is the standard
+error sqrt(p*(1-p)/n) per metric -- not a sample stddev, which does
+not apply to a 0/1 outcome.
+  * - types.ts: add validityStderr/correctnessStderr to ConditionSummary.
+- report.ts: export a pure stderr(p, n) helper, compute it in
+  aggregate(), and render each rate as "50.0% ±15.8%" in renderReport.
+- report.spec.ts: dedicated stderr() unit tests plus hand-derived
+  expected values (sqrt(2)/4, sqrt(0.025), etc.) for every updated
+  fixture -- never pasted from running the code.
+
+
+
+
+&nbsp;
+
+&nbsp;
+
+## [Untagged] - Jul 11, 2026 4:11:19 PM
+
+Commit [c80fc53977cbfab011e0a0c417fc273038da117f](https://github.com/StoneCypher/fsl-mcp/commit/c80fc53977cbfab011e0a0c417fc273038da117f)
+
+Author: `John Haugeland <stonecypher@gmail.com>`
+
+  * ci: replace archived create-release action with gh release create
+  * The release job (`.github/workflows/ci.yml`) still used
+`actions/create-release@v1`, which is archived upstream and emits three
+deprecated `set-output` warnings on every run. It also checked out with
+`actions/checkout@v4` while every other job already uses `@v5`, and ran
+a `Push tags` step (`git push origin --tags`) that has always been a
+no-op: checkout runs with `fetch-tags: false` and no local tag is ever
+created, so there was nothing for that step to push — the tag has
+always been created by `create-release` itself. That leftover step used
+to mask the same-shaped 403 permissions bug this job hit before
+`contents: write` was added.
+  * - Bump checkout to `actions/checkout@v5` to match the rest of the
+  workflow.
+- Drop the now-dead `Push tags` step and the `Use Node.js 22.x` setup
+  step (nothing left in the job runs node/npm since release creation no
+  longer needs `actions/setup-node`'s npm registry auth). Left a comment
+  showing how to restore setup-node ahead of the commented-out
+  `Publish to npm` step if that's ever revived.
+- Replace `actions/create-release@v1` with a single step that shells out
+  to the preinstalled `gh` CLI: `gh release create "$TAG" --title "$TAG"
+  --notes-file CHANGELOG.md`. Guarded with `gh release view "$TAG"`
+  first so a re-run of a main push without a version bump skips
+  gracefully instead of failing on a duplicate release/tag.
+  * `permissions: contents: write` and the job's `if:`/`needs:` are
+unchanged. No other job was touched.
+
+
+
+
+&nbsp;
+
+&nbsp;
+
+<a name="0__3__0" />
+
+## [0.3.0] - Jul 11, 2026 2:59:42 PM
+
+Commit [8b6f107ecef6ced6431184d32fb6db96b6b6a813](https://github.com/StoneCypher/fsl-mcp/commit/8b6f107ecef6ced6431184d32fb6db96b6b6a813)
+
+Author: `John Haugeland <stonecypher@gmail.com>`
+
+  * ci: grant the release job contents write permission (#5)
+  * The workflow-level GITHUB_TOKEN is read-only, so the release job's
+'Push tags' step failed with 403 (Write access to repository not
+granted) the first time the job actually ran (post-#4 push). Give the
+release job the same contents: write grant the gh-pages deploy job
+already carries, so tag push and release creation can succeed.
+
+
+
+
+&nbsp;
+
+&nbsp;
+
+## [Untagged] - Jul 11, 2026 2:31:54 PM
+
+Commit [cd19b0ae026326d17101fc10f300bf0b31e745cc](https://github.com/StoneCypher/fsl-mcp/commit/cd19b0ae026326d17101fc10f300bf0b31e745cc)
+
+Author: `John Haugeland <stonecypher@gmail.com>`
+
+  * ci: grant the release job contents write permission
+  * The workflow-level GITHUB_TOKEN is read-only, so the release job's
+'Push tags' step failed with 403 (Write access to repository not
+granted) the first time the job actually ran (post-#4 push). Give the
+release job the same contents: write grant the gh-pages deploy job
+already carries, so tag push and release creation can succeed.
+
+
+
+
+&nbsp;
+
+&nbsp;
+
+## [Untagged] - Jul 11, 2026 9:49:54 AM
+
+Commit [2ee966150a737a897136ec1e6c087f3436134c14](https://github.com/StoneCypher/fsl-mcp/commit/2ee966150a737a897136ec1e6c087f3436134c14)
+
+Author: `John Haugeland <stonecypher@gmail.com>`
+
+  * fix(stryker): run the real spec suite so mutation testing executes (#4)
+  * vitest-mutat.config.ts included only src/**/*.mutat.ts, and v1 deleted the
+last such file, so Stryker's vitest runner had zero tests to execute and
+failed with ConfigError: No tests were executed. Include src/**/*.spec.ts
+too so the real suite runs under mutation testing.
+  * stryker.config.json's ignorePatterns excluded **/*.spec.* (and *.stoch.*)
+from the sandbox, which would have kept the specs out of reach of the
+vitest runner even after the include fix. Drop those two entries; the
+mutate array already excludes spec/stoch/mutat files from being mutated,
+so nothing gets mutated that shouldn't be. *.stoch.* files now reach the
+sandbox but aren't in vitest-mutat's test.include, so they are present but
+inert - confirmed harmless via a full run.
+  * Add coverage-mutat/ to .gitignore: it's vitest-mutat's own coverage
+output directory, and the existing bare "coverage" entry doesn't match
+this differently-named directory.
+  * Verified: subset run (--mutate src/ts/tools/validate.ts) scores 100%;
+full run scores 859 mutants in 5m58s, exit 0, with reports/mutation.html
+produced. Default vitest suite and eslint on the changed config file both
+stay green.
+
+
+
+
+&nbsp;
+
+&nbsp;
+
+## [Untagged] - Jul 10, 2026 10:24:17 PM
+
+Commit [df3eb34599b3312e35723ae6bdcc75b80b04d5ea](https://github.com/StoneCypher/fsl-mcp/commit/df3eb34599b3312e35723ae6bdcc75b80b04d5ea)
+
+Author: `StoneCypher <StoneCypher@users.noreply.github.com>`
+
+  * deploy: 3e2d895118d039cfadff019dc6f22a4ebb41da99
+
+
+
+
+&nbsp;
+
+&nbsp;
+
+## [Untagged] - Jul 10, 2026 10:21:18 PM
+
+Commit [3e2d895118d039cfadff019dc6f22a4ebb41da99](https://github.com/StoneCypher/fsl-mcp/commit/3e2d895118d039cfadff019dc6f22a4ebb41da99)
+
+Author: `John Haugeland <stonecypher@gmail.com>`
+
+  * feat(eval): subscription-based eval harness for FSL authoring (#3)
+  * * docs: design spec for the subscription-based fsl-mcp eval harness
+  * A repeatable regression metric measuring whether fsl-mcp (and a shipped
+FSL reference) improves FSL authoring vs authoring blind. Runs on the
+Claude Code subscription via headless 'claude -p' (no API key); 4-way
+conditions (bare/reference/tools/reference+tools); jssm as the scoring
+oracle; configurable model (default opus), tasks, and trials.
+  * * docs: implementation plan for the fsl-mcp eval harness
+  * Seven bite-sized TDD tasks under src/ts/eval/: shared types, jssm-backed
+scoring, version-locked reference capture, condition->claude-p invocation
+builder, injectable-spawn trial runner, aggregation/report, and the task
+corpus + CLI orchestrator (npm run eval). Subscription-only via claude -p;
+no API.
+  * * feat(eval): shared types for the eval harness
+  * * feat(eval): jssm-backed scoring (extract, validity, correctness)
+  * * feat(eval): capture version-locked FSL reference primer
+  * * test(eval): cover empty-stdout branch in captureReference
+  * * feat(eval): condition -> claude -p invocation builder
+  * * feat(eval): claude -p trial runner (injectable spawn)
+  * * feat(eval): aggregation, deltas, and report rendering
+  * * test(eval): cover renderReport and no-baseline deltas
+  * - Add comprehensive tests for renderReport with synthetic data:
+  - Test percentage formatting (e.g., 0.5 -> 50.0%)
+  - Test positive and negative delta sign rendering
+  - Test header and data row rendering
+  - Test column alignment with single-digit n values
+- Add test for computeDeltas returning [] when no bare baseline exists
+- Fix one-character column drift in renderReport header by adding space before n label
+  * * feat(eval): task corpus, CLI orchestrator, and npm run eval
+  * - src/ts/eval/tasks.ts: 10-task corpus (3 easy, 4 medium, 3 harder), each
+  with a private _reference solution verified against its own expect via
+  real jssm (src/ts/eval/tests/tasks.spec.ts).
+- src/ts/eval/eval.ts: CLI orchestrator - parses flags, captures the
+  reference primer once, writes a temp --mcp-config, sweeps
+  tasks x conditions x trials through runTrial, scores, aggregates, prints
+  the report, writes eval-results.json. Excluded from coverage (shells to
+  claude, not unit-testable).
+- package.json: add npm run eval (jiti src/ts/eval/eval.ts).
+- vitest.config.ts: exclude src/ts/eval/eval.ts from coverage.
+- .gitignore: ignore eval-results.json (run artifact).
+- reference.ts / runner.ts: wrap the untestable defaultSpawn shims in
+  v8 ignore hints so only those bodies are excluded, keeping
+  captureReference/runTrial themselves covered.
+  * * test(eval): close recorded review gaps and extend scoreCorrectness coverage
+  * - score.spec.ts: cover the unexpected-rejection branch (walk rejected with
+  no rejectedAt expected), an empty-body fsl fence, an invalid-source
+  short-circuit, and the states/start/rejectedAt-index mismatch branches
+  of scoreCorrectness.
+- report.spec.ts: tighten the column-alignment assertions from a +/-1
+  tolerance to exact equality, and rename the percentage-formatting test
+  to match pct's actual one-decimal-place output.
+- eval.ts: guard --trials/--tasks against a non-finite/non-positive
+  Number() result (e.g. --trials abc) with a clear stderr message and
+  exit(1), instead of silently cascading a NaN through the trial sweep.
+  * * test: raise coverage gate to 95%
+  * Raises all four coverage.thresholds (statements/branches/functions/lines)
+in vitest.config.ts from 80 to 95, closing the gap with real behavior
+tests:
+  * - server.ts: startServer now accepts an injectable Transport (defaulting
+  to a real StdioServerTransport, unchanged for the fsl-mcp bin entry).
+  server.spec.ts exercises it end-to-end over a real stdio JSON-RPC
+  round-trip, backed by injected PassThrough streams instead of the
+  actual process stdin/stdout — so the previously-untestable process
+  wiring is now genuinely covered without hijacking the test process.
+- lint.ts: reorder analyze(source).filter().map() to .map().filter().
+  Same output, but the map callback now runs over every diagnostic
+  (errors included) instead of only the ones that already survived
+  filtering, so it is genuinely exercised by the existing invalid-FSL
+  test rather than only reachable via a non-error diagnostic that the
+  installed jssm never emits.
+- runner.spec.ts: cover the spawn-throws (Error and non-Error) catch
+  branch and the non-string envelope.result fallback.
+  * Full-suite coverage after these changes: 98.4% statements, 95.74%
+branches, 95.55% functions, 100% lines — all four thresholds pass.
+  * A few branches remain intentionally uncovered because they are not
+reachable through real behavior with the installed jssm version (no FSL
+input produces a non-error diagnostic, sets an edge's .name, or yields a
+machine with zero start states), on top of the pre-existing defaultSpawn
+process shims in reference.ts/runner.ts.
+  * * fix(eval): windows-safe primer spawn and per-trial timeout
+  * - reference.ts: on win32, spawnSync npx via a joined shell command string
+  instead of shell:true + args array (avoids ENOENT and Node's DEP0190
+  warning); other platforms unchanged.
+- runner.ts: runTrial now races the spawn against a timeoutMs (default
+  DEFAULT_TRIAL_TIMEOUT_MS = 600_000ms), killing the child via an
+  AbortSignal passed as ClaudeSpawn's new optional third argument, and
+  resolving a timeout as a normal error result instead of hanging.
+- eval.ts: wire a --timeout flag through the existing
+  parsePositiveIntFlag guard.
+- tests: cover the timeout and non-timeout paths in runner.spec.ts, and
+  fix report.spec.ts's Delta import (declared in report.ts, not types.ts).
+  * * docs: add fence languages and fix emphasis in eval spec/plan
+  * * chore: untrack per-machine .claude/settings.local.json
+  * * build: bump to v0.3.0 and regenerate build artifacts
+  * Minor bump for the new eval harness (npm run eval). Regenerates README
+madlibs, CHANGELOG, dist bundles, typedoc site, coverage reports, and
+bundle visualizations at the new version.
+
+
+
+
+&nbsp;
+
+&nbsp;
+
+## [Untagged] - Jul 10, 2026 10:16:12 PM
+
+Commit [a7075aeaa01f371d6519cba3e150fb137bf1d812](https://github.com/StoneCypher/fsl-mcp/commit/a7075aeaa01f371d6519cba3e150fb137bf1d812)
+
+Author: `John Haugeland <stonecypher@gmail.com>`
+
+  * build: bump to v0.3.0 and regenerate build artifacts
+  * Minor bump for the new eval harness (npm run eval). Regenerates README
+madlibs, CHANGELOG, dist bundles, typedoc site, coverage reports, and
+bundle visualizations at the new version.
 
 
 

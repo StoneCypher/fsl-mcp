@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(bash \"C:/Users/john/.claude/plugins/cache/claude-plugins-official/superpowers/*)",
+      "Bash(bash \"/c/Users/john/.claude/plugins/cache/claude-plugins-official/superpowers/*)",
+      "Bash(npx eslint *)",
+      "Bash(npx tsc *)",
+      "Bash(npx vitest run *)",
+      "Bash(gh run watch *)",
+      "Bash(git fetch *)",
+      "mcp__fsl__fsl_validate",
+      "mcp__fsl__fsl_simulate",
+      "mcp__fsl__fsl_explain",
+      "mcp__fsl__fsl_lint",
+      "mcp__fsl__fsl_render"
+    ]
+  }
+}
