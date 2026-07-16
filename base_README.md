@@ -63,7 +63,7 @@ available. Invalid source returns diagnostics, as everywhere else.
 
 ## Ceilings (v1)
 
-- **Rendering** is SVG-only. `format:"png"` is accepted but returns the SVG plus a `note` explaining that rasterization isn't shipped yet — there's no bundled rasterizer in v1.
+- Raster ceilings: PNG and GIF rasterize in plain Node (via jssm's bundled resvg-wasm); JPEG needs a Canvas-capable runtime and otherwise degrades to SVG plus a `note`. Any raster format degrades the same way when no backend is available.
 - **Simulation** matches `fsl_simulate`'s `actions` against edge *action labels* first, then falls back to target-state names. Machines whose edges carry no action labels will report an empty `legalNext` even where target-state transitions are legal — this is a labeling ceiling, not a bug in the walk itself.
 
 &nbsp;
