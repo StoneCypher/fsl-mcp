@@ -78,6 +78,28 @@ describe('fsl-mcp server', () => {
 
     await client.close();
   });
+
+  it('forwards all raster options end-to-end (bounded gif)', async () => {
+    const server = createServer();
+    const [clientTx, serverTx] = InMemoryTransport.createLinkedPair();
+    const client = new Client({ name: 'test', version: '0.0.0' });
+
+    await Promise.all([server.connect(serverTx), client.connect(clientTx)]);
+
+    const result = await client.callTool({
+      name: 'fsl_render',
+      arguments: { source: 'a -> b;', format: 'gif', width: 200, height: 200, scale: 100, quality: 80, delay: 5, maxFrames: 2 },
+    });
+    const content = result.content as ({ type: string; data?: string; mimeType?: string })[];
+    const image = content.find((c) => c.type === 'image');
+    expect(image).toBeDefined();
+    expect(image?.mimeType).toBe('image/gif');
+    const bytes = Buffer.from(image?.data ?? '', 'base64');
+    const head = String.fromCharCode(bytes[0] ?? 0, bytes[1] ?? 0, bytes[2] ?? 0, bytes[3] ?? 0);
+    expect(head).toBe('GIF8');
+
+    await client.close();
+  });
 });
 
 describe('startServer', () => {
