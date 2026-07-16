@@ -7,11 +7,30 @@ import { fslValidate } from './tools/validate.js';
 import { fslLint     } from './tools/lint.js';
 import { fslExplain  } from './tools/explain.js';
 import { fslSimulate } from './tools/simulate.js';
-import { fslRender   } from './tools/render.js';
+import { fslRender } from './tools/render.js';
+import type { RenderRasterOptions } from './tools/render.js';
 
 /** Wrap any JSON-serializable value as an MCP text-content tool result. */
 function jsonResult(value: unknown): { content: { type: 'text'; text: string }[] } {
   return { content: [{ type: 'text', text: JSON.stringify(value, null, 2) }] };
+}
+
+/**
+ * Wrap a render result: raster results become an MCP image content block plus
+ * a JSON text summary; every other shape uses the standard JSON text block.
+ */
+function renderResult(r: Awaited<ReturnType<typeof fslRender>>): {
+  content: ({ type: 'text'; text: string } | { type: 'image'; data: string; mimeType: string })[];
+} {
+  if (r.valid && 'bytes' in r) {
+    return {
+      content: [
+        { type: 'image', data: Buffer.from(r.bytes).toString('base64'), mimeType: r.mimeType },
+        { type: 'text', text: JSON.stringify({ valid: true, format: r.format, mimeType: r.mimeType, byteLength: r.bytes.length }, null, 2) },
+      ],
+    };
+  }
+  return jsonResult(r);
 }
 
 /**
@@ -49,9 +68,27 @@ export function createServer(): McpServer {
     ({ source, actions }) => jsonResult(fslSimulate(source, actions)));
 
   server.registerTool('fsl_render',
-    { description: 'Render FSL to SVG. format:"png" degrades to svg-plus-note in v1.',
-      inputSchema: { source: z.string(), format: z.enum(['svg', 'png']).optional() } },
-    async ({ source, format }) => jsonResult(await fslRender(source, format)));
+    { description: 'Render FSL to a diagram. format: svg (default) | dot (text) | png | jpeg | gif (returned as an image content block; gif animates a random walk). Raster options: width, height, scale (zoom %, 100 = 3x), quality (jpeg 1-100), delay (gif centiseconds/frame), maxFrames (gif; keep <= 20 for chat).',
+      inputSchema: {
+        source    : z.string(),
+        format    : z.enum(['svg', 'dot', 'png', 'jpeg', 'gif']).optional(),
+        width     : z.number().int().positive().optional(),
+        height    : z.number().int().positive().optional(),
+        scale     : z.number().int().positive().optional(),
+        quality   : z.number().int().min(1).max(100).optional(),
+        delay     : z.number().int().positive().optional(),
+        maxFrames : z.number().int().min(1).max(100).optional(),
+      } },
+    async ({ source, format, width, height, scale, quality, delay, maxFrames }) => {
+      const options: RenderRasterOptions = {};
+      if (width     !== undefined) { options.width     = width; }
+      if (height    !== undefined) { options.height    = height; }
+      if (scale     !== undefined) { options.scale     = scale; }
+      if (quality   !== undefined) { options.quality   = quality; }
+      if (delay     !== undefined) { options.delay     = delay; }
+      if (maxFrames !== undefined) { options.maxFrames = maxFrames; }
+      return renderResult(await fslRender(source, format, options));
+    });
 
   return server;
 }
