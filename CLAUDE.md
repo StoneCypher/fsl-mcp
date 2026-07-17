@@ -1,13 +1,16 @@
 # fsl-mcp — contributor brief
 
 fsl-mcp is an MCP stdio server that lets an AI agent *author* FSL finite-state
-machines: five tools (`fsl_validate`, `fsl_render`, `fsl_explain`,
+machines: five authoring tools (`fsl_validate`, `fsl_render`, `fsl_explain`,
 `fsl_simulate`, `fsl_lint`), each taking FSL `source` and returning structured
-JSON, wrapping the `jssm` library.
+JSON, plus `fsl_guide`, which takes no source and returns authoring guidance
+as raw markdown (topics: `language`, `flowcharts`). Wraps the `jssm` library.
 
 ## Analyze-first architecture
 
-Every tool calls `analyze(source)` (`src/ts/analyze.ts`) *first*. It wraps
+Every authoring tool calls `analyze(source)` (`src/ts/analyze.ts`) *first*.
+(`fsl_guide` is the one exception: it has no source input and never touches
+jssm or `analyze` at all.) It wraps
 jssm's non-throwing `fslDiagnostics()` and normalizes offsets to 1-based
 `line`/`col`. If `hasErrors(diagnostics)` is true, the tool short-circuits and
 returns diagnostics immediately. Only after that guard passes do tools call
