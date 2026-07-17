@@ -35,7 +35,7 @@ function renderResult(r: Awaited<ReturnType<typeof fslRender>>): {
 }
 
 /**
- * Build the fsl-mcp server with all five FSL authoring tools registered.
+ * Build the fsl-mcp server: the five FSL authoring tools plus the fsl_guide guidance tool.
  * The returned server is transport-agnostic; connect it to stdio (production)
  * or an in-memory transport (tests).
  *
