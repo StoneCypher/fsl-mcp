@@ -9,6 +9,7 @@ import { fslExplain  } from './tools/explain.js';
 import { fslSimulate } from './tools/simulate.js';
 import { fslRender  } from './tools/render.js';
 import type { RenderRasterOptions } from './tools/render.js';
+import { GUIDE_FLOWCHARTS, GUIDE_LANGUAGE } from './tools/guide-content.js';
 
 /** Wrap any JSON-serializable value as an MCP text-content tool result. */
 function jsonResult(value: unknown): { content: { type: 'text'; text: string }[] } {
@@ -89,6 +90,13 @@ export function createServer(): McpServer {
       if (maxFrames !== undefined) { options.maxFrames = maxFrames; }
       return renderResult(await fslRender(source, format, options));
     });
+
+  server.registerTool('fsl_guide',
+    { description: 'Returns FSL authoring guidance as markdown. topic "language": the full FSL primer - call before writing FSL for the first time. topic "flowcharts": how to express flowcharts in FSL (decision diamonds, labeled branches, terminals, failure paths). Takes no FSL source.',
+      inputSchema: { topic: z.enum(['flowcharts', 'language']) } },
+    ({ topic }) => ({
+      content: [{ type: 'text' as const, text: topic === 'flowcharts' ? GUIDE_FLOWCHARTS : GUIDE_LANGUAGE }],
+    }));
 
   return server;
 }
