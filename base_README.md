@@ -28,9 +28,9 @@ Point any MCP-speaking client at it with a stdio server entry:
 
 &nbsp;
 
-## The five tools
+## The six tools
 
-Every tool takes FSL `source` (a string) and returns structured JSON — never a thrown error for bad FSL, always diagnostics.
+Every tool takes FSL `source` (a string) and returns structured JSON — never a thrown error for bad FSL, always diagnostics. The exception is `fsl_guide`, which takes no source.
 
 | Tool | Input | Returns |
 |---|---|---|
@@ -38,6 +38,7 @@ Every tool takes FSL `source` (a string) and returns structured JSON — never a
 | `fsl_explain` | `source` | `{ states, transitions, start, terminals, summary }`, or diagnostics if invalid |
 | `fsl_simulate` | `source`, `actions: string[]` | `{ endState, path, legalNext, rejected? }`, or diagnostics if invalid |
 | `fsl_lint` | `source` | `{ notes: [{rule, message, line}] }` |
+| `fsl_guide` | `topic: "language" \| "flowcharts"` | FSL authoring guidance as markdown - topics: language, flowcharts |
 
 Under the hood, every tool runs the same non-throwing `analyze()` pass first and short-circuits to diagnostics on a compile error, so a model can always find out *why* its FSL didn't work instead of getting an exception.
 
@@ -58,6 +59,20 @@ keep it at or under 20 in chat contexts). PNG and GIF work in plain Node (via
 jssm's bundled resvg-wasm); JPEG needs a Canvas-capable runtime and otherwise
 degrades to SVG plus a note, as does any raster format when no backend is
 available. Invalid source returns diagnostics, as everywhere else.
+
+### fsl_guide
+
+Returns authoring guidance as markdown, straight from the server - no
+out-of-band primer pasting needed.
+
+- `topic: "language"` - the full FSL primer. Call it before writing FSL for
+  the first time; in our evals this guidance moved weak models from 60% to
+  100% correctness.
+- `topic: "flowcharts"` - the flowchart idiom: decision diamonds with labeled
+  branches, terminals, failure paths on `~>`, layout, and a worked example.
+
+This is the one tool that takes no FSL source; it cannot fail and does not
+touch the parser.
 
 &nbsp;
 
