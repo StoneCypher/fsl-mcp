@@ -1,0 +1,4 @@
+# The guide-content drift test compares these files byte-for-byte against
+# build-time embedded constants, so their line endings must be LF on every
+# platform, including Windows checkouts.
+src/prompts/*.md text eol=lf
