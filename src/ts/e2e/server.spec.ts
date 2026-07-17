@@ -116,6 +116,22 @@ describe('fsl-mcp server', () => {
 
     await client.close();
   });
+
+  it('serves the full language primer through fsl_guide', async () => {
+    const server = createServer();
+    const [clientTx, serverTx] = InMemoryTransport.createLinkedPair();
+    const client = new Client({ name: 'test', version: '0.0.0' });
+
+    await Promise.all([server.connect(serverTx), client.connect(clientTx)]);
+
+    const result = await client.callTool({ name: 'fsl_guide', arguments: { topic: 'language' } });
+    const content = result.content as { type: string; text?: string }[];
+    const text = content.find((c) => c.type === 'text');
+    expect(text?.text).toContain('Finite State Language (authoring guide for LLMs)');
+    expect(text?.text).toContain('# Flowcharts in FSL');
+
+    await client.close();
+  });
 });
 
 describe('startServer', () => {
