@@ -3,6 +3,7 @@ import { readdirSync, readFileSync } from 'node:fs';
 import { analyze, hasErrors } from '../analyze.js';
 import { SCAFFOLD_SOURCES } from '../tools/scaffold-content.js';
 import { SCAFFOLD_REGISTRY, PRESET_IDS } from '../tools/scaffold-registry.js';
+import { fslScaffold } from '../tools/scaffold.js';
 
 const SCAFFOLD_DIR = 'src/prompts/scaffolds';
 
@@ -43,6 +44,63 @@ describe('scaffold registry and embedding', () => {
             slot.kind === 'action' ? new RegExp(`'${n}'`) : new RegExp(`\\b${n}\\b`));
         }
       }
+    }
+  });
+});
+
+describe('fslScaffold', () => {
+  it('returns the canonical source with defaults resolved when no params given', () => {
+    const r = fslScaffold('decision');
+    expect(r.valid).toBe(true);
+    if (!r.valid) return;
+    expect(r.family).toBe('flowchart');
+    expect(r.source).toBe(SCAFFOLD_SOURCES['decision']);
+    expect(r.roles['decision']).toBe('Validate');
+    expect(r.notes.length).toBeGreaterThan(0);
+  });
+
+  it('renames states, auto-quoting multi-word names, and output compiles', () => {
+    const r = fslScaffold('decision', 'Fraud Check',
+      { decision: 'Screen Payment', outcomes: ['Approve', 'Deny'] });
+    expect(r.valid).toBe(true);
+    if (!r.valid) return;
+    expect(r.source).toContain('machine_name: "Fraud Check";');
+    expect(r.source).toContain('"Screen Payment"');
+    expect(r.source).toContain('Approve');
+    expect(r.source).not.toContain('Validate');
+    expect(hasErrors(analyze(r.source))).toBe(false);
+  });
+
+  it('renames action labels with apostrophe escaping', () => {
+    const r = fslScaffold('review-loop', undefined, { approve: "it's fine" });
+    expect(r.valid).toBe(true);
+    if (!r.valid) return;
+    expect(r.source).toContain("'it\\'s fine'");
+    expect(hasErrors(analyze(r.source))).toBe(false);
+  });
+
+  it('rejects wrong list arity, unknown roles, duplicates, and illegal characters', () => {
+    expect(fslScaffold('pipeline', undefined, { stages: ['A', 'B'] }).valid).toBe(false);
+    expect(fslScaffold('decision', undefined, { nonsense: 'X' }).valid).toBe(false);
+    expect(fslScaffold('decision', undefined, { outcomes: ['Same', 'Same'] }).valid).toBe(false);
+    expect(fslScaffold('decision', undefined, { decision: 'has"quote' }).valid).toBe(false);
+    expect(fslScaffold('decision', undefined, { decision: '' }).valid).toBe(false);
+    expect(fslScaffold('no-such-preset').valid).toBe(false);
+  });
+
+  it('every preset compiles under a full rename of every slot', () => {
+    for (const id of PRESET_IDS) {
+      const def = SCAFFOLD_REGISTRY[id];
+      if (def === undefined) continue;
+      const roles: Record<string, string | string[]> = {};
+      def.slots.forEach((slot, i) => {
+        roles[slot.role] = slot.kind === 'stateList'
+          ? slot.canonical.map((_, j) => `Zz_${String(i)}_${String(j)}`)
+          : `Zz_${String(i)}`;
+      });
+      const r = fslScaffold(id, 'Renamed', roles);
+      expect(r.valid, id).toBe(true);
+      if (r.valid) expect(hasErrors(analyze(r.source)), id).toBe(false);
     }
   });
 });
