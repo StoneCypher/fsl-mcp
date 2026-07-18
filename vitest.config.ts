@@ -21,10 +21,10 @@ export default defineConfig({
       exclude: ['src/**/*.spec.ts', 'src/**/*.stoch.ts', 'src/**/*.mutat.ts', 'src/ts/bin.ts', 'src/ts/eval/eval.ts'],
       all: true,
       thresholds: {
-        lines: 95,
-        functions: 95,
-        branches: 95,
-        statements: 95
+        lines: 100,
+        functions: 100,
+        branches: 100,
+        statements: 100
       }
     },
     globals: true
