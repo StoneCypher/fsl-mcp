@@ -2,7 +2,7 @@
 
 > Version {{version}} was built on {{built_text}} `{{built}}` from hash `{{gh_hash}}`.
 
-**fsl-mcp** is an MCP (Model Context Protocol) stdio server that lets an AI agent *author* [FSL](https://github.com/StoneCypher/jssm) finite-state machines — giving the model the same structured feedback the FSL editor gives a human (parse diagnostics, a rendered diagram, a plain-English explanation, a step-by-step simulation, and style lint notes) instead of leaving it to guess whether the FSL it just wrote is even valid. It wraps [`jssm`](https://github.com/StoneCypher/jssm), the reference FSL implementation, and exposes six tools over stdio (five authoring tools plus `fsl_guide` guidance) via the official [`@modelcontextprotocol/sdk`](https://github.com/modelcontextprotocol/typescript-sdk).
+**fsl-mcp** is an MCP (Model Context Protocol) stdio server that lets an AI agent *author* [FSL](https://github.com/StoneCypher/jssm) finite-state machines — giving the model the same structured feedback the FSL editor gives a human (parse diagnostics, a rendered diagram, a plain-English explanation, a step-by-step simulation, and style lint notes) instead of leaving it to guess whether the FSL it just wrote is even valid. It wraps [`jssm`](https://github.com/StoneCypher/jssm), the reference FSL implementation, and exposes seven tools over stdio (five authoring tools, plus `fsl_guide` guidance and `fsl_scaffold` preset generation) via the official [`@modelcontextprotocol/sdk`](https://github.com/modelcontextprotocol/typescript-sdk).
 
 <!-- Supported embeds: {{built}} {{built_text}} {{coverage}} {{docblockcount}} {{doccoverage}} {{gh_hash}} {{stochbranch}} {{stochcoverage}} {{stochfunc}} {{stochline}} {{stochtestcount}} {{testcasecount}} {{unitbranch}} {{unitfunc}} {{unitline}} {{unittestcount}} {{version}} -->
 
@@ -28,9 +28,9 @@ Point any MCP-speaking client at it with a stdio server entry:
 
 &nbsp;
 
-## The six tools
+## The seven tools
 
-Every tool takes FSL `source` (a string) and returns structured JSON — never a thrown error for bad FSL, always diagnostics. The exception is `fsl_guide`, which takes no source.
+Every tool takes FSL `source` (a string) and returns structured JSON — never a thrown error for bad FSL, always diagnostics. The exceptions are `fsl_guide`, which takes no source, and `fsl_scaffold`, which takes no source but generates one.
 
 | Tool | Input | Returns |
 |---|---|---|
@@ -39,8 +39,9 @@ Every tool takes FSL `source` (a string) and returns structured JSON — never a
 | `fsl_simulate` | `source`, `actions: string[]` | `{ endState, path, legalNext, rejected? }`, or diagnostics if invalid |
 | `fsl_lint` | `source` | `{ notes: [{rule, message, line}] }` |
 | `fsl_guide` | `topic: "language" \| "flowcharts"` | FSL authoring guidance as markdown - topics: language, flowcharts |
+| `fsl_scaffold` | `preset`, `machine_name?`, `roles?` | complete compiling starter FSL from presets (8 presets, 5 families) with your names substituted |
 
-Under the hood, every tool runs the same non-throwing `analyze()` pass first and short-circuits to diagnostics on a compile error, so a model can always find out *why* its FSL didn't work instead of getting an exception.
+Under the hood, every source-taking tool runs the same non-throwing `analyze()` pass first and short-circuits to diagnostics on a compile error, so a model can always find out *why* its FSL didn't work instead of getting an exception. `fsl_scaffold` runs the same `analyze()` pass on its *generated* source before returning it, so its output carries the same guarantee.
 
 ### fsl_render
 
@@ -71,8 +72,23 @@ out-of-band primer pasting needed.
 - `topic: "flowcharts"` - the flowchart idiom: decision diamonds with labeled
   branches, terminals, failure paths on `~>`, layout, and a worked example.
 
-This is the one tool that takes no FSL source; it cannot fail and does not
+This is one of two tools that take no FSL source; it cannot fail and does not
 touch the parser.
+
+### fsl_scaffold
+
+Returns a complete, compiling FSL starting document - pick a preset, pass
+your names, get source ready for fsl_validate / fsl_render.
+
+- Eight presets across five families: flowchart, pipeline, decision,
+  review-loop (flowchart); handshake (protocol); job-lifecycle (process);
+  org-chart (orgchart); network-topology (network).
+- Role slots rename states and action labels; multi-word names are quoted
+  automatically. List slots are fixed-arity - a scaffold is a starting
+  point, and adding a stage is a one-line edit.
+- Every result is analyze-verified before it is returned; diagram-family
+  presets (org-chart, network-topology) say so when simulation is
+  meaningless.
 
 &nbsp;
 

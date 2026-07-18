@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-1 release
+2 releases
 
 
 
@@ -12,8 +12,816 @@ All notable changes to this project will be documented in this file.
 
 Published tags:
 
-<a href="#0__3__0">0.3.0</a>
+<a href="#0__4__0">0.4.0</a>, <a href="#0__3__0">0.3.0</a>
 
+
+
+
+
+&nbsp;
+
+&nbsp;
+
+## [Untagged] - Jul 18, 2026 9:16:28 AM
+
+Commit [4e64081ff4c580433f57948b9046d297f1f86936](https://github.com/StoneCypher/fsl-mcp/commit/4e64081ff4c580433f57948b9046d297f1f86936)
+
+Author: `John Haugeland <stonecypher@gmail.com>`
+
+  * test(coverage): close the 100-gate
+  * Raises unit coverage to exit-0 at the new 100/100/100/100 gate
+(vitest.config.ts, a0beee8) without weakening anything.
+  * Real tests added (3): render.ts's JSON.stringify(err) branch for a
+non-Error thrown value; scaffold.ts's per-element stateList name
+validation and its array-for-scalar-role rejection.
+  * v8-ignore fixes/additions (9): reference.ts and runner.ts each had a
+defaultSpawn shim whose ignore block wrapped only the body, not the
+function declaration, so it still counted toward the functions metric -
+widened both to span the whole function. score.ts, explain.ts, and
+scaffold.ts each get newly-adjudicated ignores over branches verified
+unreachable through any real input (capture-group typing guards, a
+provably-redundant re-validation, jssm's edge.name/start-state
+guarantees traced through the installed jssm 5.162.10 bundle and
+verified empirically, and scaffold's substitution invariants already
+proven by its own test suite). Full per-gap justification in
+.superpowers/sdd/coverage-closure-report.md (gitignored, not committed).
+  * No thresholds lowered, no defensive branches deleted, no tests weakened,
+no files added to the coverage exclude list.
+
+
+
+
+&nbsp;
+
+&nbsp;
+
+## [Untagged] - Jul 18, 2026 8:55:19 AM
+
+Commit [a0beee899da09e02b28d7d0d7a492fa68f340ddf](https://github.com/StoneCypher/fsl-mcp/commit/a0beee899da09e02b28d7d0d7a492fa68f340ddf)
+
+Author: `John Haugeland <stonecypher@gmail.com>`
+
+  * build: raise unit coverage gate to 100 on all four metrics
+
+
+
+
+&nbsp;
+
+&nbsp;
+
+## [Untagged] - Jul 18, 2026 8:48:47 AM
+
+Commit [6554cb8d269e779f460fcbb1f2ac7f6c698efca5](https://github.com/StoneCypher/fsl-mcp/commit/6554cb8d269e779f460fcbb1f2ac7f6c698efca5)
+
+Author: `John Haugeland <stonecypher@gmail.com>`
+
+  * fix(scaffold): shield machine_name line in every substitution pass; stoch cross-slot coverage
+
+
+
+
+&nbsp;
+
+&nbsp;
+
+## [Untagged] - Jul 18, 2026 8:35:33 AM
+
+Commit [91a0d54a953a09f8355acba32e0e741f916bfea6](https://github.com/StoneCypher/fsl-mcp/commit/91a0d54a953a09f8355acba32e0e741f916bfea6)
+
+Author: `John Haugeland <stonecypher@gmail.com>`
+
+  * fix(scaffold): single-pass substitution and own-property preset lookup; harden stoch generator
+
+
+
+
+&nbsp;
+
+&nbsp;
+
+## [Untagged] - Jul 18, 2026 7:53:00 AM
+
+Commit [75d0c21be8746daa66e7e76823aac6e8a7f7e67c](https://github.com/StoneCypher/fsl-mcp/commit/75d0c21be8746daa66e7e76823aac6e8a7f7e67c)
+
+Author: `John Haugeland <stonecypher@gmail.com>`
+
+  * fix(eval): allow mcp__fsl__fsl_guide in the tools-condition allowlist
+
+
+
+
+&nbsp;
+
+&nbsp;
+
+## [Untagged] - Jul 18, 2026 7:52:48 AM
+
+Commit [212947e9afab4a47dd8822aa05280f72eef3407a](https://github.com/StoneCypher/fsl-mcp/commit/212947e9afab4a47dd8822aa05280f72eef3407a)
+
+Author: `John Haugeland <stonecypher@gmail.com>`
+
+  * fix(build): externalize jssm/cli in rollup config - main's build broke when render.ts began importing it
+
+
+
+
+&nbsp;
+
+&nbsp;
+
+## [Untagged] - Jul 18, 2026 7:51:30 AM
+
+Commit [4c78ca39665b0fd3f33e0a78760e788bf685469a](https://github.com/StoneCypher/fsl-mcp/commit/4c78ca39665b0fd3f33e0a78760e788bf685469a)
+
+Author: `John Haugeland <stonecypher@gmail.com>`
+
+  * feat(scaffold): rename engine with analyze gate, unit and stochastic coverage
+
+
+
+
+&nbsp;
+
+&nbsp;
+
+## [Untagged] - Jul 18, 2026 7:39:26 AM
+
+Commit [673f796d9b39f2131f9a023c82ef9b6831319e0d](https://github.com/StoneCypher/fsl-mcp/commit/673f796d9b39f2131f9a023c82ef9b6831319e0d)
+
+Author: `John Haugeland <stonecypher@gmail.com>`
+
+  * feat(scaffold): directory-scanning embedder, preset registry, drift guard
+
+
+
+
+&nbsp;
+
+&nbsp;
+
+## [Untagged] - Jul 18, 2026 7:31:39 AM
+
+Commit [df16dbb00bcb0ca3c2318a12574bb062fae448e4](https://github.com/StoneCypher/fsl-mcp/commit/df16dbb00bcb0ca3c2318a12574bb062fae448e4)
+
+Author: `John Haugeland <stonecypher@gmail.com>`
+
+  * feat(scaffold): eight preset sources across five families with raw-compile test
+
+
+
+
+&nbsp;
+
+&nbsp;
+
+## [Untagged] - Jul 18, 2026 7:28:55 AM
+
+Commit [e6d2972bf3f546825bece6c1d76709af3ff9ab2c](https://github.com/StoneCypher/fsl-mcp/commit/e6d2972bf3f546825bece6c1d76709af3ff9ab2c)
+
+Author: `John Haugeland <stonecypher@gmail.com>`
+
+  * docs(plan): implementation plan for fsl_scaffold - eight presets, five families
+
+
+
+
+&nbsp;
+
+&nbsp;
+
+## [Untagged] - Jul 18, 2026 7:23:39 AM
+
+Commit [dd4a394ef99ac48c3c607e797f9c2ee649a0a02e](https://github.com/StoneCypher/fsl-mcp/commit/dd4a394ef99ac48c3c607e797f9c2ee649a0a02e)
+
+Author: `John Haugeland <stonecypher@gmail.com>`
+
+  * docs: fsl_scaffold spec - eight presets across five families; fixed-arity list slots; state and action role kinds
+
+
+
+
+&nbsp;
+
+&nbsp;
+
+## [Untagged] - Jul 18, 2026 7:18:31 AM
+
+Commit [25fc5544000e268e6839fe528b07104ccf76e867](https://github.com/StoneCypher/fsl-mcp/commit/25fc5544000e268e6839fe528b07104ccf76e867)
+
+Author: `John Haugeland <stonecypher@gmail.com>`
+
+  * docs: fsl_scaffold spec - registry-driven preset families for future chart types
+
+
+
+
+&nbsp;
+
+&nbsp;
+
+## [Untagged] - Jul 18, 2026 7:16:55 AM
+
+Commit [a1f5dd928dcffc1dc128f2b99d8cf84ed4b02223](https://github.com/StoneCypher/fsl-mcp/commit/a1f5dd928dcffc1dc128f2b99d8cf84ed4b02223)
+
+Author: `John Haugeland <stonecypher@gmail.com>`
+
+  * docs: design spec for fsl_scaffold preset tool
+
+
+
+
+&nbsp;
+
+&nbsp;
+
+## [Untagged] - Jul 17, 2026 9:59:46 PM
+
+Commit [812f1e4603afaad0a7ebf0b7b021560b9e2255b0](https://github.com/StoneCypher/fsl-mcp/commit/812f1e4603afaad0a7ebf0b7b021560b9e2255b0)
+
+Author: `John Haugeland <stonecypher@gmail.com>`
+
+  * docs(primer): state declarations create neither states nor edges; explicit parallel-edge remedy
+
+
+
+
+&nbsp;
+
+&nbsp;
+
+## [Untagged] - Jul 17, 2026 9:55:09 PM
+
+Commit [454e0394100da572ff862a47a672b70cb87d4e7f](https://github.com/StoneCypher/fsl-mcp/commit/454e0394100da572ff862a47a672b70cb87d4e7f)
+
+Author: `John Haugeland <stonecypher@gmail.com>`
+
+  * docs(primer): re-verify against jssm 5.162.10; forced-edge and islands semantics, state-registration remedy
+  * Forced edges now traverse via their named action and appear in actions() /
+list_exit_actions(); target-name transition() still refuses them. Islands
+are allowed by default; false and with_start are the restrictive modes.
+Correct the flowchart remedy: only edges register states (self-loop works;
+properties are styling only). Add gotchas: post-arrow misplacement yields
+zero diagnostics; +N targets compile to an object pseudo-state; parallel
+same-(source,target) edges are legal with distinct action labels.
+  * Refs #12
+
+
+
+
+&nbsp;
+
+&nbsp;
+
+## [Untagged] - Jul 17, 2026 9:59:46 PM
+
+Commit [ce12e6f9606d3dbbb2e8378d4f0d7095b93a7e18](https://github.com/StoneCypher/fsl-mcp/commit/ce12e6f9606d3dbbb2e8378d4f0d7095b93a7e18)
+
+Author: `John Haugeland <stonecypher@gmail.com>`
+
+  * docs(primer): state declarations create neither states nor edges; explicit parallel-edge remedy
+
+
+
+
+&nbsp;
+
+&nbsp;
+
+## [Untagged] - Jul 17, 2026 9:55:09 PM
+
+Commit [d560605968a457c7b8663b138274ddb9e8867a87](https://github.com/StoneCypher/fsl-mcp/commit/d560605968a457c7b8663b138274ddb9e8867a87)
+
+Author: `John Haugeland <stonecypher@gmail.com>`
+
+  * docs(primer): re-verify against jssm 5.162.10; forced-edge and islands semantics, state-registration remedy
+  * Forced edges now traverse via their named action and appear in actions() /
+list_exit_actions(); target-name transition() still refuses them. Islands
+are allowed by default; false and with_start are the restrictive modes.
+Correct the flowchart remedy: only edges register states (self-loop works;
+properties are styling only). Add gotchas: post-arrow misplacement yields
+zero diagnostics; +N targets compile to an object pseudo-state; parallel
+same-(source,target) edges are legal with distinct action labels.
+  * Refs #12
+
+
+
+
+&nbsp;
+
+&nbsp;
+
+## [Untagged] - Jul 17, 2026 2:47:23 PM
+
+Commit [8245c244d159cf06b9bc12a31d952d439dafd151](https://github.com/StoneCypher/fsl-mcp/commit/8245c244d159cf06b9bc12a31d952d439dafd151)
+
+Author: `John Haugeland <stonecypher@gmail.com>`
+
+  * docs: six tools in intro and contributor brief; note fsl_guide analyze exception
+
+
+
+
+&nbsp;
+
+&nbsp;
+
+## [Untagged] - Jul 17, 2026 2:43:04 PM
+
+Commit [590df4643b9e34cdbd1ee8f90bc3e80ec1fda0d5](https://github.com/StoneCypher/fsl-mcp/commit/590df4643b9e34cdbd1ee8f90bc3e80ec1fda0d5)
+
+Author: `John Haugeland <stonecypher@gmail.com>`
+
+  * test(server): cover fsl_guide language topic; correct createServer doc to six tools
+
+
+
+
+&nbsp;
+
+&nbsp;
+
+## [Untagged] - Jul 17, 2026 2:36:04 PM
+
+Commit [363995761df2d6ba3d8209e4972100bfe44debbe](https://github.com/StoneCypher/fsl-mcp/commit/363995761df2d6ba3d8209e4972100bfe44debbe)
+
+Author: `John Haugeland <stonecypher@gmail.com>`
+
+  * feat(server): fsl_guide tool serves language and flowchart guidance
+
+
+
+
+&nbsp;
+
+&nbsp;
+
+## [Untagged] - Jul 17, 2026 2:23:03 PM
+
+Commit [4c3c3e6f41d88bbe284f54e211150bcfb2de5687](https://github.com/StoneCypher/fsl-mcp/commit/4c3c3e6f41d88bbe284f54e211150bcfb2de5687)
+
+Author: `John Haugeland <stonecypher@gmail.com>`
+
+  * build: pin src/prompts markdown to LF for the guide drift test
+
+
+
+
+&nbsp;
+
+&nbsp;
+
+## [Untagged] - Jul 17, 2026 2:21:13 PM
+
+Commit [c9aad94214232a69112b71e07458d9061f70693f](https://github.com/StoneCypher/fsl-mcp/commit/c9aad94214232a69112b71e07458d9061f70693f)
+
+Author: `John Haugeland <stonecypher@gmail.com>`
+
+  * feat(guide): flowchart idiom doc and build-time guide content embedding
+
+
+
+
+&nbsp;
+
+&nbsp;
+
+## [Untagged] - Jul 17, 2026 1:39:55 PM
+
+Commit [592bd7097bdfdb4fb98f4f353552d7345b323408](https://github.com/StoneCypher/fsl-mcp/commit/592bd7097bdfdb4fb98f4f353552d7345b323408)
+
+Author: `John Haugeland <stonecypher@gmail.com>`
+
+  * docs(plan): implementation plan for fsl_guide and flowchart idiom
+
+
+
+
+&nbsp;
+
+&nbsp;
+
+## [Untagged] - Jul 17, 2026 1:24:48 PM
+
+Commit [d9b36d2cd7673f1afd21d63a6a1898df78ad8193](https://github.com/StoneCypher/fsl-mcp/commit/d9b36d2cd7673f1afd21d63a6a1898df78ad8193)
+
+Author: `John Haugeland <stonecypher@gmail.com>`
+
+  * docs: design spec for fsl_guide tool and flowchart idiom guidance
+
+
+
+
+&nbsp;
+
+&nbsp;
+
+## [Untagged] - Jul 17, 2026 2:47:23 PM
+
+Commit [f39ceaa659ae5114e28562b95a402eaa311c34a2](https://github.com/StoneCypher/fsl-mcp/commit/f39ceaa659ae5114e28562b95a402eaa311c34a2)
+
+Author: `John Haugeland <stonecypher@gmail.com>`
+
+  * docs: six tools in intro and contributor brief; note fsl_guide analyze exception
+
+
+
+
+&nbsp;
+
+&nbsp;
+
+## [Untagged] - Jul 17, 2026 2:43:04 PM
+
+Commit [6185093a696683e0a310d739ebb56ebc640bcd91](https://github.com/StoneCypher/fsl-mcp/commit/6185093a696683e0a310d739ebb56ebc640bcd91)
+
+Author: `John Haugeland <stonecypher@gmail.com>`
+
+  * test(server): cover fsl_guide language topic; correct createServer doc to six tools
+
+
+
+
+&nbsp;
+
+&nbsp;
+
+## [Untagged] - Jul 17, 2026 2:36:04 PM
+
+Commit [60259ed752c0ecceaa751a3c7def4eabded9d989](https://github.com/StoneCypher/fsl-mcp/commit/60259ed752c0ecceaa751a3c7def4eabded9d989)
+
+Author: `John Haugeland <stonecypher@gmail.com>`
+
+  * feat(server): fsl_guide tool serves language and flowchart guidance
+
+
+
+
+&nbsp;
+
+&nbsp;
+
+## [Untagged] - Jul 17, 2026 2:23:03 PM
+
+Commit [000149a303c35d2754da484d1f9c3f87d28caeae](https://github.com/StoneCypher/fsl-mcp/commit/000149a303c35d2754da484d1f9c3f87d28caeae)
+
+Author: `John Haugeland <stonecypher@gmail.com>`
+
+  * build: pin src/prompts markdown to LF for the guide drift test
+
+
+
+
+&nbsp;
+
+&nbsp;
+
+## [Untagged] - Jul 17, 2026 2:21:13 PM
+
+Commit [3cc497ba76ae81b08100af34aeabebd047964e4d](https://github.com/StoneCypher/fsl-mcp/commit/3cc497ba76ae81b08100af34aeabebd047964e4d)
+
+Author: `John Haugeland <stonecypher@gmail.com>`
+
+  * feat(guide): flowchart idiom doc and build-time guide content embedding
+
+
+
+
+&nbsp;
+
+&nbsp;
+
+## [Untagged] - Jul 17, 2026 1:39:55 PM
+
+Commit [024ffa765bd509837ff5abac0ede40caedc0f345](https://github.com/StoneCypher/fsl-mcp/commit/024ffa765bd509837ff5abac0ede40caedc0f345)
+
+Author: `John Haugeland <stonecypher@gmail.com>`
+
+  * docs(plan): implementation plan for fsl_guide and flowchart idiom
+
+
+
+
+&nbsp;
+
+&nbsp;
+
+## [Untagged] - Jul 17, 2026 1:24:48 PM
+
+Commit [2ae0832d71f7007aca46acb2af5dff3702156237](https://github.com/StoneCypher/fsl-mcp/commit/2ae0832d71f7007aca46acb2af5dff3702156237)
+
+Author: `John Haugeland <stonecypher@gmail.com>`
+
+  * docs: design spec for fsl_guide tool and flowchart idiom guidance
+
+
+
+
+&nbsp;
+
+&nbsp;
+
+## [Untagged] - Jul 16, 2026 10:32:04 AM
+
+Commit [297ee6bb74b1ae1fef3c7a5e6e0fba4e17808878](https://github.com/StoneCypher/fsl-mcp/commit/297ee6bb74b1ae1fef3c7a5e6e0fba4e17808878)
+
+Author: `John Haugeland <stonecypher@gmail.com>`
+
+  * fix(render): reconcile stale v1 ceilings note; document and surface RasterizationUnsupportedError
+
+
+
+
+&nbsp;
+
+&nbsp;
+
+## [Untagged] - Jul 16, 2026 10:15:39 AM
+
+Commit [35dba560dd935a3d64a3d774683ecc92c3c1cdc1](https://github.com/StoneCypher/fsl-mcp/commit/35dba560dd935a3d64a3d774683ecc92c3c1cdc1)
+
+Author: `John Haugeland <stonecypher@gmail.com>`
+
+  * test(render): cover option-forwarding guards and fallback failure paths
+
+
+
+
+&nbsp;
+
+&nbsp;
+
+## [Untagged] - Jul 16, 2026 10:11:50 AM
+
+Commit [d37ad2bd1d3d2910cb97ec419046d77d357ca87c](https://github.com/StoneCypher/fsl-mcp/commit/d37ad2bd1d3d2910cb97ec419046d77d357ca87c)
+
+Author: `John Haugeland <stonecypher@gmail.com>`
+
+  * feat(render): e2e image-block round-trip and README format table
+
+
+
+
+&nbsp;
+
+&nbsp;
+
+## [Untagged] - Jul 16, 2026 10:02:43 AM
+
+Commit [5f9330344de412ef4bc0cdabf652376e53c1c59b](https://github.com/StoneCypher/fsl-mcp/commit/5f9330344de412ef4bc0cdabf652376e53c1c59b)
+
+Author: `John Haugeland <stonecypher@gmail.com>`
+
+  * feat(server): fsl_render raster results ship as MCP image content blocks
+
+
+
+
+&nbsp;
+
+&nbsp;
+
+## [Untagged] - Jul 16, 2026 9:54:01 AM
+
+Commit [6ed4dd0c9c89c4c278e2810497ad512e5616e031](https://github.com/StoneCypher/fsl-mcp/commit/6ed4dd0c9c89c4c278e2810497ad512e5616e031)
+
+Author: `John Haugeland <stonecypher@gmail.com>`
+
+  * test(render): jpeg mapping via stub engine; real engine held to degrade contract
+
+
+
+
+&nbsp;
+
+&nbsp;
+
+## [Untagged] - Jul 16, 2026 9:51:56 AM
+
+Commit [9de79d86a01179cd1b071138fce54aa71e9782bb](https://github.com/StoneCypher/fsl-mcp/commit/9de79d86a01179cd1b071138fce54aa71e9782bb)
+
+Author: `John Haugeland <stonecypher@gmail.com>`
+
+  * docs(plan): jpeg needs Canvas runtime - test via stub engine + degrade contract; allowlist read-only npm/mcp patterns
+
+
+
+
+&nbsp;
+
+&nbsp;
+
+## [Untagged] - Jul 16, 2026 9:47:03 AM
+
+Commit [6c89e16fb1a4b4bed3056711f67c77396e474c5d](https://github.com/StoneCypher/fsl-mcp/commit/6c89e16fb1a4b4bed3056711f67c77396e474c5d)
+
+Author: `John Haugeland <stonecypher@gmail.com>`
+
+  * feat(render): real png/jpeg/gif and dot output via jssm/cli render engine
+
+
+
+
+&nbsp;
+
+&nbsp;
+
+## [Untagged] - Jul 16, 2026 7:14:46 AM
+
+Commit [ac8353840e3a507e85ad1816eabf5cbf57394e5f](https://github.com/StoneCypher/fsl-mcp/commit/ac8353840e3a507e85ad1816eabf5cbf57394e5f)
+
+Author: `John Haugeland <stonecypher@gmail.com>`
+
+  * docs(plan): implementation plan for fsl_render image derivation
+
+
+
+
+&nbsp;
+
+&nbsp;
+
+## [Untagged] - Jul 15, 2026 11:47:27 PM
+
+Commit [53f9a675f1ab7e8d75dde2dfc4b34924faa56221](https://github.com/StoneCypher/fsl-mcp/commit/53f9a675f1ab7e8d75dde2dfc4b34924faa56221)
+
+Author: `John Haugeland <stonecypher@gmail.com>`
+
+  * docs: design spec for fsl_render image derivation (png/jpeg/gif as MCP image blocks)
+
+
+
+
+&nbsp;
+
+&nbsp;
+
+## [Untagged] - Jul 16, 2026 10:32:04 AM
+
+Commit [0d954d45275b0b4f77edb3b27c6c9d27146fdc5c](https://github.com/StoneCypher/fsl-mcp/commit/0d954d45275b0b4f77edb3b27c6c9d27146fdc5c)
+
+Author: `John Haugeland <stonecypher@gmail.com>`
+
+  * fix(render): reconcile stale v1 ceilings note; document and surface RasterizationUnsupportedError
+
+
+
+
+&nbsp;
+
+&nbsp;
+
+## [Untagged] - Jul 16, 2026 10:15:39 AM
+
+Commit [bfac9aac3bdb1392b66851d69233795aeae109e6](https://github.com/StoneCypher/fsl-mcp/commit/bfac9aac3bdb1392b66851d69233795aeae109e6)
+
+Author: `John Haugeland <stonecypher@gmail.com>`
+
+  * test(render): cover option-forwarding guards and fallback failure paths
+
+
+
+
+&nbsp;
+
+&nbsp;
+
+## [Untagged] - Jul 16, 2026 10:11:50 AM
+
+Commit [df93201d3693f0d5513611fddabb7323d6b50237](https://github.com/StoneCypher/fsl-mcp/commit/df93201d3693f0d5513611fddabb7323d6b50237)
+
+Author: `John Haugeland <stonecypher@gmail.com>`
+
+  * feat(render): e2e image-block round-trip and README format table
+
+
+
+
+&nbsp;
+
+&nbsp;
+
+## [Untagged] - Jul 16, 2026 10:02:43 AM
+
+Commit [cb8d60c0c5208c405b34a43a382ed472720245a6](https://github.com/StoneCypher/fsl-mcp/commit/cb8d60c0c5208c405b34a43a382ed472720245a6)
+
+Author: `John Haugeland <stonecypher@gmail.com>`
+
+  * feat(server): fsl_render raster results ship as MCP image content blocks
+
+
+
+
+&nbsp;
+
+&nbsp;
+
+## [Untagged] - Jul 16, 2026 9:54:01 AM
+
+Commit [d2e5a20c25ab564eaa8f6a4760ecd4afb476f65e](https://github.com/StoneCypher/fsl-mcp/commit/d2e5a20c25ab564eaa8f6a4760ecd4afb476f65e)
+
+Author: `John Haugeland <stonecypher@gmail.com>`
+
+  * test(render): jpeg mapping via stub engine; real engine held to degrade contract
+
+
+
+
+&nbsp;
+
+&nbsp;
+
+## [Untagged] - Jul 16, 2026 9:51:56 AM
+
+Commit [4254dbf9e7829702546eec376928f4fb34c0ac8d](https://github.com/StoneCypher/fsl-mcp/commit/4254dbf9e7829702546eec376928f4fb34c0ac8d)
+
+Author: `John Haugeland <stonecypher@gmail.com>`
+
+  * docs(plan): jpeg needs Canvas runtime - test via stub engine + degrade contract; allowlist read-only npm/mcp patterns
+
+
+
+
+&nbsp;
+
+&nbsp;
+
+## [Untagged] - Jul 16, 2026 9:47:03 AM
+
+Commit [1a1e91ec06566d458a17bf8e0d06a3b4bbaea9c9](https://github.com/StoneCypher/fsl-mcp/commit/1a1e91ec06566d458a17bf8e0d06a3b4bbaea9c9)
+
+Author: `John Haugeland <stonecypher@gmail.com>`
+
+  * feat(render): real png/jpeg/gif and dot output via jssm/cli render engine
+
+
+
+
+&nbsp;
+
+&nbsp;
+
+## [Untagged] - Jul 16, 2026 7:14:46 AM
+
+Commit [471e1702b88f1eadb34af2ffdf72849cc3c02ac4](https://github.com/StoneCypher/fsl-mcp/commit/471e1702b88f1eadb34af2ffdf72849cc3c02ac4)
+
+Author: `John Haugeland <stonecypher@gmail.com>`
+
+  * docs(plan): implementation plan for fsl_render image derivation
+
+
+
+
+&nbsp;
+
+&nbsp;
+
+## [Untagged] - Jul 15, 2026 11:47:27 PM
+
+Commit [f45a5ca539f8600fbd92eaf9ea1aed657460d96f](https://github.com/StoneCypher/fsl-mcp/commit/f45a5ca539f8600fbd92eaf9ea1aed657460d96f)
+
+Author: `John Haugeland <stonecypher@gmail.com>`
+
+  * docs: design spec for fsl_render image derivation (png/jpeg/gif as MCP image blocks)
+
+
+
+
+&nbsp;
+
+&nbsp;
+
+## [Untagged] - Jul 15, 2026 11:33:42 PM
+
+Commit [22518eae72c4ed1aec167d4be3a7c9c3bfb6c546](https://github.com/StoneCypher/fsl-mcp/commit/22518eae72c4ed1aec167d4be3a7c9c3bfb6c546)
+
+Author: `StoneCypher <StoneCypher@users.noreply.github.com>`
+
+  * deploy: d69b2dcc3c017c01ea2edd6ab6ed603d4a609754
+
+
+
+
+&nbsp;
+
+&nbsp;
+
+<a name="0__4__0" />
+
+## [0.4.0] - Jul 15, 2026 11:27:25 PM
+
+Commit [d69b2dcc3c017c01ea2edd6ab6ed603d4a609754](https://github.com/StoneCypher/fsl-mcp/commit/d69b2dcc3c017c01ea2edd6ab6ed603d4a609754)
+
+Author: `John Haugeland <stonecypher@gmail.com>`
+
+  * build: bump to v0.4.0 and regenerate build artifacts
+  * Rolls up the post-0.3.0 mainline: primer A/B tooling (--primer-file,
+case-insensitive scoring, per-trial FSL capture), the jssm 5.162.10 bump,
+eval report spread/guards/timeout-sentinel, the Stryker fix, the release
+pipeline repair, and the prompt artifacts (FSL LLM primer draft and
+ambient-context spec). Adds the shared project permission allowlist
+(.claude/settings.json). Regenerates README madlibs, CHANGELOG, dist
+bundles, typedoc site, coverage reports, and bundle visualizations.
 
 
 
@@ -165,75 +973,6 @@ Author: `John Haugeland <stonecypher@gmail.com>`
 
 &nbsp;
 
-## [Untagged] - Jul 12, 2026 6:07:47 AM
-
-Commit [773f4a5534dff842063f8a584a7895dbebbb1ae1](https://github.com/StoneCypher/fsl-mcp/commit/773f4a5534dff842063f8a584a7895dbebbb1ae1)
-
-Author: `John Haugeland <stonecypher@gmail.com>`
-
-  * feat(eval): capture per-trial FSL and error in results
-  * ScoredTrial gains fsl (the trial's extracted FSL, null when extraction
-failed) and an optional error, populated from the TrialResult when
-eval.ts pushes each scored row. Lets a failing or miscored trial be
-inspected directly from eval-results.json instead of re-running the
-sweep.
-  * report.ts's aggregate/computeDeltas only read task/condition/valid/
-correct, so they're unaffected; report.spec.ts's hand-built
-ScoredTrial fixtures gained the now-required fsl field to keep
-typechecking.
-
-
-
-
-&nbsp;
-
-&nbsp;
-
-## [Untagged] - Jul 12, 2026 3:58:20 AM
-
-Commit [701af28fd1b24f014754057abe7f5a0afe45330b](https://github.com/StoneCypher/fsl-mcp/commit/701af28fd1b24f014754057abe7f5a0afe45330b)
-
-Author: `John Haugeland <stonecypher@gmail.com>`
-
-  * feat(eval): --primer-file flag for A/B testing alternative primers
-
-
-
-
-&nbsp;
-
-&nbsp;
-
-## [Untagged] - Jul 12, 2026 6:07:37 AM
-
-Commit [0c59f6c683760251d51eb7dd3e452105c74cd9a9](https://github.com/StoneCypher/fsl-mcp/commit/0c59f6c683760251d51eb7dd3e452105c74cd9a9)
-
-Author: `John Haugeland <stonecypher@gmail.com>`
-
-  * fix(eval): case-insensitive name matching in the scorer
-  * scoreCorrectness now folds case on every name comparison: states,
-transition endpoints, start/terminal states, and a walk's endState.
-A/B runs showed models writing On/Off for tasks specifying on/off -
-structurally correct FSL that only differed in identifier case, which
-should not fail a trial.
-  * Because jssm's own action()/transition() lookups are case-sensitive, a
-walk's actions are resolved case-insensitively against the machine's
-own action labels and state names before being simulated, so a
-differently-cased action label in the expectation still walks
-correctly. Only the resolved copy is ever passed to jssm; nothing
-jssm returns is mutated.
-  * Extends score.spec.ts with a case-insensitive-matching describe block
-covering states/transitions/start/terminals, a walk endState, a
-capitalized action label resolved against a lowercase expected action,
-and a negative control confirming a genuinely wrong name still fails.
-
-
-
-
-&nbsp;
-
-&nbsp;
-
 ## [Untagged] - Jul 12, 2026 6:36:36 AM
 
 Commit [df036980c892936b466bc1f156cc66ae2d6c0e44](https://github.com/StoneCypher/fsl-mcp/commit/df036980c892936b466bc1f156cc66ae2d6c0e44)
@@ -316,192 +1055,6 @@ contract are unchanged: a timeout still yields
 injected spawn actually fires (signal.aborted === true) once runTrial
 resolves with a timeout, plus a small direct test of
 TrialTimeoutError's message/name.
-
-
-
-
-&nbsp;
-
-&nbsp;
-
-## [Untagged] - Jul 12, 2026 6:07:47 AM
-
-Commit [3e59e17e1ab6792c94ca7b260bc5e6fc0f4794b1](https://github.com/StoneCypher/fsl-mcp/commit/3e59e17e1ab6792c94ca7b260bc5e6fc0f4794b1)
-
-Author: `John Haugeland <stonecypher@gmail.com>`
-
-  * feat(eval): capture per-trial FSL and error in results
-  * ScoredTrial gains fsl (the trial's extracted FSL, null when extraction
-failed) and an optional error, populated from the TrialResult when
-eval.ts pushes each scored row. Lets a failing or miscored trial be
-inspected directly from eval-results.json instead of re-running the
-sweep.
-  * report.ts's aggregate/computeDeltas only read task/condition/valid/
-correct, so they're unaffected; report.spec.ts's hand-built
-ScoredTrial fixtures gained the now-required fsl field to keep
-typechecking.
-
-
-
-
-&nbsp;
-
-&nbsp;
-
-## [Untagged] - Jul 12, 2026 6:07:37 AM
-
-Commit [218a98804503c97e2585b40663a1399bce8b7c7f](https://github.com/StoneCypher/fsl-mcp/commit/218a98804503c97e2585b40663a1399bce8b7c7f)
-
-Author: `John Haugeland <stonecypher@gmail.com>`
-
-  * fix(eval): case-insensitive name matching in the scorer
-  * scoreCorrectness now folds case on every name comparison: states,
-transition endpoints, start/terminal states, and a walk's endState.
-A/B runs showed models writing On/Off for tasks specifying on/off -
-structurally correct FSL that only differed in identifier case, which
-should not fail a trial.
-  * Because jssm's own action()/transition() lookups are case-sensitive, a
-walk's actions are resolved case-insensitively against the machine's
-own action labels and state names before being simulated, so a
-differently-cased action label in the expectation still walks
-correctly. Only the resolved copy is ever passed to jssm; nothing
-jssm returns is mutated.
-  * Extends score.spec.ts with a case-insensitive-matching describe block
-covering states/transitions/start/terminals, a walk endState, a
-capitalized action label resolved against a lowercase expected action,
-and a negative control confirming a genuinely wrong name still fails.
-
-
-
-
-&nbsp;
-
-&nbsp;
-
-## [Untagged] - Jul 12, 2026 3:58:20 AM
-
-Commit [6f81455382cea6c173ac402132b167d4cf6e7e1b](https://github.com/StoneCypher/fsl-mcp/commit/6f81455382cea6c173ac402132b167d4cf6e7e1b)
-
-Author: `John Haugeland <stonecypher@gmail.com>`
-
-  * feat(eval): --primer-file flag for A/B testing alternative primers
-
-
-
-
-&nbsp;
-
-&nbsp;
-
-## [Untagged] - Jul 12, 2026 2:08:36 AM
-
-Commit [02c0abd126dde60d59ea660b4b73af6aecac9156](https://github.com/StoneCypher/fsl-mcp/commit/02c0abd126dde60d59ea660b4b73af6aecac9156)
-
-Author: `John Haugeland <stonecypher@gmail.com>`
-
-  * fix(eval): detect trial timeouts by type, not by message text
-  * withTimeout previously rejected with a plain Error whose message
-happened to start with 'timeout after', and runTrial detected a
-timeout by checking that string prefix. Introduce TrialTimeoutError,
-a dedicated Error subclass, thrown from the timeout race and detected
-via instanceof in runTrial. The message text and runTrial's public
-contract are unchanged: a timeout still yields
-{ fsl: null, error: 'timeout after Ns' }.
-  * Also adds a runner.spec.ts test proving the AbortSignal passed to an
-injected spawn actually fires (signal.aborted === true) once runTrial
-resolves with a timeout, plus a small direct test of
-TrialTimeoutError's message/name.
-
-
-
-
-&nbsp;
-
-&nbsp;
-
-## [Untagged] - Jul 12, 2026 2:08:18 AM
-
-Commit [e39ccec1e7d33fac5947e8fdca152905f3f867e4](https://github.com/StoneCypher/fsl-mcp/commit/e39ccec1e7d33fac5947e8fdca152905f3f867e4)
-
-Author: `John Haugeland <stonecypher@gmail.com>`
-
-  * fix(eval): guard --conditions against unrecognized tokens
-  * Previously an unmatched token (e.g. a typo like 'tool' for 'tools')
-was silently filtered out, which could shrink --conditions bare,tool
-down to just ['bare'] -- or empty the sweep entirely -- with no
-indication anything was wrong.
-  * parseConditionsFlag now checks every comma-separated token against
-the known Condition set and, on the first miss, prints the bad token
-and the valid set to stderr and exits(1), mirroring the existing
-parsePositiveIntFlag guard. The check now runs before captureReference
-so a bad --conditions value fails before any subprocess is spawned.
-  * Also documents that --timeout is milliseconds in main's DocBlock, so
-it isn't mistaken for seconds.
-
-
-
-
-&nbsp;
-
-&nbsp;
-
-## [Untagged] - Jul 12, 2026 2:07:39 AM
-
-Commit [d33fd06d8c501fb2c012bd108360aa4493419fd1](https://github.com/StoneCypher/fsl-mcp/commit/d33fd06d8c501fb2c012bd108360aa4493419fd1)
-
-Author: `John Haugeland <stonecypher@gmail.com>`
-
-  * feat(eval): add per-condition stderr spread to report
-  * The design spec calls for spread across trials so noise is visible
-against real regressions. validityRate/correctnessRate are Bernoulli
-means over n trials, so the honest spread figure is the standard
-error sqrt(p*(1-p)/n) per metric -- not a sample stddev, which does
-not apply to a 0/1 outcome.
-  * - types.ts: add validityStderr/correctnessStderr to ConditionSummary.
-- report.ts: export a pure stderr(p, n) helper, compute it in
-  aggregate(), and render each rate as "50.0% ±15.8%" in renderReport.
-- report.spec.ts: dedicated stderr() unit tests plus hand-derived
-  expected values (sqrt(2)/4, sqrt(0.025), etc.) for every updated
-  fixture -- never pasted from running the code.
-
-
-
-
-&nbsp;
-
-&nbsp;
-
-## [Untagged] - Jul 11, 2026 4:11:19 PM
-
-Commit [c80fc53977cbfab011e0a0c417fc273038da117f](https://github.com/StoneCypher/fsl-mcp/commit/c80fc53977cbfab011e0a0c417fc273038da117f)
-
-Author: `John Haugeland <stonecypher@gmail.com>`
-
-  * ci: replace archived create-release action with gh release create
-  * The release job (`.github/workflows/ci.yml`) still used
-`actions/create-release@v1`, which is archived upstream and emits three
-deprecated `set-output` warnings on every run. It also checked out with
-`actions/checkout@v4` while every other job already uses `@v5`, and ran
-a `Push tags` step (`git push origin --tags`) that has always been a
-no-op: checkout runs with `fetch-tags: false` and no local tag is ever
-created, so there was nothing for that step to push — the tag has
-always been created by `create-release` itself. That leftover step used
-to mask the same-shaped 403 permissions bug this job hit before
-`contents: write` was added.
-  * - Bump checkout to `actions/checkout@v5` to match the rest of the
-  workflow.
-- Drop the now-dead `Push tags` step and the `Use Node.js 22.x` setup
-  step (nothing left in the job runs node/npm since release creation no
-  longer needs `actions/setup-node`'s npm registry auth). Left a comment
-  showing how to restore setup-node ahead of the commented-out
-  `Publish to npm` step if that's ever revived.
-- Replace `actions/create-release@v1` with a single step that shells out
-  to the preinstalled `gh` CLI: `gh release create "$TAG" --title "$TAG"
-  --notes-file CHANGELOG.md`. Guarded with `gh release view "$TAG"`
-  first so a re-run of a main push without a version bump skips
-  gracefully instead of failing on a duplicate release/tag.
-  * `permissions: contents: write` and the job's `if:`/`needs:` are
-unchanged. No other job was touched.
 
 
 

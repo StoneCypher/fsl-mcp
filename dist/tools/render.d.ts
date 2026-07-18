@@ -1,16 +1,58 @@
+import { RasterizationUnsupportedError } from 'jssm/cli';
 import type { FslDiagnostic } from '../types.js';
-/** Requested render format. */
-export type RenderFormat = 'svg' | 'png';
+/**
+ * jssm's error for raster requests in runtimes with no rasterizer backend;
+ * re-exported so engine stubs and callers can detect the degrade path.
+ */
+export { RasterizationUnsupportedError };
+/** Requested render format: two text targets and three raster targets. */
+export type RenderFormat = 'svg' | 'dot' | 'png' | 'jpeg' | 'gif';
+/** Raster-only tuning knobs, forwarded verbatim to jssm's render engine. */
+export interface RenderRasterOptions {
+    /** Fit raster output to this pixel width. */
+    width?: number;
+    /** Fit raster output to this pixel height. */
+    height?: number;
+    /** Raster zoom percentage; 100 = 3x natural size. */
+    scale?: number;
+    /** JPEG quality 1-100; ignored for other formats. */
+    quality?: number;
+    /** GIF per-frame delay in centiseconds; ignored for other formats. */
+    delay?: number;
+    /** GIF walk-length frame ceiling; ignored for other formats. */
+    maxFrames?: number;
+}
+/** The engine contract: jssm/cli's render(), injectable for error-path tests. */
+export type RenderEngine = (fsl: string, opts: Record<string, unknown>) => Promise<{
+    kind: 'text';
+    content: string;
+} | {
+    kind: 'raster';
+    buffer: Uint8Array;
+}>;
 /** Successful SVG render. */
 export interface RenderSvg {
     valid: true;
     format: 'svg';
     svg: string;
 }
-/** PNG requested but unsupported in v1: the SVG plus an explanatory note. */
+/** Successful DOT (graphviz source) render. */
+export interface RenderDot {
+    valid: true;
+    format: 'dot';
+    dot: string;
+}
+/** Successful raster render; bytes are the encoded image. */
+export interface RenderImage {
+    valid: true;
+    format: 'png' | 'jpeg' | 'gif';
+    mimeType: 'image/png' | 'image/jpeg' | 'image/gif';
+    bytes: Uint8Array;
+}
+/** Raster requested but no rasterizer backend exists: the SVG plus a note. */
 export interface RenderUnsupported {
     valid: true;
-    format: 'png';
+    format: 'png' | 'jpeg' | 'gif';
     svg: string;
     note: string;
 }
@@ -19,18 +61,29 @@ export interface RenderError {
     valid: false;
     diagnostics: FslDiagnostic[];
 }
+/** Returned when the render engine itself fails at render time. */
+export interface RenderFailure {
+    valid: false;
+    error: string;
+}
 /**
- * Render FSL source to a diagram. SVG is produced natively; `format:'png'` is
- * accepted but degrades to the SVG plus a note in v1 (no rasterizer shipped).
- * Invalid source yields diagnostics and is never handed to the renderer.
+ * Render FSL source to a diagram. `svg` (default) and `dot` return text;
+ * `png`, `jpeg`, and `gif` return real encoded image bytes (the gif animates a
+ * random walk). When a raster format is requested but no rasterizer backend is
+ * available, degrades to the SVG plus a note. Invalid source yields
+ * diagnostics and is never handed to the render engine.
  *
  * @param source - the FSL source text
- * @param format - `'svg'` (default) or `'png'`
- * @returns an SVG result, a degraded-png result, or an error with diagnostics
+ * @param format - one of `'svg' | 'dot' | 'png' | 'jpeg' | 'gif'`; default `'svg'`
+ * @param options - raster tuning knobs; ignored for text formats
+ * @param engine - render engine, injectable for tests; defaults to jssm/cli's
+ * @returns a text result, an image result, a degraded result, or a failure
+ * @throws never - all failures are returned as values
  *
  * @example
- *   await fslRender('a -> b;')          // => { valid: true, format: 'svg', svg: '<svg ...' }
- *   await fslRender('a -> b;', 'png')   // => { valid: true, format: 'png', svg: '<svg ...', note: '...' }
+ *   await fslRender('a -> b;')                          // => { valid: true, format: 'svg', svg: '<svg ...' }
+ * @example
+ *   await fslRender('a -> b;', 'png', { width: 640 })   // => { valid: true, format: 'png', mimeType: 'image/png', bytes: Uint8Array }
  */
-export declare function fslRender(source: string, format?: RenderFormat): Promise<RenderSvg | RenderUnsupported | RenderError>;
+export declare function fslRender(source: string, format?: RenderFormat, options?: RenderRasterOptions, engine?: RenderEngine): Promise<RenderSvg | RenderDot | RenderImage | RenderUnsupported | RenderFailure | RenderError>;
 //# sourceMappingURL=render.d.ts.map

@@ -3,7 +3,8 @@
 Flowcharts map cleanly onto state machines: every box is a state, every arrow
 is a transition, and every decision is a state whose outgoing edges carry the
 answers. This section shows the idiom. Every fenced example below is a
-complete FSL document that compiles on its own.
+complete FSL document that compiles on its own. The fsl_scaffold tool returns
+ready-to-edit starting documents for these idioms.
 
 ## The mapping
 

@@ -1,6 +1,6 @@
 {
   "name": "fsl-mcp",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "MCP for FSL - Model Context Protocol for Finite State Language",
   "keywords": [
     "fsl-mcp",

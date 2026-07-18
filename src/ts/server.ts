@@ -10,10 +10,29 @@ import { fslSimulate } from './tools/simulate.js';
 import { fslRender  } from './tools/render.js';
 import type { RenderRasterOptions } from './tools/render.js';
 import { GUIDE_FLOWCHARTS, GUIDE_LANGUAGE } from './tools/guide-content.js';
+import { fslScaffold } from './tools/scaffold.js';
+import { PRESET_IDS, SCAFFOLD_REGISTRY } from './tools/scaffold-registry.js';
 
 /** Wrap any JSON-serializable value as an MCP text-content tool result. */
 function jsonResult(value: unknown): { content: { type: 'text'; text: string }[] } {
   return { content: [{ type: 'text', text: JSON.stringify(value, null, 2) }] };
+}
+
+/**
+ * Formats the fsl_scaffold tool description's per-preset family list, e.g.
+ * `decision (flowchart), handshake (protocol), ...` for every registered preset.
+ *
+ * @returns a comma-separated `preset (family)` list in `PRESET_IDS` order
+ */
+function presetFamilySummary(): string {
+  return PRESET_IDS.map((p) => {
+    const d = SCAFFOLD_REGISTRY[p];
+    /* v8 ignore next -- defensive only: PRESET_IDS is always
+       Object.keys(SCAFFOLD_REGISTRY).sort(), so every `p` iterated here is
+       guaranteed to already be a key of SCAFFOLD_REGISTRY and `d` can never
+       be undefined. No real input reaches the bare-`p` fallback. */
+    return d === undefined ? p : `${p} (${d.family})`;
+  }).join(', ');
 }
 
 /**
@@ -35,7 +54,8 @@ function renderResult(r: Awaited<ReturnType<typeof fslRender>>): {
 }
 
 /**
- * Build the fsl-mcp server: the five FSL authoring tools plus the fsl_guide guidance tool.
+ * Build the fsl-mcp server: the five FSL authoring tools, the fsl_guide
+ * guidance tool, and the fsl_scaffold preset-generator tool (seven tools total).
  * The returned server is transport-agnostic; connect it to stdio (production)
  * or an in-memory transport (tests).
  *
@@ -97,6 +117,15 @@ export function createServer(): McpServer {
     ({ topic }) => ({
       content: [{ type: 'text' as const, text: topic === 'flowcharts' ? GUIDE_FLOWCHARTS : GUIDE_LANGUAGE }],
     }));
+
+  server.registerTool('fsl_scaffold',
+    { description: `Returns a complete, compiling FSL starting document for a preset chart shape, with your names substituted in. Presets by family: ${presetFamilySummary()}. Pass roles to rename states/actions; list roles need their exact canonical count. See fsl_guide topic "flowcharts" for the idioms.`,
+      inputSchema: {
+        preset: z.enum(PRESET_IDS as [string, ...string[]]),
+        machine_name: z.string().optional(),
+        roles: z.record(z.string(), z.union([z.string(), z.array(z.string())])).optional(),
+      } },
+    ({ preset, machine_name, roles }) => jsonResult(fslScaffold(preset, machine_name, roles)));
 
   return server;
 }

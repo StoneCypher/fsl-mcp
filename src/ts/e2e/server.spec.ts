@@ -6,7 +6,7 @@ import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 import { createServer, startServer } from '../server.js';
 
 describe('fsl-mcp server', () => {
-  it('lists the six tools and validates FSL over the protocol', async () => {
+  it('lists the seven tools and validates FSL over the protocol', async () => {
     const server = createServer();
     const [clientTx, serverTx] = InMemoryTransport.createLinkedPair();
     const client = new Client({ name: 'test', version: '0.0.0' });
@@ -16,7 +16,7 @@ describe('fsl-mcp server', () => {
     const tools = await client.listTools();
     const names = tools.tools.map(t => t.name).sort();
     expect(names).toEqual(
-      ['fsl_explain', 'fsl_guide', 'fsl_lint', 'fsl_render', 'fsl_simulate', 'fsl_validate'].sort(),
+      ['fsl_explain', 'fsl_guide', 'fsl_lint', 'fsl_render', 'fsl_scaffold', 'fsl_simulate', 'fsl_validate'].sort(),
     );
 
     const res = await client.callTool({ name: 'fsl_validate', arguments: { source: 'a -> b;' } });
@@ -132,6 +132,26 @@ describe('fsl-mcp server', () => {
 
     await client.close();
   });
+
+  it('scaffolds a renamed decision preset through fsl_scaffold', async () => {
+    const server = createServer();
+    const [clientTx, serverTx] = InMemoryTransport.createLinkedPair();
+    const client = new Client({ name: 'test', version: '0.0.0' });
+
+    await Promise.all([server.connect(serverTx), client.connect(clientTx)]);
+
+    const result = await client.callTool({ name: 'fsl_scaffold',
+      arguments: { preset: 'decision', machine_name: 'Fraud Check', roles: { outcomes: ['Approve', 'Deny'] } } });
+    const content = result.content as { type: string; text?: string }[];
+    const text = content.find((c) => c.type === 'text');
+    expect(text?.text).toBeDefined();
+    const parsed = JSON.parse(text?.text ?? '{}') as { valid: boolean; family: string; source: string };
+    expect(parsed.valid).toBe(true);
+    expect(parsed.family).toBe('flowchart');
+    expect(parsed.source).toContain('Approve');
+
+    await client.close();
+  });
 });
 
 describe('startServer', () => {
@@ -154,7 +174,7 @@ describe('startServer', () => {
 
     const { result } = await response;
     expect(result.tools.map(t => t.name).sort()).toEqual(
-      ['fsl_explain', 'fsl_guide', 'fsl_lint', 'fsl_render', 'fsl_simulate', 'fsl_validate'].sort(),
+      ['fsl_explain', 'fsl_guide', 'fsl_lint', 'fsl_render', 'fsl_scaffold', 'fsl_simulate', 'fsl_validate'].sort(),
     );
 
     await transport.close();
