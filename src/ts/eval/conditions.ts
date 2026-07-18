@@ -44,7 +44,7 @@ export function buildInvocation(
   if (usesTools) {
     args.push('--mcp-config', opts.mcpConfigPath);
     // Auto-allow the server's tools so the run never blocks on a permission prompt.
-    args.push('--allowedTools', 'mcp__fsl__fsl_validate,mcp__fsl__fsl_render,mcp__fsl__fsl_explain,mcp__fsl__fsl_simulate,mcp__fsl__fsl_lint');
+    args.push('--allowedTools', 'mcp__fsl__fsl_validate,mcp__fsl__fsl_render,mcp__fsl__fsl_explain,mcp__fsl__fsl_simulate,mcp__fsl__fsl_lint,mcp__fsl__fsl_guide');
   }
 
   const prompt = usesReference
