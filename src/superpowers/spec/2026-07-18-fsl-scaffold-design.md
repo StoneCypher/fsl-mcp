@@ -14,8 +14,9 @@ source, one call before `fsl_validate`/`fsl_render`.
 
 1. **Parameterization: presets + light params.** A preset id, an optional
    `machine_name`, and optional named role slots. No rich generator knobs.
-2. **Preset catalog (v1, all four):** `flowchart`, `pipeline`, `decision`,
-   `review-loop`.
+2. **Preset catalog (v1, eight - amended 2026-07-18):** `flowchart`,
+   `pipeline`, `decision`, `review-loop`, plus `handshake`, `job-lifecycle`,
+   `org-chart`, `network-topology` to smoke out the family interface.
 3. **Output: jsonResult wrapper** (the authoring-tools convention, not
    fsl_guide's raw-text convention).
 4. **Renames: named role slots per preset** - self-documenting, validated
@@ -61,12 +62,39 @@ machine name). Consequences:
 
 ## Preset catalog and role slots
 
-| Preset | Shape (from the flowchart guide) | Role slots (all optional, defaults = canonical names) |
-|---|---|---|
-| `decision` | one diamond, one labeled edge per outcome, styled terminals | `decision: string`, `outcomes: string[]` (2-6, default `[Ship, Reject]`) |
-| `pipeline` | linear stages, `flow: right;`, shared `~>` failure sink | `stages: string[]` (2-8, default `[Fetch, Parse, Save]`), `failed: string` |
-| `review-loop` | Draft/Review/Publish with approve + revise-back | `draft`, `review`, `publish` (strings) |
-| `flowchart` | full worked idiom: start terminal, two diamonds, end terminal, `~>` escalation, rework loop (Expense Approval shape) | `submitted`, `validating`, `managerReview`, `paid`, `returned`, `escalated` (strings) |
+v1 ships **eight presets across five families** (user decision 2026-07-18: two
+state-machine and two pure-diagram families join, to smoke out the registry
+interface before it ships). **List slots are fixed-arity**: canonical-rename
+substitution cannot add or remove states, so each list slot requires exactly
+its canonical count; arity knobs are precisely where the rejected
+rich-generator option begins. Adding a stage is a one-line edit to the
+returned source - a scaffold is a starting point.
+
+**Role slots come in two kinds**: `state` slots (rename a state; bare or
+auto-double-quoted) and `action` slots (rename a single-quoted action label;
+`'` escaped as `\'`, newlines rejected). The manifest declares the kind;
+validation and quoting are generic per kind.
+
+| Preset | Family | Shape | Role slots (optional; defaults = canonical) |
+|---|---|---|---|
+| `decision` | flowchart | one diamond, labeled edge per outcome, styled terminals | states: `decision`, `outcomes` (exactly 2) |
+| `pipeline` | flowchart | linear stages, `flow: right;`, shared `~>` failure sink | states: `stages` (exactly 3), `failed` |
+| `review-loop` | flowchart | Draft/Review/Publish with approve + revise-back | states: `draft`, `review`, `publish`; actions: `approve`, `revise` |
+| `flowchart` | flowchart | full worked idiom (Expense Approval shape) | states: `submitted`, `validating`, `managerReview`, `paid`, `returned`, `escalated` |
+| `handshake` | protocol | connect/established/close with retry loop and forced timeout | states: `idle`, `connecting`, `established`, `failed`; actions: `connect`, `acknowledge` |
+| `job-lifecycle` | process | queued/running/done with `~>` fail and retry loop | states: `queued`, `running`, `done`, `failed`, `retrying`; actions: `start`, `finish`, `retry` |
+| `org-chart` | orgchart | strict reporting tree, `flow: down;`, box nodes | states: `root`, `branches` (exactly 2), `leaves` (exactly 4) |
+| `network-topology` | network | `graph_layout: neato;`, `<->` links, one isolated node registered by self-loop | states: `hub`, `switches` (exactly 2), `hosts` (exactly 3), `isolated` |
+
+**Diagram families (orgchart, network) are rendering-first**: the "machine"
+semantics are vestigial. Their `notes` say so explicitly ("this is a drawing;
+simulate is meaningless; render it"), their content leans on styling and
+layout directives, and network-topology deliberately exercises
+islands-by-default and the self-loop registration idiom. Authoring caution
+for `handshake`: verify the timed-forced combination (`~> after 5s`)
+actually compiles during authoring - if it does not, use a plain `~>`
+timeout edge and say so in the preset's comments (the fence-style compile
+test is the enforcement either way).
 
 Naming rules: a role value matching `^[A-Za-z][A-Za-z0-9_]*$` is used bare;
 anything else is double-quoted automatically; values containing `"`, newlines,
@@ -77,9 +105,8 @@ via the same quoting rules (always quoted).
 
 ## Files
 
-- `src/prompts/scaffolds/flowchart.fsl`, `pipeline.fsl`, `decision.fsl`,
-  `review-loop.fsl` - authored presets (new; LF-pinned in `.gitattributes`
-  like the other prompt sources).
+- `src/prompts/scaffolds/*.fsl` - the eight authored presets (new; LF-pinned
+  in `.gitattributes` like the other prompt sources).
 - `src/build_js/generate_scaffold_content.js` - embeds the four files into
   `src/ts/tools/scaffold-content.ts` (generated, committed, drift-guarded);
   wired into the `typescript` npm script beside the guide generator.
