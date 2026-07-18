@@ -39,8 +39,11 @@ state Validate: { shape: diamond; };
 
 An end terminal is just a state with no outgoing edges; give it
 \`doublecircle\` so it reads as terminal. Style the start state so the eye
-finds the entry point. Note: a bare declaration \`state X : {};\` with no
-properties is silently dropped - always set at least one property.
+finds the entry point. Note: a \`state\` declaration alone never creates a
+state - \`state X : {};\` and \`state X : { shape: box; };\` alike are silently
+dropped unless \`X\` appears in at least one edge. Only edges register states;
+a self-loop \`X -> X;\` is the minimal way to make an edgeless box exist.
+Properties are for styling, not existence.
 
 \`\`\`fsl
 Start -> Working;
@@ -90,14 +93,20 @@ Landing -> Form -> Submitted;
 ## Gotchas (all empirically verified)
 
 - Action labels and decorations bind only BEFORE the arrow; after the arrow
-  they are silently ignored.
-- \`state X : {};\` with an empty body is silently dropped - set at least one
-  property.
+  they are silently ignored - with ZERO diagnostics. Validation and lint
+  both pass; only review catches the misplacement.
+- A \`state\` declaration never creates a state - \`state X : {};\` and
+  \`state X : { shape: box; };\` are both silently dropped unless \`X\` appears
+  in an edge. Use a self-loop \`X -> X;\` to register an isolated state;
+  properties style, they do not register.
 - Two unlabeled edges with the same source and target collide, even across
-  different arrow kinds - label at least one of them.
+  different arrow kinds. Two parallel edges are legal when both carry
+  distinct action labels.
 - Apostrophes inside single-quoted labels need escaping: \`'it\\'s done'\`.
-- Numeric cycle targets like \`+1\` parse but do not compile - spell states
-  out in flowcharts.
+- Numeric cycle targets like \`+1\` compile - into an object pseudo-state
+  (\`{"key":"cycle","value":1}\`) that appears in the state and edge lists,
+  breaking things downstream rather than at compile time. Spell states out
+  in flowcharts.
 
 ## Rendering flowcharts
 
@@ -139,7 +148,7 @@ exactly like the whiteboard version.
 export const GUIDE_LANGUAGE: string = `# FSL — Finite State Language (authoring guide for LLMs)
 
 You write FSL, the text language of the \`jssm\` library, to define finite-state
-machines. This guide is verified against jssm 5.162.1. Emit only constructs
+machines. This guide is verified against jssm 5.162.10. Emit only constructs
 described here; do not import syntax from other DSLs or programming languages.
 
 ## Semantic model — read this first
@@ -166,14 +175,17 @@ are insignificant; the \`;\` is the only statement separator.
 |-------|------|-----------------|
 | \`->\`  | legal  | An ordinary allowed move. A driver may take it. |
 | \`=>\`  | main   | The primary / "happy path". Also an ordinary allowed move at runtime — \`=>\` is \`->\` plus a "this is the main path" tag used for layout and documentation. It is **not** a different runtime mechanism. |
-| \`~>\`  | forced | An **involuntary** edge: errors, timeouts, crashes, external interrupts. The driver **cannot choose it**. An ordinary transition attempt is *refused*; only an explicit forced call (the API's \`force_transition\`) traverses it. |
+| \`~>\`  | forced | An **involuntary** edge: errors, timeouts, crashes, external interrupts. Naming the *target* is refused (\`transition('Failed')\` returns false), but firing the edge's *action* traverses it, and forced actions are listed in \`actions()\` / \`list_exit_actions()\`. The API's \`force_transition\` also traverses it. |
 
 Use \`~>\` for anything the actor does not opt into. Model "the job crashed",
 "the session timed out", "the payment was reversed" as forced edges — never as
 \`->\`. This is the single most common FSL authoring mistake.
 
-Verified: for \`Working 'crash' ~> Failed;\`, an ordinary \`transition('Failed')\`
-returns false; only a forced transition reaches \`Failed\`.
+Verified (5.162.10): for \`Working 'crash' ~> Failed;\`, \`action('crash')\`
+returns true and traverses the forced edge, and \`crash\` appears in \`actions()\`
+/ \`list_exit_actions()\` (so it shows up in simulation's legal next moves). A
+target-name \`transition('Failed')\` still returns false. \`force_transition\`
+bypasses legality but not connectivity — the edge must still exist.
 
 ### Direction
 
@@ -216,7 +228,9 @@ verified and it is exactly the trap the previous guidance fell into:
 - \`A -> 'go' B;\` binds **nothing** — the machine reports no action \`go\`. ❌
 
 The same holds for probabilities (below). **Put actions and weights before the
-arrow.**
+arrow.** The misplacement produces **zero diagnostics**: validation and lint
+both pass and the machine compiles with the decoration silently unbound. No
+tool catches this — only review does.
 
 Single quotes are for actions only. Double quotes make a string used as a
 state/label name. \`A "go" -> B;\` is a **syntax error** — \`"go"\` is not an
@@ -322,7 +336,10 @@ A document needs at least one transition; metadata alone will not compile.
 - \`end_states: [A];\` — voluntary success endpoints.
 - \`failed_outputs: [A];\` — failure endpoints.
 - \`graph_layout: dot;\` — one of \`dot circo fdp neato twopi\`.
-- \`allow_islands: true;\` — permit disconnected subgraphs (\`true\`/\`false\`/\`with_start\`).
+- \`allow_islands:\` — disconnected subgraphs are permitted **by default**
+  (equivalent to \`allow_islands: true;\`). \`allow_islands: false;\` rejects a
+  graph with disconnected components; \`allow_islands: with_start;\` requires
+  every component to contain a start state.
 - Default style blocks: \`state: { ... };\`, \`start_state: { ... };\`,
   \`end_state: { ... };\`, \`terminal_state: { ... };\`, \`active_state: { ... };\`,
   \`transition: { ... };\`, \`graph: { ... };\`.
@@ -408,6 +425,10 @@ comments after a statement are fine.
   expressions, or nested machines — FSL has none. If a concept is not in this
   guide, do not emit it. In particular \`machine_definition:\` and a
   \`hooks: open;\` attribute are **not** accepted by this version; omit them.
+- **No \`+N\` cycle targets.** \`A -> +1;\` compiles, but into an object
+  pseudo-state (\`{"key":"cycle","value":1}\`) visible in the state and edge
+  lists; breakage surfaces downstream, not at compile time. Spell the target
+  state out.
 - **One machine per document.** Put metadata first, then transitions, then
   optional styling — though order is not enforced.
 - **Prefer ASCII arrows** over the Unicode equivalents.
@@ -448,8 +469,11 @@ state Validate: { shape: diamond; };
 
 An end terminal is just a state with no outgoing edges; give it
 \`doublecircle\` so it reads as terminal. Style the start state so the eye
-finds the entry point. Note: a bare declaration \`state X : {};\` with no
-properties is silently dropped - always set at least one property.
+finds the entry point. Note: a \`state\` declaration alone never creates a
+state - \`state X : {};\` and \`state X : { shape: box; };\` alike are silently
+dropped unless \`X\` appears in at least one edge. Only edges register states;
+a self-loop \`X -> X;\` is the minimal way to make an edgeless box exist.
+Properties are for styling, not existence.
 
 \`\`\`fsl
 Start -> Working;
@@ -499,14 +523,20 @@ Landing -> Form -> Submitted;
 ## Gotchas (all empirically verified)
 
 - Action labels and decorations bind only BEFORE the arrow; after the arrow
-  they are silently ignored.
-- \`state X : {};\` with an empty body is silently dropped - set at least one
-  property.
+  they are silently ignored - with ZERO diagnostics. Validation and lint
+  both pass; only review catches the misplacement.
+- A \`state\` declaration never creates a state - \`state X : {};\` and
+  \`state X : { shape: box; };\` are both silently dropped unless \`X\` appears
+  in an edge. Use a self-loop \`X -> X;\` to register an isolated state;
+  properties style, they do not register.
 - Two unlabeled edges with the same source and target collide, even across
-  different arrow kinds - label at least one of them.
+  different arrow kinds. Two parallel edges are legal when both carry
+  distinct action labels.
 - Apostrophes inside single-quoted labels need escaping: \`'it\\'s done'\`.
-- Numeric cycle targets like \`+1\` parse but do not compile - spell states
-  out in flowcharts.
+- Numeric cycle targets like \`+1\` compile - into an object pseudo-state
+  (\`{"key":"cycle","value":1}\`) that appears in the state and edge lists,
+  breaking things downstream rather than at compile time. Spell states out
+  in flowcharts.
 
 ## Rendering flowcharts
 
