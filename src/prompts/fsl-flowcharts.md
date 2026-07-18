@@ -94,8 +94,8 @@ Landing -> Form -> Submitted;
   in an edge. Use a self-loop `X -> X;` to register an isolated state;
   properties style, they do not register.
 - Two unlabeled edges with the same source and target collide, even across
-  different arrow kinds. Two parallel edges are legal when both carry
-  distinct action labels.
+  different arrow kinds. When you need parallel edges, give both distinct
+  action labels - that is the verified-legal form.
 - Apostrophes inside single-quoted labels need escaping: `'it\'s done'`.
 - Numeric cycle targets like `+1` compile - into an object pseudo-state
   (`{"key":"cycle","value":1}`) that appears in the state and edge lists,

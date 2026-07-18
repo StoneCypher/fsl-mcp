@@ -208,7 +208,8 @@ Item keys: `label`, `color`, `text-color`, `background-color`, `border-color`,
 dashed`), `image` ("url"), `url` ("url"), `property`. Colors: SVG names
 (`red`, `cornflowerblue`), or hex `#rgb` / `#rgba` / `#rrggbb` / `#rrggbbaa`.
 Shapes: graphviz names (`box circle ellipse diamond hexagon cylinder note
-plaintext` …). A `state` declaration only styles; it does not create edges.
+plaintext` …). A `state` declaration only styles; it creates neither
+states nor edges - the state must appear in an edge to exist.
 
 ### Edge decoration block
 Attach display data to an edge with a brace block after the arrow (keep
