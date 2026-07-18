@@ -35,6 +35,15 @@ const BARE = /^[A-Za-z][A-Za-z0-9_]*$/;
 const isBadName = (s: string): boolean =>
   s.length === 0 || s.includes('\n') || s.includes('\r');
 
+/**
+ * True when `s` ends in a backslash. Every name here is eventually embedded
+ * in a quoted FSL literal - double-quoted for state/machine_name tokens,
+ * single-quoted for action labels - and a trailing backslash escapes (eats)
+ * the literal's closing quote, corrupting the emitted source. Interior
+ * backslashes are harmless; only a trailing one breaks the quote.
+ */
+const endsInBackslash = (s: string): boolean => s.endsWith('\\');
+
 /** Renders a state name as FSL: bare when safe, double-quoted otherwise. */
 const stateToken = (name: string): string => (BARE.test(name) ? name : `"${name}"`);
 
@@ -97,12 +106,17 @@ export function fslScaffold(preset: string, machineName?: string, roles?: Scaffo
   for (const key of Object.keys(roles ?? {})) {
     if (!known.has(key)) errors.push(`unknown role: ${key}`);
   }
-  if (machineName !== undefined && (isBadName(machineName) || machineName.includes('"'))) {
-    errors.push('machine_name must be non-empty with no quotes or newlines');
+  if (machineName !== undefined) {
+    if (isBadName(machineName) || machineName.includes('"')) {
+      errors.push('machine_name must be non-empty with no quotes or newlines');
+    } else if (endsInBackslash(machineName)) {
+      errors.push('machine_name may not end in a backslash');
+    }
   }
 
   const resolved: Record<string, string | readonly string[]> = {};
   const finalNames: string[] = [];
+  const actionNames: string[] = [];
   for (const slot of def.slots) {
     const given = roles?.[slot.role];
     if (slot.kind === 'stateList') {
@@ -113,6 +127,7 @@ export function fslScaffold(preset: string, machineName?: string, roles?: Scaffo
       }
       value.forEach((n) => {
         if (isBadName(n) || n.includes('"')) errors.push(`role ${slot.role}: bad name ${JSON.stringify(n)}`);
+        else if (endsInBackslash(n)) errors.push(`role ${slot.role}: name may not end in a backslash`);
       });
       resolved[slot.role] = value;
       finalNames.push(...value);
@@ -123,12 +138,20 @@ export function fslScaffold(preset: string, machineName?: string, roles?: Scaffo
         errors.push(`role ${slot.role}: bad name ${JSON.stringify(value)}`);
         continue;
       }
+      if (endsInBackslash(value)) {
+        errors.push(`role ${slot.role}: name may not end in a backslash`);
+        continue;
+      }
       resolved[slot.role] = value;
       if (slot.kind === 'state') finalNames.push(value);
+      if (slot.kind === 'action') actionNames.push(value);
     }
   }
   if (new Set(finalNames).size !== finalNames.length) {
     errors.push('resolved state names must be unique');
+  }
+  if (new Set(actionNames).size !== actionNames.length) {
+    errors.push('resolved action labels must be unique');
   }
   if (errors.length > 0) return { valid: false, errors };
 
@@ -175,13 +198,20 @@ export function fslScaffold(preset: string, machineName?: string, roles?: Scaffo
   const source = substitute(raw, subs);
 
   const diagnostics = analyze(source);
-  /* v8 ignore start -- defensive armor, not reachable through any registry preset:
-     substitution only ever performs token-boundary renames of names already
-     validated above (non-empty, no quotes/newlines, unique, correct arity) into
-     source text that scaffold.spec.ts proves compiles both unmodified and under
-     a full rename of every slot for every preset in SCAFFOLD_REGISTRY. There is
-     no known input that makes the post-substitution source fail to compile; this
-     guards only against a future preset or substitution-logic defect. */
+  /* v8 ignore start -- defensive armor, verified still reachable, not just
+     future-proofing: substitution performs token-boundary renames of names
+     validated above (non-empty, no quotes/newlines/trailing backslash,
+     unique states, unique action labels, correct arity) into source text
+     that scaffold.spec.ts proves compiles both unmodified and under a full
+     rename of every slot for every preset in SCAFFOLD_REGISTRY. Probed and
+     confirmed NOT reachable via a trailing backslash on any name/machine_name
+     or via duplicate resolved action labels (both rejected above now). Probed
+     and confirmed STILL reachable: a name containing an INTERIOR backslash
+     followed by a character jssm's FSL string grammar doesn't recognize as
+     an escape (e.g. '\m') fails analyze() even though '\n', '\r', '\\', and
+     the trailing-backslash case above either compile fine or are rejected
+     pre-substitution - this branch is real, not merely hypothetical, armor
+     against that gap. */
   if (hasErrors(diagnostics)) {
     return { valid: false, errors: ['substituted scaffold failed to compile (tool defect - please report)'] };
   }

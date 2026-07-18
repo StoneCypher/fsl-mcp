@@ -100,6 +100,44 @@ describe('fslScaffold', () => {
     expect(quoted.errors.some((e) => e.includes('outcomes'))).toBe(true);
   });
 
+  it('rejects duplicate resolved action labels within a preset', () => {
+    const r = fslScaffold('review-loop', undefined, { approve: 'go', revise: 'go' });
+    expect(r.valid).toBe(false);
+    if (r.valid) return;
+    expect(r.errors).toContain('resolved action labels must be unique');
+    expect(r.errors.some((e) => e.includes('tool defect'))).toBe(false);
+  });
+
+  it('rejects a state rename, action rename, stateList entry, or machine_name ending in a trailing backslash', () => {
+    const state = fslScaffold('decision', undefined, { decision: 'Screen\\' });
+    expect(state.valid).toBe(false);
+    if (!state.valid) {
+      expect(state.errors.some((e) => e.includes('name may not end in a backslash'))).toBe(true);
+      expect(state.errors.some((e) => e.includes('tool defect'))).toBe(false);
+    }
+
+    const action = fslScaffold('review-loop', undefined, { approve: 'go\\' });
+    expect(action.valid).toBe(false);
+    if (!action.valid) {
+      expect(action.errors.some((e) => e.includes('name may not end in a backslash'))).toBe(true);
+      expect(action.errors.some((e) => e.includes('tool defect'))).toBe(false);
+    }
+
+    const list = fslScaffold('decision', undefined, { outcomes: ['Ship\\', 'Reject'] });
+    expect(list.valid).toBe(false);
+    if (!list.valid) {
+      expect(list.errors.some((e) => e.includes('name may not end in a backslash'))).toBe(true);
+      expect(list.errors.some((e) => e.includes('tool defect'))).toBe(false);
+    }
+
+    const name = fslScaffold('decision', 'Name\\');
+    expect(name.valid).toBe(false);
+    if (!name.valid) {
+      expect(name.errors.some((e) => e.includes('name may not end in a backslash'))).toBe(true);
+      expect(name.errors.some((e) => e.includes('tool defect'))).toBe(false);
+    }
+  });
+
   it('rejects an array value given for a scalar-kind (state/action) role', () => {
     const r = fslScaffold('decision', undefined, { decision: ['A', 'B'] });
     expect(r.valid).toBe(false);

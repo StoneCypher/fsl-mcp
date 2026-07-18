@@ -66,9 +66,10 @@ available. Invalid source returns diagnostics, as everywhere else.
 Returns authoring guidance as markdown, straight from the server - no
 out-of-band primer pasting needed.
 
-- `topic: "language"` - the full FSL primer. Call it before writing FSL for
-  the first time; in our evals this guidance moved weak models from 60% to
-  100% correctness.
+- `topic: "language"` - the full FSL primer. In our evals, putting this
+  primer in-band lifted a weak model from 55% to 95% correctness - but
+  models don't call it unprompted, so instruct your agent to call it before
+  its first FSL.
 - `topic: "flowcharts"` - the flowchart idiom: decision diamonds with labeled
   branches, terminals, failure paths on `~>`, layout, and a worked example.
 

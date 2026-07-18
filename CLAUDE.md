@@ -12,8 +12,10 @@ Wraps the `jssm` library.
 ## Analyze-first architecture
 
 Every authoring tool calls `analyze(source)` (`src/ts/analyze.ts`) *first*.
-(`fsl_guide` is the one exception: it has no source input and never touches
-jssm or `analyze` at all.) It wraps
+(Two tools are sourceless exceptions: `fsl_guide` has no source input and
+never touches jssm or `analyze` at all; `fsl_scaffold` also takes no FSL
+source — it *generates* one from a preset — but analyze-gates that generated
+output before returning it.) `analyze()` wraps
 jssm's non-throwing `fslDiagnostics()` and normalizes offsets to 1-based
 `line`/`col`. If `hasErrors(diagnostics)` is true, the tool short-circuits and
 returns diagnostics immediately. Only after that guard passes do tools call
@@ -30,7 +32,7 @@ hash, etc.).
 
 ## Tests
 
-- Unit: `*.spec.ts` (vitest, default run, 80% coverage gate on all four
+- Unit: `*.spec.ts` (vitest, default run, 100% coverage gate on all four
   metrics via `coverage.thresholds` in `vitest.config.ts` — real and
   enforced, not decorative).
 - Stochastic: `*.stoch.ts` (fast-check property tests), run via

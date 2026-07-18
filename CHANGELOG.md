@@ -22,6 +22,36 @@ Published tags:
 
 &nbsp;
 
+## [Untagged] - Jul 18, 2026 10:42:35 AM
+
+Commit [1a90ae3b08538a8818eda6f97fcb845d45c316e3](https://github.com/StoneCypher/fsl-mcp/commit/1a90ae3b08538a8818eda6f97fcb845d45c316e3)
+
+Author: `John Haugeland <stonecypher@gmail.com>`
+
+  * test(e2e): scalar-kind role rename crosses the fsl_scaffold protocol boundary
+
+
+
+
+&nbsp;
+
+&nbsp;
+
+## [Untagged] - Jul 18, 2026 10:29:46 AM
+
+Commit [77c2224aad4f29146b5c9ded754c220542d9801a](https://github.com/StoneCypher/fsl-mcp/commit/77c2224aad4f29146b5c9ded754c220542d9801a)
+
+Author: `John Haugeland <stonecypher@gmail.com>`
+
+  * feat(server): fsl_scaffold tool - eight presets, five families; v0.5.0
+
+
+
+
+&nbsp;
+
+&nbsp;
+
 ## [Untagged] - Jul 18, 2026 9:16:28 AM
 
 Commit [4e64081ff4c580433f57948b9046d297f1f86936](https://github.com/StoneCypher/fsl-mcp/commit/4e64081ff4c580433f57948b9046d297f1f86936)
@@ -152,33 +182,3 @@ Commit [673f796d9b39f2131f9a023c82ef9b6831319e0d](https://github.com/StoneCypher
 Author: `John Haugeland <stonecypher@gmail.com>`
 
   * feat(scaffold): directory-scanning embedder, preset registry, drift guard
-
-
-
-
-&nbsp;
-
-&nbsp;
-
-## [Untagged] - Jul 18, 2026 7:31:39 AM
-
-Commit [df16dbb00bcb0ca3c2318a12574bb062fae448e4](https://github.com/StoneCypher/fsl-mcp/commit/df16dbb00bcb0ca3c2318a12574bb062fae448e4)
-
-Author: `John Haugeland <stonecypher@gmail.com>`
-
-  * feat(scaffold): eight preset sources across five families with raw-compile test
-
-
-
-
-&nbsp;
-
-&nbsp;
-
-## [Untagged] - Jul 18, 2026 7:28:55 AM
-
-Commit [e6d2972bf3f546825bece6c1d76709af3ff9ab2c](https://github.com/StoneCypher/fsl-mcp/commit/e6d2972bf3f546825bece6c1d76709af3ff9ab2c)
-
-Author: `John Haugeland <stonecypher@gmail.com>`
-
-  * docs(plan): implementation plan for fsl_scaffold - eight presets, five families

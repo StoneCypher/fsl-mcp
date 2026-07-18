@@ -22,6 +22,36 @@ Published tags:
 
 &nbsp;
 
+## [Untagged] - Jul 18, 2026 10:42:35 AM
+
+Commit [1a90ae3b08538a8818eda6f97fcb845d45c316e3](https://github.com/StoneCypher/fsl-mcp/commit/1a90ae3b08538a8818eda6f97fcb845d45c316e3)
+
+Author: `John Haugeland <stonecypher@gmail.com>`
+
+  * test(e2e): scalar-kind role rename crosses the fsl_scaffold protocol boundary
+
+
+
+
+&nbsp;
+
+&nbsp;
+
+## [Untagged] - Jul 18, 2026 10:29:46 AM
+
+Commit [77c2224aad4f29146b5c9ded754c220542d9801a](https://github.com/StoneCypher/fsl-mcp/commit/77c2224aad4f29146b5c9ded754c220542d9801a)
+
+Author: `John Haugeland <stonecypher@gmail.com>`
+
+  * feat(server): fsl_scaffold tool - eight presets, five families; v0.5.0
+
+
+
+
+&nbsp;
+
+&nbsp;
+
 ## [Untagged] - Jul 18, 2026 9:16:28 AM
 
 Commit [4e64081ff4c580433f57948b9046d297f1f86936](https://github.com/StoneCypher/fsl-mcp/commit/4e64081ff4c580433f57948b9046d297f1f86936)
