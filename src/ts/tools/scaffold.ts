@@ -59,10 +59,10 @@ interface Substitution {
  * replacement text is ever re-scanned by a later alternative (the source of the
  * cross-slot corruption this replaces). Order in `subs` sets alternation
  * precedence: earlier entries win when two alternatives could start at the
- * same position.
+ * same position. `subs` must be non-empty; the sole caller always pushes the
+ * machine_name statement first.
  */
 const substitute = (src: string, subs: readonly Substitution[]): string => {
-  if (subs.length === 0) return src;
   const lookup = new Map<string, string>(subs.map((sub): [string, string] => [sub.from, sub.to]));
   const pattern = subs
     .map((sub) => (sub.bounded ? `\\b${escapeRegExp(sub.from)}\\b` : escapeRegExp(sub.from)))
@@ -130,15 +130,17 @@ export function fslScaffold(preset: string, machineName?: string, roles?: Scaffo
   // Build every substitution against the ORIGINAL raw source, then resolve them
   // all in one combined regex pass (see `substitute`). Order matters: the
   // machine_name statement and quoted-action forms are pushed before bare
-  // state tokens, so they take alternation precedence.
+  // state tokens, so they take alternation precedence. The machine_name
+  // substitution is ALWAYS pushed - even as an identity rewrite - so the
+  // combined regex consumes the whole statement and no bare state token can
+  // reach into its quoted text (e.g. review-loop's "Review Loop" containing
+  // the canonical state Review).
   const subs: Substitution[] = [];
-  if (machineName !== undefined && machineName !== def.machineName) {
-    subs.push({
-      from: `machine_name: "${def.machineName}";`,
-      to: `machine_name: "${machineName}";`,
-      bounded: false,
-    });
-  }
+  subs.push({
+    from: `machine_name: "${def.machineName}";`,
+    to: `machine_name: "${machineName ?? def.machineName}";`,
+    bounded: false,
+  });
   for (const slot of def.slots) {
     if (slot.kind !== 'action') continue;
     const value = resolved[slot.role];

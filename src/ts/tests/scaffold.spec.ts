@@ -88,6 +88,12 @@ describe('fslScaffold', () => {
     expect(fslScaffold('no-such-preset').valid).toBe(false);
   });
 
+  it('rejects empty, quoted, and multi-line machine names', () => {
+    expect(fslScaffold('decision', '').valid).toBe(false);
+    expect(fslScaffold('decision', 'has"quote').valid).toBe(false);
+    expect(fslScaffold('decision', 'line\nbreak').valid).toBe(false);
+  });
+
   it('every preset compiles under a full rename of every slot', () => {
     for (const id of PRESET_IDS) {
       const def = SCAFFOLD_REGISTRY[id];
@@ -136,6 +142,24 @@ describe('fslScaffold', () => {
     if (!r.valid) return;
     expect(r.source).toContain('machine_name: "Validate Corp";');
     expect(r.source).not.toContain('machine_name: "Screen Corp";');
+    expect(hasErrors(analyze(r.source))).toBe(false);
+  });
+
+  it('regression: the default machine_name line is shielded from state renames when no machineName is given', () => {
+    const r = fslScaffold('review-loop', undefined, { review: 'Assess' });
+    expect(r.valid).toBe(true);
+    if (!r.valid) return;
+    expect(r.source).toContain('machine_name: "Review Loop";');
+    expect(r.source).not.toContain('machine_name: "Assess Loop";');
+    expect(hasErrors(analyze(r.source))).toBe(false);
+  });
+
+  it('regression: an explicit identity machineName is likewise shielded from state renames', () => {
+    const r = fslScaffold('review-loop', 'Review Loop', { review: 'Assess' });
+    expect(r.valid).toBe(true);
+    if (!r.valid) return;
+    expect(r.source).toContain('machine_name: "Review Loop";');
+    expect(r.source).not.toContain('machine_name: "Assess Loop";');
     expect(hasErrors(analyze(r.source))).toBe(false);
   });
 });
