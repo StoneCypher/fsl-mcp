@@ -1,10 +1,10 @@
-# fsl-mcp v0.4.0
+# fsl-mcp v0.5.0
 
-> Version 0.4.0 was built on Wednesday, July 15, 2026 at GMT-07:00 `1784183185830` from hash `faecb5d`.
+> Version 0.5.0 was built on Saturday, July 18, 2026 at GMT-07:00 `1784402287652` from hash `1a90ae3`.
 
-**fsl-mcp** is an MCP (Model Context Protocol) stdio server that lets an AI agent *author* [FSL](https://github.com/StoneCypher/jssm) finite-state machines — giving the model the same structured feedback the FSL editor gives a human (parse diagnostics, a rendered diagram, a plain-English explanation, a step-by-step simulation, and style lint notes) instead of leaving it to guess whether the FSL it just wrote is even valid. It wraps [`jssm`](https://github.com/StoneCypher/jssm), the reference FSL implementation, and exposes five tools over stdio via the official [`@modelcontextprotocol/sdk`](https://github.com/modelcontextprotocol/typescript-sdk).
+**fsl-mcp** is an MCP (Model Context Protocol) stdio server that lets an AI agent *author* [FSL](https://github.com/StoneCypher/jssm) finite-state machines — giving the model the same structured feedback the FSL editor gives a human (parse diagnostics, a rendered diagram, a plain-English explanation, a step-by-step simulation, and style lint notes) instead of leaving it to guess whether the FSL it just wrote is even valid. It wraps [`jssm`](https://github.com/StoneCypher/jssm), the reference FSL implementation, and exposes seven tools over stdio (five authoring tools, plus `fsl_guide` guidance and `fsl_scaffold` preset generation) via the official [`@modelcontextprotocol/sdk`](https://github.com/modelcontextprotocol/typescript-sdk).
 
-<!-- Supported embeds: 1784183185830 Wednesday, July 15, 2026 at GMT-07:00 98.62 62 33 faecb5d 0.7 2.65 1.58 2.85 5 141 96.15 96.36 100 136 0.4.0 -->
+<!-- Supported embeds: 1784402287652 Saturday, July 18, 2026 at GMT-07:00 100 86 37 1a90ae3 28.13 22.62 21.51 23.54 6 180 100 100 100 174 0.5.0 -->
 
 &nbsp;
 
@@ -28,25 +28,74 @@ Point any MCP-speaking client at it with a stdio server entry:
 
 &nbsp;
 
-## The five tools
+## The seven tools
 
-Every tool takes FSL `source` (a string) and returns structured JSON — never a thrown error for bad FSL, always diagnostics.
+Every tool takes FSL `source` (a string) and returns structured JSON — never a thrown error for bad FSL, always diagnostics. The exceptions are `fsl_guide`, which takes no source, and `fsl_scaffold`, which takes no source but generates one.
 
 | Tool | Input | Returns |
 |---|---|---|
 | `fsl_validate` | `source` | `{ valid, diagnostics: [{severity, message, line, col}] }` |
-| `fsl_render` | `source`, `format?: "svg" \| "png"` | an SVG diagram (`format:"png"` degrades to svg + a note in v1), or diagnostics if invalid |
 | `fsl_explain` | `source` | `{ states, transitions, start, terminals, summary }`, or diagnostics if invalid |
 | `fsl_simulate` | `source`, `actions: string[]` | `{ endState, path, legalNext, rejected? }`, or diagnostics if invalid |
 | `fsl_lint` | `source` | `{ notes: [{rule, message, line}] }` |
+| `fsl_guide` | `topic: "language" \| "flowcharts"` | FSL authoring guidance as markdown - topics: language, flowcharts |
+| `fsl_scaffold` | `preset`, `machine_name?`, `roles?` | complete compiling starter FSL from presets (8 presets, 5 families) with your names substituted |
 
-Under the hood, every tool runs the same non-throwing `analyze()` pass first and short-circuits to diagnostics on a compile error, so a model can always find out *why* its FSL didn't work instead of getting an exception.
+Under the hood, every source-taking tool runs the same non-throwing `analyze()` pass first and short-circuits to diagnostics on a compile error, so a model can always find out *why* its FSL didn't work instead of getting an exception. `fsl_scaffold` runs the same `analyze()` pass on its *generated* source before returning it, so its output carries the same guarantee.
+
+### fsl_render
+
+Render FSL to a diagram.
+
+| format | returns |
+|--------|---------|
+| `svg` (default) | SVG text |
+| `dot` | Graphviz DOT text |
+| `png` / `jpeg` | an MCP image content block (the model can see it) |
+| `gif` | an animated random walk as an image content block |
+
+Raster options: `width`, `height`, `scale` (zoom %, 100 = 3x natural), `quality`
+(jpeg 1-100), `delay` (gif centiseconds/frame), `maxFrames` (gif frame ceiling -
+keep it at or under 20 in chat contexts). PNG and GIF work in plain Node (via
+jssm's bundled resvg-wasm); JPEG needs a Canvas-capable runtime and otherwise
+degrades to SVG plus a note, as does any raster format when no backend is
+available. Invalid source returns diagnostics, as everywhere else.
+
+### fsl_guide
+
+Returns authoring guidance as markdown, straight from the server - no
+out-of-band primer pasting needed.
+
+- `topic: "language"` - the full FSL primer. In our evals, putting this
+  primer in-band lifted a weak model from 55% to 95% correctness - but
+  models don't call it unprompted, so instruct your agent to call it before
+  its first FSL.
+- `topic: "flowcharts"` - the flowchart idiom: decision diamonds with labeled
+  branches, terminals, failure paths on `~>`, layout, and a worked example.
+
+This is one of two tools that take no FSL source; it cannot fail and does not
+touch the parser.
+
+### fsl_scaffold
+
+Returns a complete, compiling FSL starting document - pick a preset, pass
+your names, get source ready for fsl_validate / fsl_render.
+
+- Eight presets across five families: flowchart, pipeline, decision,
+  review-loop (flowchart); handshake (protocol); job-lifecycle (process);
+  org-chart (orgchart); network-topology (network).
+- Role slots rename states and action labels; multi-word names are quoted
+  automatically. List slots are fixed-arity - a scaffold is a starting
+  point, and adding a stage is a one-line edit.
+- Every result is analyze-verified before it is returned; diagram-family
+  presets (org-chart, network-topology) say so when simulation is
+  meaningless.
 
 &nbsp;
 
 ## Ceilings (v1)
 
-- **Rendering** is SVG-only. `format:"png"` is accepted but returns the SVG plus a `note` explaining that rasterization isn't shipped yet — there's no bundled rasterizer in v1.
+- Raster ceilings: PNG and GIF rasterize in plain Node (via jssm's bundled resvg-wasm); JPEG needs a Canvas-capable runtime and otherwise degrades to SVG plus a `note`. Any raster format degrades the same way when no backend is available.
 - **Simulation** matches `fsl_simulate`'s `actions` against edge *action labels* first, then falls back to target-state names. Machines whose edges carry no action labels will report an empty `legalNext` even where target-state transitions are legal — this is a labeling ceiling, not a bug in the walk itself.
 
 &nbsp;
@@ -64,19 +113,19 @@ Under the hood, every tool runs the same non-throwing `analyze()` pass first and
   </tr>
   <tr>
     <th>Unit</th>
-    <td>136</td>
-    <td>98.62<small>%</small></td>
-    <td>96.15<small>%</small></td>
-    <td>96.36<small>%</small></td>
+    <td>174</td>
+    <td>100<small>%</small></td>
+    <td>100<small>%</small></td>
+    <td>100<small>%</small></td>
     <td>100<small>%</small></td>
   </tr>
   <tr>
     <th>Stochastic</th>
-    <td>5</td>
-    <td>98.62<small>%</small></td>
-    <td>0.7<small>%</small></td>
-    <td>1.58<small>%</small></td>
-    <td>2.85<small>%</small></td>
+    <td>6</td>
+    <td>100<small>%</small></td>
+    <td>28.13<small>%</small></td>
+    <td>21.51<small>%</small></td>
+    <td>23.54<small>%</small></td>
   </tr>
 </table>
 
@@ -84,12 +133,12 @@ Under the hood, every tool runs the same non-throwing `analyze()` pass first and
   <tr>
     <th></th>
     <th>Docblock count</th>
-    <th>33<small>%</small></th>
+    <th>37<small>%</small></th>
   </tr>
   <tr>
     <th>Docblock coverage</th>
-    <td>62</td>
-    <td>33<small>%</small></td>
+    <td>86</td>
+    <td>37<small>%</small></td>
   </tr>
 </table>
 
