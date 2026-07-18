@@ -106,6 +106,25 @@ via the same quoting rules (always quoted).
 - e2e: MCP round-trip for one preset with renames; tool list shows seven.
 - No fake tests; coverage gate stays 95 on all four metrics.
 
+## Extensibility: preset families (user-requested 2026-07-18)
+
+The catalog is a **data-driven registry**, built to take chart types beyond
+flowcharts later (statecharts, protocol handshakes, cycles, ...):
+
+- Each preset is a registry entry `{ id, family, roles manifest, notes }`
+  plus its `.fsl` file; all four v1 presets carry `family: 'flowchart'`.
+- `generate_scaffold_content.js` **scans** `src/prompts/scaffolds/*.fsl`
+  rather than hard-coding four names; `scaffold-content.ts` exports the
+  registry and the embedded sources together.
+- The `preset` zod enum and the tool description's preset list are **derived
+  from the registry at registration time**, so adding a chart family later =
+  new `.fsl` files + registry entries (+ their role manifests). No changes
+  to `scaffold.ts` logic, the server registration code, or the test
+  machinery (the per-preset tests iterate the registry).
+- The jsonResult already carries `preset`; it gains `family` so callers can
+  group. Role-manifest validation is generic (single slots, list slots with
+  min/max) - a new family reuses it.
+
 ## Composition and release
 
 - Tool description cross-references `fsl_guide` topic `flowcharts`; the guide
