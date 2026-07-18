@@ -19,8 +19,10 @@ export const DEFAULT_TRIAL_TIMEOUT_MS = 600_000;
  * Kills the child with `SIGTERM` if `signal` fires (wired to `runTrial`'s
  * timeout), so a hung call is actually terminated rather than left running.
  */
+/* v8 ignore start -- shells out to the real claude CLI; untestable without a live process.
+   The block spans the function declaration itself (not just its body) so v8
+   drops the function's own coverage slot too, not only its statements/branches. */
 function defaultSpawn(args: string[], stdin: string, signal?: AbortSignal): Promise<{ stdout: string; code: number }> {
-  /* v8 ignore start -- shells out to the real claude CLI; untestable without a live process */
   return new Promise((resolve, reject) => {
     const child = nodeSpawn('claude', args, { stdio: ['pipe', 'pipe', 'inherit'] });
     let stdout = '';
@@ -30,8 +32,8 @@ function defaultSpawn(args: string[], stdin: string, signal?: AbortSignal): Prom
     child.stdin.end(stdin);
     signal?.addEventListener('abort', () => { child.kill('SIGTERM'); });
   });
-  /* v8 ignore stop */
 }
+/* v8 ignore stop */
 
 /**
  * Sentinel thrown by {@link withTimeout} when its timer fires first. A

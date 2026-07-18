@@ -68,6 +68,11 @@ const substitute = (src: string, subs: readonly Substitution[]): string => {
     .map((sub) => (sub.bounded ? `\\b${escapeRegExp(sub.from)}\\b` : escapeRegExp(sub.from)))
     .join('|');
   const combined = new RegExp(pattern, 'g');
+  /* v8 ignore next -- defensive fallback only: `combined`'s alternatives are built
+     verbatim from each `sub.from` (`\b` bounding only adds zero-width anchors, it
+     never alters the matched text), and `lookup` is keyed by those same `from`
+     strings, so any `match` the regex captures is always present in `lookup`.
+     No real input can make `.get(match)` miss. */
   return src.replace(combined, (match) => lookup.get(match) ?? match);
 };
 
@@ -150,6 +155,11 @@ export function fslScaffold(preset: string, machineName?: string, roles?: Scaffo
   }
   for (const slot of def.slots) {
     const value = resolved[slot.role];
+    /* v8 ignore next -- defensive only: `errors.length === 0` is already guaranteed
+       here (checked above), and the resolution loop above sets `resolved[slot.role]`
+       for every slot unless it also pushes an error and `continue`s - so every
+       slot's value is guaranteed defined by this point. No real input reaches the
+       `undefined` branch. */
     if (value === undefined) continue;
     if (slot.kind === 'stateList' && typeof value !== 'string') {
       slot.canonical.forEach((from, i) => {
@@ -165,8 +175,16 @@ export function fslScaffold(preset: string, machineName?: string, roles?: Scaffo
   const source = substitute(raw, subs);
 
   const diagnostics = analyze(source);
+  /* v8 ignore start -- defensive armor, not reachable through any registry preset:
+     substitution only ever performs token-boundary renames of names already
+     validated above (non-empty, no quotes/newlines, unique, correct arity) into
+     source text that scaffold.spec.ts proves compiles both unmodified and under
+     a full rename of every slot for every preset in SCAFFOLD_REGISTRY. There is
+     no known input that makes the post-substitution source fail to compile; this
+     guards only against a future preset or substitution-logic defect. */
   if (hasErrors(diagnostics)) {
     return { valid: false, errors: ['substituted scaffold failed to compile (tool defect - please report)'] };
   }
+  /* v8 ignore stop */
   return { valid: true, preset, family: def.family, source, roles: resolved, notes: def.notes };
 }

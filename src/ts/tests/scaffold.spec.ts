@@ -88,6 +88,25 @@ describe('fslScaffold', () => {
     expect(fslScaffold('no-such-preset').valid).toBe(false);
   });
 
+  it('rejects a stateList role when one of its individual names is bad', () => {
+    const empty = fslScaffold('decision', undefined, { outcomes: ['Approve', ''] });
+    expect(empty.valid).toBe(false);
+    if (empty.valid) return;
+    expect(empty.errors.some((e) => e.includes('outcomes'))).toBe(true);
+
+    const quoted = fslScaffold('decision', undefined, { outcomes: ['Approve', 'has"quote'] });
+    expect(quoted.valid).toBe(false);
+    if (quoted.valid) return;
+    expect(quoted.errors.some((e) => e.includes('outcomes'))).toBe(true);
+  });
+
+  it('rejects an array value given for a scalar-kind (state/action) role', () => {
+    const r = fslScaffold('decision', undefined, { decision: ['A', 'B'] });
+    expect(r.valid).toBe(false);
+    if (r.valid) return;
+    expect(r.errors.some((e) => e.includes('decision'))).toBe(true);
+  });
+
   it('rejects empty, quoted, and multi-line machine names', () => {
     expect(fslScaffold('decision', '').valid).toBe(false);
     expect(fslScaffold('decision', 'has"quote').valid).toBe(false);

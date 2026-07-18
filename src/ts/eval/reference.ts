@@ -13,15 +13,17 @@ export type PrimerSpawn = (cmd: string, args: string[]) => { stdout: string; sta
  * args would be concatenated into the shell command line unescaped. Other
  * platforms exec `cmd`/`args` directly, unchanged from before.
  */
+/* v8 ignore start -- shells out to a real CLI; untestable without a live process.
+   The block spans the function declaration itself (not just its body) so v8
+   drops the function's own coverage slot too, not only its statements/branches. */
 function defaultSpawn(cmd: string, args: string[]): { stdout: string; status: number } {
-  /* v8 ignore start -- shells out to a real CLI; untestable without a live process */
   const r = process.platform === 'win32'
     ? spawnSync([cmd, ...args].join(' '), { encoding: 'utf8', shell: true })
     : spawnSync(cmd, args, { encoding: 'utf8' });
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   return { stdout: r.stdout ?? '', status: r.status ?? 1 };
-  /* v8 ignore stop */
 }
+/* v8 ignore stop */
 
 /**
  * Capture the version-locked FSL language primer from jssm's
