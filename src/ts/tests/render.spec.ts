@@ -98,6 +98,13 @@ describe('fslRender', () => {
     if (!r.valid && 'error' in r) { expect(r.error).toContain('viz exploded'); } else { expect.unreachable(); }
   });
 
+  it('JSON-stringifies a non-Error thrown value into RenderFailure.error', async () => {
+    const thrown = { code: 'ENOENT', detail: 'no such file' };
+    const engine = async () => { throw thrown; };
+    const r = await fslRender(SRC, 'svg', {}, engine);
+    if (!r.valid && 'error' in r) { expect(r.error).toBe(JSON.stringify(thrown)); } else { expect.unreachable(); }
+  });
+
   it('forwards only the defined raster options to the engine', async () => {
     let seen: Record<string, unknown> = {};
     const engine = async (fsl: string, opts: Record<string, unknown>) => {

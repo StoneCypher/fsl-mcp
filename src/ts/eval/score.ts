@@ -17,6 +17,11 @@ export function extractFsl(text: string): string | null {
   const fenced = /```fsl\s*\n([\s\S]*?)```/i.exec(text) ?? /```\s*\n([\s\S]*?)```/.exec(text);
   if (fenced === null) { return null; }
   const body = fenced[1];
+  /* v8 ignore next -- defensive only: the capture group in both alternatives of
+     `fenced` is a mandatory (non-`?`) group, so once the outer regex matches,
+     group 1 is always a string (possibly empty), never `undefined`. This guard
+     exists solely to satisfy `noUncheckedIndexedAccess`'s `string | undefined`
+     typing of `fenced[1]`; no real input can take the `undefined` branch. */
   if (body === undefined) { return null; }
   const trimmed = body.trim();
   return trimmed.length > 0 ? trimmed : null;
@@ -103,6 +108,11 @@ export function scoreCorrectness(source: string, expect: Expect): boolean {
     for (const walk of expect.walks) {
       const resolvedActions = walk.actions.map(a => actionNames.get(fold(a)) ?? stateNames.get(fold(a)) ?? a);
       const sim = fslSimulate(source, resolvedActions);
+      /* v8 ignore next -- defensive only: `fslSimulate` re-validates `source`
+         via the same deterministic `analyze()` that `fslExplain(source)` already
+         ran three lines above (guarded by `!explained.valid` returning early).
+         Same source in, same pure analysis, so `sim.valid` cannot independently
+         come back false here — there is no real input that reaches this branch. */
       if (!sim.valid) { return false; }
       if (fold(sim.endState) !== fold(walk.endState)) { return false; }
       if (walk.rejectedAt !== undefined) {
