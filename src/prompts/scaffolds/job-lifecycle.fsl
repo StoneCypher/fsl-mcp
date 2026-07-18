@@ -1,0 +1,12 @@
+machine_name: "Job Lifecycle";
+flow: right;
+
+Queued 'start'   -> Running;
+Running 'finish' -> Done;
+// Jobs do not choose to fail.
+Running ~> Failed;
+Failed 'retry' -> Retrying;
+Retrying -> Running;
+
+state Done:   { shape: doublecircle; background-color: palegreen; };
+state Failed: { background-color: mistyrose; };

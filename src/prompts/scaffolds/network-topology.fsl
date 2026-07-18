@@ -1,0 +1,14 @@
+machine_name: "Network";
+graph_layout: neato;
+
+// A drawing, not a machine: <-> draws linked pairs.
+Hub <-> Switch_A;
+Hub <-> Switch_B;
+Switch_A <-> Host_One;
+Switch_A <-> Host_Two;
+Switch_B <-> Host_Three;
+// Islands are allowed by default; a self-loop registers an isolated node.
+Standby -> Standby;
+
+state Hub:     { shape: hexagon; };
+state Standby: { line-style: dashed; };
