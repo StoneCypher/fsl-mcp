@@ -1,10 +1,10 @@
 # fsl-mcp v0.5.0
 
-> Version 0.5.0 was built on Saturday, July 18, 2026 at GMT-07:00 `1784395593215` from hash `4e64081`.
+> Version 0.5.0 was built on Saturday, July 18, 2026 at GMT-07:00 `1784402287652` from hash `1a90ae3`.
 
 **fsl-mcp** is an MCP (Model Context Protocol) stdio server that lets an AI agent *author* [FSL](https://github.com/StoneCypher/jssm) finite-state machines — giving the model the same structured feedback the FSL editor gives a human (parse diagnostics, a rendered diagram, a plain-English explanation, a step-by-step simulation, and style lint notes) instead of leaving it to guess whether the FSL it just wrote is even valid. It wraps [`jssm`](https://github.com/StoneCypher/jssm), the reference FSL implementation, and exposes seven tools over stdio (five authoring tools, plus `fsl_guide` guidance and `fsl_scaffold` preset generation) via the official [`@modelcontextprotocol/sdk`](https://github.com/modelcontextprotocol/typescript-sdk).
 
-<!-- Supported embeds: 1784395593215 Saturday, July 18, 2026 at GMT-07:00 100 86 37 4e64081 26.19 20.84 20.51 22.06 6 178 100 100 100 172 0.5.0 -->
+<!-- Supported embeds: 1784402287652 Saturday, July 18, 2026 at GMT-07:00 100 86 37 1a90ae3 28.13 22.62 21.51 23.54 6 180 100 100 100 174 0.5.0 -->
 
 &nbsp;
 
@@ -66,9 +66,10 @@ available. Invalid source returns diagnostics, as everywhere else.
 Returns authoring guidance as markdown, straight from the server - no
 out-of-band primer pasting needed.
 
-- `topic: "language"` - the full FSL primer. Call it before writing FSL for
-  the first time; in our evals this guidance moved weak models from 60% to
-  100% correctness.
+- `topic: "language"` - the full FSL primer. In our evals, putting this
+  primer in-band lifted a weak model from 55% to 95% correctness - but
+  models don't call it unprompted, so instruct your agent to call it before
+  its first FSL.
 - `topic: "flowcharts"` - the flowchart idiom: decision diamonds with labeled
   branches, terminals, failure paths on `~>`, layout, and a worked example.
 
@@ -112,7 +113,7 @@ your names, get source ready for fsl_validate / fsl_render.
   </tr>
   <tr>
     <th>Unit</th>
-    <td>172</td>
+    <td>174</td>
     <td>100<small>%</small></td>
     <td>100<small>%</small></td>
     <td>100<small>%</small></td>
@@ -122,9 +123,9 @@ your names, get source ready for fsl_validate / fsl_render.
     <th>Stochastic</th>
     <td>6</td>
     <td>100<small>%</small></td>
-    <td>26.19<small>%</small></td>
-    <td>20.51<small>%</small></td>
-    <td>22.06<small>%</small></td>
+    <td>28.13<small>%</small></td>
+    <td>21.51<small>%</small></td>
+    <td>23.54<small>%</small></td>
   </tr>
 </table>
 

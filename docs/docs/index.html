@@ -1,9 +1,9 @@
 <!DOCTYPE html><html class="default" lang="en" data-base="./"><head><meta charset="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>fsl-mcp</title><meta name="description" content="Documentation for fsl-mcp"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="assets/style.css"/><link rel="stylesheet" href="assets/highlight.css"/><script defer src="assets/main.js"></script><script async src="assets/icons.js" id="tsd-icons-script"></script><script async src="assets/search.js" id="tsd-search-script"></script><script async src="assets/navigation.js" id="tsd-nav-script"></script></head><body><script>document.documentElement.dataset.theme = localStorage.getItem("tsd-theme") || "os";document.body.style.display="none";setTimeout(() => window.app?app.showPage():document.body.style.removeProperty("display"),500)</script><header class="tsd-page-toolbar"><div class="tsd-toolbar-contents container"><a href="index.html" class="title">fsl-mcp</a><div id="tsd-toolbar-links"></div><button id="tsd-search-trigger" class="tsd-widget" aria-label="Search"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><use href="assets/icons.svg#icon-search"></use></svg></button><dialog id="tsd-search" aria-label="Search"><input role="combobox" id="tsd-search-input" aria-controls="tsd-search-results" aria-autocomplete="list" aria-expanded="true" autocapitalize="off" autocomplete="off" placeholder="Search the docs" maxLength="100"/><ul role="listbox" id="tsd-search-results"></ul><div id="tsd-search-status" aria-live="polite" aria-atomic="true"><div>Preparing search index...</div></div></dialog><a href="#" class="tsd-widget menu" id="tsd-toolbar-menu-trigger" data-toggle="menu" aria-label="Menu"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><use href="assets/icons.svg#icon-menu"></use></svg></a></div></header><div class="container container-main"><div class="col-content"><div class="tsd-page-title"><h1>fsl-mcp</h1></div><div class="tsd-panel tsd-typography"><h1 id="fsl-mcp-v050" class="tsd-anchor-link">fsl-mcp v0.5.0<a href="#fsl-mcp-v050" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h1>
 <blockquote>
-<p>Version 0.5.0 was built on Saturday, July 18, 2026 at GMT-07:00 <code>1784395593215</code> from hash <code>4e64081</code>.</p>
+<p>Version 0.5.0 was built on Saturday, July 18, 2026 at GMT-07:00 <code>1784402287652</code> from hash <code>1a90ae3</code>.</p>
 </blockquote>
 <p><strong>fsl-mcp</strong> is an MCP (Model Context Protocol) stdio server that lets an AI agent <em>author</em> <a href="https://github.com/StoneCypher/jssm">FSL</a> finite-state machines — giving the model the same structured feedback the FSL editor gives a human (parse diagnostics, a rendered diagram, a plain-English explanation, a step-by-step simulation, and style lint notes) instead of leaving it to guess whether the FSL it just wrote is even valid. It wraps <a href="https://github.com/StoneCypher/jssm"><code>jssm</code></a>, the reference FSL implementation, and exposes seven tools over stdio (five authoring tools, plus <code>fsl_guide</code> guidance and <code>fsl_scaffold</code> preset generation) via the official <a href="https://github.com/modelcontextprotocol/typescript-sdk"><code>@modelcontextprotocol/sdk</code></a>.</p>
-<!-- Supported embeds: 1784395593215 Saturday, July 18, 2026 at GMT-07:00 100 86 37 4e64081 26.19 20.84 20.51 22.06 6 178 100 100 100 172 0.5.0 -->
+<!-- Supported embeds: 1784402287652 Saturday, July 18, 2026 at GMT-07:00 100 86 37 1a90ae3 28.13 22.62 21.51 23.54 6 180 100 100 100 174 0.5.0 -->
 <p> </p>
 <h2 id="install-run" class="tsd-anchor-link">Install / run<a href="#install-run" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2>
 <p>fsl-mcp ships as a standalone package and runs with no local install:</p>
@@ -97,9 +97,10 @@ available. Invalid source returns diagnostics, as everywhere else.</p>
 <p>Returns authoring guidance as markdown, straight from the server - no
 out-of-band primer pasting needed.</p>
 <ul>
-<li><code>topic: &quot;language&quot;</code> - the full FSL primer. Call it before writing FSL for
-the first time; in our evals this guidance moved weak models from 60% to
-100% correctness.</li>
+<li><code>topic: &quot;language&quot;</code> - the full FSL primer. In our evals, putting this
+primer in-band lifted a weak model from 55% to 95% correctness - but
+models don't call it unprompted, so instruct your agent to call it before
+its first FSL.</li>
 <li><code>topic: &quot;flowcharts&quot;</code> - the flowchart idiom: decision diamonds with labeled
 branches, terminals, failure paths on <code>~&gt;</code>, layout, and a worked example.</li>
 </ul>
@@ -138,7 +139,7 @@ meaningless.</li>
   </tr>
   <tr>
     <th>Unit</th>
-    <td>172</td>
+    <td>174</td>
     <td>100<small>%</small></td>
     <td>100<small>%</small></td>
     <td>100<small>%</small></td>
@@ -148,9 +149,9 @@ meaningless.</li>
     <th>Stochastic</th>
     <td>6</td>
     <td>100<small>%</small></td>
-    <td>26.19<small>%</small></td>
-    <td>20.51<small>%</small></td>
-    <td>22.06<small>%</small></td>
+    <td>28.13<small>%</small></td>
+    <td>21.51<small>%</small></td>
+    <td>23.54<small>%</small></td>
   </tr>
 </table>
 <table>
