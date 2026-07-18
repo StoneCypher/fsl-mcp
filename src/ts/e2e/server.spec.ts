@@ -141,7 +141,7 @@ describe('fsl-mcp server', () => {
     await Promise.all([server.connect(serverTx), client.connect(clientTx)]);
 
     const result = await client.callTool({ name: 'fsl_scaffold',
-      arguments: { preset: 'decision', machine_name: 'Fraud Check', roles: { outcomes: ['Approve', 'Deny'] } } });
+      arguments: { preset: 'decision', machine_name: 'Fraud Check', roles: { decision: 'Screen', outcomes: ['Approve', 'Deny'] } } });
     const content = result.content as { type: string; text?: string }[];
     const text = content.find((c) => c.type === 'text');
     expect(text?.text).toBeDefined();
@@ -149,6 +149,8 @@ describe('fsl-mcp server', () => {
     expect(parsed.valid).toBe(true);
     expect(parsed.family).toBe('flowchart');
     expect(parsed.source).toContain('Approve');
+    expect(parsed.source).toContain('Screen');
+    expect(parsed.source).not.toContain('Validate');
 
     await client.close();
   });
