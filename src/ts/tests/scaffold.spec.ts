@@ -108,33 +108,74 @@ describe('fslScaffold', () => {
     expect(r.errors.some((e) => e.includes('tool defect'))).toBe(false);
   });
 
-  it('rejects a state rename, action rename, stateList entry, or machine_name ending in a trailing backslash', () => {
+  it('rejects a state rename, action rename, stateList entry, or machine_name containing a backslash', () => {
     const state = fslScaffold('decision', undefined, { decision: 'Screen\\' });
     expect(state.valid).toBe(false);
     if (!state.valid) {
-      expect(state.errors.some((e) => e.includes('name may not end in a backslash'))).toBe(true);
+      expect(state.errors.some((e) => e.includes('role decision: bad name'))).toBe(true);
       expect(state.errors.some((e) => e.includes('tool defect'))).toBe(false);
     }
 
     const action = fslScaffold('review-loop', undefined, { approve: 'go\\' });
     expect(action.valid).toBe(false);
     if (!action.valid) {
-      expect(action.errors.some((e) => e.includes('name may not end in a backslash'))).toBe(true);
+      expect(action.errors.some((e) => e.includes('role approve: bad name'))).toBe(true);
       expect(action.errors.some((e) => e.includes('tool defect'))).toBe(false);
     }
 
     const list = fslScaffold('decision', undefined, { outcomes: ['Ship\\', 'Reject'] });
     expect(list.valid).toBe(false);
     if (!list.valid) {
-      expect(list.errors.some((e) => e.includes('name may not end in a backslash'))).toBe(true);
+      expect(list.errors.some((e) => e.includes('role outcomes: bad name'))).toBe(true);
       expect(list.errors.some((e) => e.includes('tool defect'))).toBe(false);
     }
 
     const name = fslScaffold('decision', 'Name\\');
     expect(name.valid).toBe(false);
     if (!name.valid) {
-      expect(name.errors.some((e) => e.includes('name may not end in a backslash'))).toBe(true);
+      expect(name.errors).toContain('machine_name must be non-empty with no quotes, control characters, or backslashes');
       expect(name.errors.some((e) => e.includes('tool defect'))).toBe(false);
+    }
+  });
+
+  it('regression: rejects an interior recognized escape (a\\\\b) - jssm would collapse it and the roles map would lie', () => {
+    // probe4 case: the caller's literal string is a<backslash><backslash>b.
+    // Before the wholesale backslash rejection this returned valid:true with
+    // roles.decision = 'a\\b' while jssm compiled the state as 'a\b' -
+    // a compiling-but-wrong silent divergence between the roles map and the
+    // machine. It must be rejected in validation, with the generic bad-name
+    // error, never the tool-defect message.
+    const r = fslScaffold('decision', undefined, { decision: 'a\\\\b' });
+    expect(r.valid).toBe(false);
+    if (r.valid) return;
+    expect(r.errors.some((e) => e.includes('role decision: bad name'))).toBe(true);
+    expect(r.errors.some((e) => e.includes('tool defect'))).toBe(false);
+
+    const single = fslScaffold('decision', undefined, { decision: 'a\\b' });
+    expect(single.valid).toBe(false);
+    if (single.valid) return;
+    expect(single.errors.some((e) => e.includes('role decision: bad name'))).toBe(true);
+    expect(single.errors.some((e) => e.includes('tool defect'))).toBe(false);
+  });
+
+  it('rejects control characters in any name position - previously the last gate-reachable class', () => {
+    const action = fslScaffold('review-loop', undefined, { approve: 'go\tnow' });
+    expect(action.valid).toBe(false);
+    if (!action.valid) {
+      expect(action.errors.some((e) => e.includes('role approve: bad name'))).toBe(true);
+      expect(action.errors.some((e) => e.includes('tool defect'))).toBe(false);
+    }
+
+    const state = fslScaffold('decision', undefined, { decision: 'Screen\u001b' });
+    expect(state.valid).toBe(false);
+    if (!state.valid) {
+      expect(state.errors.some((e) => e.includes('role decision: bad name'))).toBe(true);
+    }
+
+    const name = fslScaffold('decision', 'Nul\u0000Name');
+    expect(name.valid).toBe(false);
+    if (!name.valid) {
+      expect(name.errors).toContain('machine_name must be non-empty with no quotes, control characters, or backslashes');
     }
   });
 
