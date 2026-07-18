@@ -42,7 +42,7 @@
     "postinstall": "node src/build_js/postinstall.js",
     "clean": "node src/build_js/clean.js",
     "update_madlibs": "node src/build_js/update_madlibs.js && cp README.md docs",
-    "typescript": "node src/build_js/generate_guide_content.js && tsc --build tsconfig.json",
+    "typescript": "node src/build_js/generate_guide_content.js && node src/build_js/generate_scaffold_content.js && tsc --build tsconfig.json",
     "terser": "node src/build_js/minify_bundles.js",
     "dts": "cp build/ts/*.d.ts build/ts/*.d.ts.map dist/ && rm -rf dist/tools && cp -r build/ts/tools dist/tools && rm -f dist/tools/*.js dist/tools/*.js.map",
     "rollup": "rollup -c",
