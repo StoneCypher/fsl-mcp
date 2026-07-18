@@ -1,0 +1,10 @@
+machine_name: "Pipeline";
+flow: right;
+
+// Happy path rides ->; involuntary failure rides ~>.
+Fetch -> Parse -> Save;
+Fetch ~> Failed;
+Parse ~> Failed;
+
+state Fetch:  { background-color: palegreen; };
+state Failed: { background-color: mistyrose; };

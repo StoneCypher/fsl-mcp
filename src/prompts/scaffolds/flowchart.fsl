@@ -1,0 +1,19 @@
+machine_name: "Expense Approval";
+flow: down;
+
+// Full flowchart idiom: terminals, diamonds, forced escalation, rework loop.
+Submitted -> Validating;
+Validating 'complete'   -> ManagerReview;
+Validating 'incomplete' -> Returned;
+Returned 'resubmit' -> Submitted;
+ManagerReview 'approve' -> Paid;
+ManagerReview 'reject'  -> Returned;
+ManagerReview ~> Escalated;
+Escalated 'resolve' -> ManagerReview;
+
+state Submitted:     { background-color: palegreen; };
+state Validating:    { shape: diamond; };
+state ManagerReview: { shape: diamond; };
+state Paid:          { shape: doublecircle; background-color: palegreen; };
+state Returned:      { line-style: dotted; };
+state Escalated:     { background-color: mistyrose; };

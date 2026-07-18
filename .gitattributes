@@ -2,3 +2,4 @@
 # build-time embedded constants, so their line endings must be LF on every
 # platform, including Windows checkouts.
 src/prompts/*.md text eol=lf
+src/prompts/scaffolds/*.fsl text eol=lf

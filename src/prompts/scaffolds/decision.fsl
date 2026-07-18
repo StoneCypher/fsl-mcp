@@ -1,0 +1,10 @@
+machine_name: "Decision";
+flow: down;
+
+// Labels bind BEFORE the arrow; after the arrow they are silently ignored.
+Validate 'ok'  -> Ship;
+Validate 'bad' -> Reject;
+
+state Validate: { shape: diamond; };
+state Ship:     { shape: doublecircle; background-color: palegreen; };
+state Reject:   { shape: doublecircle; background-color: mistyrose; };

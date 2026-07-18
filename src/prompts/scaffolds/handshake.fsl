@@ -1,0 +1,12 @@
+machine_name: "Handshake";
+flow: right;
+
+Idle 'connect'          -> Connecting;
+Connecting 'acknowledge' -> Established;
+Established 'close'      -> Idle;
+// A timeout is involuntary: it rides ~>.
+Connecting ~> TimedOut;
+TimedOut 'connect' -> Connecting;
+
+state Established: { background-color: palegreen; };
+state TimedOut:    { background-color: mistyrose; };

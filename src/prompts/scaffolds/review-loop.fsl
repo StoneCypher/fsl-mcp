@@ -1,0 +1,8 @@
+machine_name: "Review Loop";
+flow: down;
+
+Draft 'submit'   -> Review;
+Review 'approve' -> Publish;
+Review 'revise'  -> Draft;
+
+state Publish: { shape: doublecircle; background-color: palegreen; };

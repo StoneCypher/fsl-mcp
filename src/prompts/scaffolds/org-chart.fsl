@@ -1,0 +1,9 @@
+machine_name: "Org Chart";
+flow: down;
+
+// A drawing, not a process: edges are reporting lines. Render it; never simulate it.
+CEO -> [VP_Eng VP_Sales];
+VP_Eng -> [Eng_One Eng_Two];
+VP_Sales -> [Sales_One Sales_Two];
+
+state CEO: { background-color: lightgoldenrodyellow; };
