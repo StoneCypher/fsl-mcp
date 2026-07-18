@@ -28,6 +28,7 @@ import dts            from 'rollup-plugin-dts';
 const external = [
   'jssm',
   'jssm/viz',
+  'jssm/cli',
   '@modelcontextprotocol/sdk',
   /^@modelcontextprotocol\/sdk\//,
   'zod',
