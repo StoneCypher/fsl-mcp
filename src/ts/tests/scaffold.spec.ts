@@ -103,4 +103,39 @@ describe('fslScaffold', () => {
       if (r.valid) expect(hasErrors(analyze(r.source)), id).toBe(false);
     }
   });
+
+  it('rejects prototype-chain preset ids without throwing (own-property guard)', () => {
+    expect(() => fslScaffold('__proto__')).not.toThrow();
+    expect(() => fslScaffold('constructor')).not.toThrow();
+    const proto = fslScaffold('__proto__');
+    expect(proto.valid).toBe(false);
+    if (proto.valid) return;
+    expect(proto.errors[0]).toContain('unknown preset');
+    const ctor = fslScaffold('constructor');
+    expect(ctor.valid).toBe(false);
+    if (ctor.valid) return;
+    expect(ctor.errors[0]).toContain('unknown preset');
+  });
+
+  it('regression: a later stateList rename must not corrupt an earlier state rename (single-pass substitution)', () => {
+    const r = fslScaffold('decision', undefined, { decision: 'Reject Now', outcomes: ['Ship', 'Reject2'] });
+    expect(r.valid).toBe(true);
+    if (!r.valid) return;
+    expect(r.source).toContain('"Reject Now" \'ok\'  -> Ship;');
+    expect(r.source).toContain('"Reject Now" \'bad\' -> Reject2;');
+    expect(r.source).toContain('state "Reject Now": { shape: diamond; };');
+    expect((r.source.match(/"Reject Now"/g) ?? []).length).toBe(3);
+    expect(r.source).not.toContain('Reject2 Now');
+    expect(r.source).not.toContain('Validate');
+    expect(hasErrors(analyze(r.source))).toBe(false);
+  });
+
+  it('regression: a role rename must not corrupt the already-substituted machine_name statement (single-pass substitution)', () => {
+    const r = fslScaffold('decision', 'Validate Corp', { decision: 'Screen' });
+    expect(r.valid).toBe(true);
+    if (!r.valid) return;
+    expect(r.source).toContain('machine_name: "Validate Corp";');
+    expect(r.source).not.toContain('machine_name: "Screen Corp";');
+    expect(hasErrors(analyze(r.source))).toBe(false);
+  });
 });

@@ -41,7 +41,35 @@ const stateToken = (name: string): string => (BARE.test(name) ? name : `"${name}
 /** Renders an action label body with apostrophes escaped for single quotes. */
 const actionBody = (name: string): string => name.replace(/'/g, "\\'");
 
-const replaceAll = (src: string, find: RegExp, repl: string): string => src.replace(find, repl);
+/** Escapes regex metacharacters so a literal string is safe inside an alternation. */
+const escapeRegExp = (s: string): string => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+/** One canonical -> replacement pair to resolve in the single combined substitution pass. */
+interface Substitution {
+  /** The exact literal to match: a full machine_name statement, a quoted action, or a bare state name. */
+  readonly from: string;
+  /** The literal text to substitute in place of a match. */
+  readonly to: string;
+  /** Whether `from` must be wrapped in `\b...\b` (bare state tokens) rather than matched verbatim. */
+  readonly bounded: boolean;
+}
+
+/**
+ * Applies every substitution to `src` in one single-pass combined regex, so no
+ * replacement text is ever re-scanned by a later alternative (the source of the
+ * cross-slot corruption this replaces). Order in `subs` sets alternation
+ * precedence: earlier entries win when two alternatives could start at the
+ * same position.
+ */
+const substitute = (src: string, subs: readonly Substitution[]): string => {
+  if (subs.length === 0) return src;
+  const lookup = new Map<string, string>(subs.map((sub): [string, string] => [sub.from, sub.to]));
+  const pattern = subs
+    .map((sub) => (sub.bounded ? `\\b${escapeRegExp(sub.from)}\\b` : escapeRegExp(sub.from)))
+    .join('|');
+  const combined = new RegExp(pattern, 'g');
+  return src.replace(combined, (match) => lookup.get(match) ?? match);
+};
 
 /**
  * Builds a scaffold from a preset with optional renames; never throws.
@@ -51,8 +79,10 @@ const replaceAll = (src: string, find: RegExp, repl: string): string => src.repl
  * @param roles - renames keyed by role; list slots need exactly their canonical count
  */
 export function fslScaffold(preset: string, machineName?: string, roles?: ScaffoldRoles): ScaffoldResult {
-  const def: PresetDef | undefined = SCAFFOLD_REGISTRY[preset];
-  const raw = SCAFFOLD_SOURCES[preset];
+  const presetKnown = Object.prototype.hasOwnProperty.call(SCAFFOLD_REGISTRY, preset)
+    && Object.prototype.hasOwnProperty.call(SCAFFOLD_SOURCES, preset);
+  const def: PresetDef | undefined = presetKnown ? SCAFFOLD_REGISTRY[preset] : undefined;
+  const raw: string | undefined = presetKnown ? SCAFFOLD_SOURCES[preset] : undefined;
   if (def === undefined || raw === undefined) {
     return { valid: false, errors: [`unknown preset: ${preset}`] };
   }
@@ -97,9 +127,24 @@ export function fslScaffold(preset: string, machineName?: string, roles?: Scaffo
   }
   if (errors.length > 0) return { valid: false, errors };
 
-  let source = raw;
-  if (machineName !== undefined) {
-    source = source.replace(`machine_name: "${def.machineName}";`, `machine_name: "${machineName}";`);
+  // Build every substitution against the ORIGINAL raw source, then resolve them
+  // all in one combined regex pass (see `substitute`). Order matters: the
+  // machine_name statement and quoted-action forms are pushed before bare
+  // state tokens, so they take alternation precedence.
+  const subs: Substitution[] = [];
+  if (machineName !== undefined && machineName !== def.machineName) {
+    subs.push({
+      from: `machine_name: "${def.machineName}";`,
+      to: `machine_name: "${machineName}";`,
+      bounded: false,
+    });
+  }
+  for (const slot of def.slots) {
+    if (slot.kind !== 'action') continue;
+    const value = resolved[slot.role];
+    if (typeof value === 'string' && value !== slot.canonical) {
+      subs.push({ from: `'${slot.canonical}'`, to: `'${actionBody(value)}'`, bounded: false });
+    }
   }
   for (const slot of def.slots) {
     const value = resolved[slot.role];
@@ -108,15 +153,14 @@ export function fslScaffold(preset: string, machineName?: string, roles?: Scaffo
       slot.canonical.forEach((from, i) => {
         const to = value[i];
         if (to !== undefined && to !== from) {
-          source = replaceAll(source, new RegExp(`\\b${from}\\b`, 'g'), stateToken(to));
+          subs.push({ from, to: stateToken(to), bounded: true });
         }
       });
     } else if (slot.kind === 'state' && typeof value === 'string' && value !== slot.canonical) {
-      source = replaceAll(source, new RegExp(`\\b${slot.canonical}\\b`, 'g'), stateToken(value));
-    } else if (slot.kind === 'action' && typeof value === 'string' && value !== slot.canonical) {
-      source = replaceAll(source, new RegExp(`'${slot.canonical}'`, 'g'), `'${actionBody(value)}'`);
+      subs.push({ from: slot.canonical, to: stateToken(value), bounded: true });
     }
   }
+  const source = substitute(raw, subs);
 
   const diagnostics = analyze(source);
   if (hasErrors(diagnostics)) {
