@@ -1,5 +1,6 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { Transport } from '@modelcontextprotocol/sdk/shared/transport.js';
+export { RasterizationUnsupportedError } from 'jssm/cli';
 
 /** Severity of an FSL diagnostic, aligned with LSP / jssm's DiagnosticSeverity. */
 type FslSeverity = 'error' | 'warning' | 'info' | 'hint';
@@ -131,18 +132,54 @@ interface SimulateError {
  */
 declare function fslSimulate(source: string, actions: string[]): SimulateResult | SimulateError;
 
-/** Requested render format. */
-type RenderFormat = 'svg' | 'png';
+/** Requested render format: two text targets and three raster targets. */
+type RenderFormat = 'svg' | 'dot' | 'png' | 'jpeg' | 'gif';
+/** Raster-only tuning knobs, forwarded verbatim to jssm's render engine. */
+interface RenderRasterOptions {
+    /** Fit raster output to this pixel width. */
+    width?: number;
+    /** Fit raster output to this pixel height. */
+    height?: number;
+    /** Raster zoom percentage; 100 = 3x natural size. */
+    scale?: number;
+    /** JPEG quality 1-100; ignored for other formats. */
+    quality?: number;
+    /** GIF per-frame delay in centiseconds; ignored for other formats. */
+    delay?: number;
+    /** GIF walk-length frame ceiling; ignored for other formats. */
+    maxFrames?: number;
+}
+/** The engine contract: jssm/cli's render(), injectable for error-path tests. */
+type RenderEngine = (fsl: string, opts: Record<string, unknown>) => Promise<{
+    kind: 'text';
+    content: string;
+} | {
+    kind: 'raster';
+    buffer: Uint8Array;
+}>;
 /** Successful SVG render. */
 interface RenderSvg {
     valid: true;
     format: 'svg';
     svg: string;
 }
-/** PNG requested but unsupported in v1: the SVG plus an explanatory note. */
+/** Successful DOT (graphviz source) render. */
+interface RenderDot {
+    valid: true;
+    format: 'dot';
+    dot: string;
+}
+/** Successful raster render; bytes are the encoded image. */
+interface RenderImage {
+    valid: true;
+    format: 'png' | 'jpeg' | 'gif';
+    mimeType: 'image/png' | 'image/jpeg' | 'image/gif';
+    bytes: Uint8Array;
+}
+/** Raster requested but no rasterizer backend exists: the SVG plus a note. */
 interface RenderUnsupported {
     valid: true;
-    format: 'png';
+    format: 'png' | 'jpeg' | 'gif';
     svg: string;
     note: string;
 }
@@ -151,23 +188,35 @@ interface RenderError {
     valid: false;
     diagnostics: FslDiagnostic[];
 }
+/** Returned when the render engine itself fails at render time. */
+interface RenderFailure {
+    valid: false;
+    error: string;
+}
 /**
- * Render FSL source to a diagram. SVG is produced natively; `format:'png'` is
- * accepted but degrades to the SVG plus a note in v1 (no rasterizer shipped).
- * Invalid source yields diagnostics and is never handed to the renderer.
+ * Render FSL source to a diagram. `svg` (default) and `dot` return text;
+ * `png`, `jpeg`, and `gif` return real encoded image bytes (the gif animates a
+ * random walk). When a raster format is requested but no rasterizer backend is
+ * available, degrades to the SVG plus a note. Invalid source yields
+ * diagnostics and is never handed to the render engine.
  *
  * @param source - the FSL source text
- * @param format - `'svg'` (default) or `'png'`
- * @returns an SVG result, a degraded-png result, or an error with diagnostics
+ * @param format - one of `'svg' | 'dot' | 'png' | 'jpeg' | 'gif'`; default `'svg'`
+ * @param options - raster tuning knobs; ignored for text formats
+ * @param engine - render engine, injectable for tests; defaults to jssm/cli's
+ * @returns a text result, an image result, a degraded result, or a failure
+ * @throws never - all failures are returned as values
  *
  * @example
- *   await fslRender('a -> b;')          // => { valid: true, format: 'svg', svg: '<svg ...' }
- *   await fslRender('a -> b;', 'png')   // => { valid: true, format: 'png', svg: '<svg ...', note: '...' }
+ *   await fslRender('a -> b;')                          // => { valid: true, format: 'svg', svg: '<svg ...' }
+ * @example
+ *   await fslRender('a -> b;', 'png', { width: 640 })   // => { valid: true, format: 'png', mimeType: 'image/png', bytes: Uint8Array }
  */
-declare function fslRender(source: string, format?: RenderFormat): Promise<RenderSvg | RenderUnsupported | RenderError>;
+declare function fslRender(source: string, format?: RenderFormat, options?: RenderRasterOptions, engine?: RenderEngine): Promise<RenderSvg | RenderDot | RenderImage | RenderUnsupported | RenderFailure | RenderError>;
 
 /**
- * Build the fsl-mcp server with all five FSL authoring tools registered.
+ * Build the fsl-mcp server: the five FSL authoring tools, the fsl_guide
+ * guidance tool, and the fsl_scaffold preset-generator tool (seven tools total).
  * The returned server is transport-agnostic; connect it to stdio (production)
  * or an in-memory transport (tests).
  *
@@ -197,4 +246,4 @@ declare function createServer(): McpServer;
 declare function startServer(transport?: Transport): Promise<void>;
 
 export { createServer, fslExplain, fslLint, fslRender, fslSimulate, fslValidate, startServer };
-export type { ExplainError, ExplainResult, ExplainTransition, FslDiagnostic, FslSeverity, LintNote, LintResult, RenderError, RenderFormat, RenderSvg, RenderUnsupported, SimulateError, SimulateResult, ValidateResult };
+export type { ExplainError, ExplainResult, ExplainTransition, FslDiagnostic, FslSeverity, LintNote, LintResult, RenderDot, RenderEngine, RenderError, RenderFailure, RenderFormat, RenderImage, RenderRasterOptions, RenderSvg, RenderUnsupported, SimulateError, SimulateResult, ValidateResult };

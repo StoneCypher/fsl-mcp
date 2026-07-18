@@ -1,9 +1,9 @@
-<!DOCTYPE html><html class="default" lang="en" data-base="./"><head><meta charset="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>fsl-mcp</title><meta name="description" content="Documentation for fsl-mcp"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="assets/style.css"/><link rel="stylesheet" href="assets/highlight.css"/><script defer src="assets/main.js"></script><script async src="assets/icons.js" id="tsd-icons-script"></script><script async src="assets/search.js" id="tsd-search-script"></script><script async src="assets/navigation.js" id="tsd-nav-script"></script></head><body><script>document.documentElement.dataset.theme = localStorage.getItem("tsd-theme") || "os";document.body.style.display="none";setTimeout(() => window.app?app.showPage():document.body.style.removeProperty("display"),500)</script><header class="tsd-page-toolbar"><div class="tsd-toolbar-contents container"><a href="index.html" class="title">fsl-mcp</a><div id="tsd-toolbar-links"></div><button id="tsd-search-trigger" class="tsd-widget" aria-label="Search"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><use href="assets/icons.svg#icon-search"></use></svg></button><dialog id="tsd-search" aria-label="Search"><input role="combobox" id="tsd-search-input" aria-controls="tsd-search-results" aria-autocomplete="list" aria-expanded="true" autocapitalize="off" autocomplete="off" placeholder="Search the docs" maxLength="100"/><ul role="listbox" id="tsd-search-results"></ul><div id="tsd-search-status" aria-live="polite" aria-atomic="true"><div>Preparing search index...</div></div></dialog><a href="#" class="tsd-widget menu" id="tsd-toolbar-menu-trigger" data-toggle="menu" aria-label="Menu"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><use href="assets/icons.svg#icon-menu"></use></svg></a></div></header><div class="container container-main"><div class="col-content"><div class="tsd-page-title"><h1>fsl-mcp</h1></div><div class="tsd-panel tsd-typography"><h1 id="fsl-mcp-v040" class="tsd-anchor-link">fsl-mcp v0.4.0<a href="#fsl-mcp-v040" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h1>
+<!DOCTYPE html><html class="default" lang="en" data-base="./"><head><meta charset="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>fsl-mcp</title><meta name="description" content="Documentation for fsl-mcp"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="assets/style.css"/><link rel="stylesheet" href="assets/highlight.css"/><script defer src="assets/main.js"></script><script async src="assets/icons.js" id="tsd-icons-script"></script><script async src="assets/search.js" id="tsd-search-script"></script><script async src="assets/navigation.js" id="tsd-nav-script"></script></head><body><script>document.documentElement.dataset.theme = localStorage.getItem("tsd-theme") || "os";document.body.style.display="none";setTimeout(() => window.app?app.showPage():document.body.style.removeProperty("display"),500)</script><header class="tsd-page-toolbar"><div class="tsd-toolbar-contents container"><a href="index.html" class="title">fsl-mcp</a><div id="tsd-toolbar-links"></div><button id="tsd-search-trigger" class="tsd-widget" aria-label="Search"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><use href="assets/icons.svg#icon-search"></use></svg></button><dialog id="tsd-search" aria-label="Search"><input role="combobox" id="tsd-search-input" aria-controls="tsd-search-results" aria-autocomplete="list" aria-expanded="true" autocapitalize="off" autocomplete="off" placeholder="Search the docs" maxLength="100"/><ul role="listbox" id="tsd-search-results"></ul><div id="tsd-search-status" aria-live="polite" aria-atomic="true"><div>Preparing search index...</div></div></dialog><a href="#" class="tsd-widget menu" id="tsd-toolbar-menu-trigger" data-toggle="menu" aria-label="Menu"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><use href="assets/icons.svg#icon-menu"></use></svg></a></div></header><div class="container container-main"><div class="col-content"><div class="tsd-page-title"><h1>fsl-mcp</h1></div><div class="tsd-panel tsd-typography"><h1 id="fsl-mcp-v050" class="tsd-anchor-link">fsl-mcp v0.5.0<a href="#fsl-mcp-v050" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h1>
 <blockquote>
-<p>Version 0.4.0 was built on Wednesday, July 15, 2026 at GMT-07:00 <code>1784183185830</code> from hash <code>faecb5d</code>.</p>
+<p>Version 0.5.0 was built on Saturday, July 18, 2026 at GMT-07:00 <code>1784395593215</code> from hash <code>4e64081</code>.</p>
 </blockquote>
-<p><strong>fsl-mcp</strong> is an MCP (Model Context Protocol) stdio server that lets an AI agent <em>author</em> <a href="https://github.com/StoneCypher/jssm">FSL</a> finite-state machines — giving the model the same structured feedback the FSL editor gives a human (parse diagnostics, a rendered diagram, a plain-English explanation, a step-by-step simulation, and style lint notes) instead of leaving it to guess whether the FSL it just wrote is even valid. It wraps <a href="https://github.com/StoneCypher/jssm"><code>jssm</code></a>, the reference FSL implementation, and exposes five tools over stdio via the official <a href="https://github.com/modelcontextprotocol/typescript-sdk"><code>@modelcontextprotocol/sdk</code></a>.</p>
-<!-- Supported embeds: 1784183185830 Wednesday, July 15, 2026 at GMT-07:00 98.62 62 33 faecb5d 0.7 2.65 1.58 2.85 5 141 96.15 96.36 100 136 0.4.0 -->
+<p><strong>fsl-mcp</strong> is an MCP (Model Context Protocol) stdio server that lets an AI agent <em>author</em> <a href="https://github.com/StoneCypher/jssm">FSL</a> finite-state machines — giving the model the same structured feedback the FSL editor gives a human (parse diagnostics, a rendered diagram, a plain-English explanation, a step-by-step simulation, and style lint notes) instead of leaving it to guess whether the FSL it just wrote is even valid. It wraps <a href="https://github.com/StoneCypher/jssm"><code>jssm</code></a>, the reference FSL implementation, and exposes seven tools over stdio (five authoring tools, plus <code>fsl_guide</code> guidance and <code>fsl_scaffold</code> preset generation) via the official <a href="https://github.com/modelcontextprotocol/typescript-sdk"><code>@modelcontextprotocol/sdk</code></a>.</p>
+<!-- Supported embeds: 1784395593215 Saturday, July 18, 2026 at GMT-07:00 100 86 37 4e64081 26.19 20.84 20.51 22.06 6 178 100 100 100 172 0.5.0 -->
 <p> </p>
 <h2 id="install-run" class="tsd-anchor-link">Install / run<a href="#install-run" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2>
 <p>fsl-mcp ships as a standalone package and runs with no local install:</p>
@@ -15,8 +15,8 @@
 </code><button type="button">Copy</button></pre>
 
 <p> </p>
-<h2 id="the-five-tools" class="tsd-anchor-link">The five tools<a href="#the-five-tools" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2>
-<p>Every tool takes FSL <code>source</code> (a string) and returns structured JSON — never a thrown error for bad FSL, always diagnostics.</p>
+<h2 id="the-seven-tools" class="tsd-anchor-link">The seven tools<a href="#the-seven-tools" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2>
+<p>Every tool takes FSL <code>source</code> (a string) and returns structured JSON — never a thrown error for bad FSL, always diagnostics. The exceptions are <code>fsl_guide</code>, which takes no source, and <code>fsl_scaffold</code>, which takes no source but generates one.</p>
 <table>
 <thead>
 <tr>
@@ -30,11 +30,6 @@
 <td><code>fsl_validate</code></td>
 <td><code>source</code></td>
 <td><code>{ valid, diagnostics: [{severity, message, line, col}] }</code></td>
-</tr>
-<tr>
-<td><code>fsl_render</code></td>
-<td><code>source</code>, <code>format?: &quot;svg&quot; | &quot;png&quot;</code></td>
-<td>an SVG diagram (<code>format:&quot;png&quot;</code> degrades to svg + a note in v1), or diagnostics if invalid</td>
 </tr>
 <tr>
 <td><code>fsl_explain</code></td>
@@ -51,13 +46,83 @@
 <td><code>source</code></td>
 <td><code>{ notes: [{rule, message, line}] }</code></td>
 </tr>
+<tr>
+<td><code>fsl_guide</code></td>
+<td><code>topic: &quot;language&quot; | &quot;flowcharts&quot;</code></td>
+<td>FSL authoring guidance as markdown - topics: language, flowcharts</td>
+</tr>
+<tr>
+<td><code>fsl_scaffold</code></td>
+<td><code>preset</code>, <code>machine_name?</code>, <code>roles?</code></td>
+<td>complete compiling starter FSL from presets (8 presets, 5 families) with your names substituted</td>
+</tr>
 </tbody>
 </table>
-<p>Under the hood, every tool runs the same non-throwing <code>analyze()</code> pass first and short-circuits to diagnostics on a compile error, so a model can always find out <em>why</em> its FSL didn't work instead of getting an exception.</p>
+<p>Under the hood, every source-taking tool runs the same non-throwing <code>analyze()</code> pass first and short-circuits to diagnostics on a compile error, so a model can always find out <em>why</em> its FSL didn't work instead of getting an exception. <code>fsl_scaffold</code> runs the same <code>analyze()</code> pass on its <em>generated</em> source before returning it, so its output carries the same guarantee.</p>
+<h3 id="fsl_render" class="tsd-anchor-link">fsl_render<a href="#fsl_render" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<p>Render FSL to a diagram.</p>
+<table>
+<thead>
+<tr>
+<th>format</th>
+<th>returns</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>svg</code> (default)</td>
+<td>SVG text</td>
+</tr>
+<tr>
+<td><code>dot</code></td>
+<td>Graphviz DOT text</td>
+</tr>
+<tr>
+<td><code>png</code> / <code>jpeg</code></td>
+<td>an MCP image content block (the model can see it)</td>
+</tr>
+<tr>
+<td><code>gif</code></td>
+<td>an animated random walk as an image content block</td>
+</tr>
+</tbody>
+</table>
+<p>Raster options: <code>width</code>, <code>height</code>, <code>scale</code> (zoom %, 100 = 3x natural), <code>quality</code>
+(jpeg 1-100), <code>delay</code> (gif centiseconds/frame), <code>maxFrames</code> (gif frame ceiling -
+keep it at or under 20 in chat contexts). PNG and GIF work in plain Node (via
+jssm's bundled resvg-wasm); JPEG needs a Canvas-capable runtime and otherwise
+degrades to SVG plus a note, as does any raster format when no backend is
+available. Invalid source returns diagnostics, as everywhere else.</p>
+<h3 id="fsl_guide" class="tsd-anchor-link">fsl_guide<a href="#fsl_guide" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<p>Returns authoring guidance as markdown, straight from the server - no
+out-of-band primer pasting needed.</p>
+<ul>
+<li><code>topic: &quot;language&quot;</code> - the full FSL primer. Call it before writing FSL for
+the first time; in our evals this guidance moved weak models from 60% to
+100% correctness.</li>
+<li><code>topic: &quot;flowcharts&quot;</code> - the flowchart idiom: decision diamonds with labeled
+branches, terminals, failure paths on <code>~&gt;</code>, layout, and a worked example.</li>
+</ul>
+<p>This is one of two tools that take no FSL source; it cannot fail and does not
+touch the parser.</p>
+<h3 id="fsl_scaffold" class="tsd-anchor-link">fsl_scaffold<a href="#fsl_scaffold" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<p>Returns a complete, compiling FSL starting document - pick a preset, pass
+your names, get source ready for fsl_validate / fsl_render.</p>
+<ul>
+<li>Eight presets across five families: flowchart, pipeline, decision,
+review-loop (flowchart); handshake (protocol); job-lifecycle (process);
+org-chart (orgchart); network-topology (network).</li>
+<li>Role slots rename states and action labels; multi-word names are quoted
+automatically. List slots are fixed-arity - a scaffold is a starting
+point, and adding a stage is a one-line edit.</li>
+<li>Every result is analyze-verified before it is returned; diagram-family
+presets (org-chart, network-topology) say so when simulation is
+meaningless.</li>
+</ul>
 <p> </p>
 <h2 id="ceilings-v1" class="tsd-anchor-link">Ceilings (v1)<a href="#ceilings-v1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2>
 <ul>
-<li><strong>Rendering</strong> is SVG-only. <code>format:&quot;png&quot;</code> is accepted but returns the SVG plus a <code>note</code> explaining that rasterization isn't shipped yet — there's no bundled rasterizer in v1.</li>
+<li>Raster ceilings: PNG and GIF rasterize in plain Node (via jssm's bundled resvg-wasm); JPEG needs a Canvas-capable runtime and otherwise degrades to SVG plus a <code>note</code>. Any raster format degrades the same way when no backend is available.</li>
 <li><strong>Simulation</strong> matches <code>fsl_simulate</code>'s <code>actions</code> against edge <em>action labels</em> first, then falls back to target-state names. Machines whose edges carry no action labels will report an empty <code>legalNext</code> even where target-state transitions are legal — this is a labeling ceiling, not a bug in the walk itself.</li>
 </ul>
 <p> </p>
@@ -73,31 +138,31 @@
   </tr>
   <tr>
     <th>Unit</th>
-    <td>136</td>
-    <td>98.62<small>%</small></td>
-    <td>96.15<small>%</small></td>
-    <td>96.36<small>%</small></td>
+    <td>172</td>
+    <td>100<small>%</small></td>
+    <td>100<small>%</small></td>
+    <td>100<small>%</small></td>
     <td>100<small>%</small></td>
   </tr>
   <tr>
     <th>Stochastic</th>
-    <td>5</td>
-    <td>98.62<small>%</small></td>
-    <td>0.7<small>%</small></td>
-    <td>1.58<small>%</small></td>
-    <td>2.85<small>%</small></td>
+    <td>6</td>
+    <td>100<small>%</small></td>
+    <td>26.19<small>%</small></td>
+    <td>20.51<small>%</small></td>
+    <td>22.06<small>%</small></td>
   </tr>
 </table>
 <table>
   <tr>
     <th></th>
     <th>Docblock count</th>
-    <th>33<small>%</small></th>
+    <th>37<small>%</small></th>
   </tr>
   <tr>
     <th>Docblock coverage</th>
-    <td>62</td>
-    <td>33<small>%</small></td>
+    <td>86</td>
+    <td>37<small>%</small></td>
   </tr>
 </table>
 <ul>
@@ -120,4 +185,4 @@
 <p> </p>
 <h2 id="license" class="tsd-anchor-link">License<a href="#license" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2>
 <p>MIT</p>
-</div></div><div class="col-sidebar"><div class="page-menu"><div class="tsd-navigation settings"><details class="tsd-accordion"><summary class="tsd-accordion-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="assets/icons.svg#icon-chevronDown"></use></svg><h3>Settings</h3></summary><div class="tsd-accordion-details"><div class="tsd-filter-visibility"><span class="settings-label">Member Visibility</span><ul id="tsd-filter-options"><li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-protected" name="protected"/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Protected</span></label></li><li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-inherited" name="inherited" checked/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Inherited</span></label></li><li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-external" name="external"/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>External</span></label></li></ul></div><div class="tsd-theme-toggle"><label class="settings-label" for="tsd-theme">Theme</label><select id="tsd-theme"><option value="os">OS</option><option value="light">Light</option><option value="dark">Dark</option></select></div></div></details></div><details open class="tsd-accordion tsd-page-navigation"><summary class="tsd-accordion-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="assets/icons.svg#icon-chevronDown"></use></svg><h3>On This Page</h3></summary><div class="tsd-accordion-details"><a href="#fsl-mcp-v040"><span>fsl-<wbr/>mcp v0.4.0</span></a><ul><li><a href="#install-run"><span>Install / run</span></a></li><li><a href="#the-five-tools"><span>The five tools</span></a></li><li><a href="#ceilings-v1"><span>Ceilings (v1)</span></a></li><li><a href="#test-status"><span>Test status</span></a></li><li><a href="#license"><span>License</span></a></li></ul></div></details></div><div class="site-menu"><nav class="tsd-navigation"><a href="modules.html">fsl-mcp</a><ul class="tsd-small-nested-navigation" id="tsd-nav-container"><li>Loading...</li></ul></nav></div></div></div><footer><p class="tsd-generator">Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p></footer><div class="overlay"></div></body></html>
+</div></div><div class="col-sidebar"><div class="page-menu"><div class="tsd-navigation settings"><details class="tsd-accordion"><summary class="tsd-accordion-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="assets/icons.svg#icon-chevronDown"></use></svg><h3>Settings</h3></summary><div class="tsd-accordion-details"><div class="tsd-filter-visibility"><span class="settings-label">Member Visibility</span><ul id="tsd-filter-options"><li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-protected" name="protected"/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Protected</span></label></li><li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-inherited" name="inherited" checked/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Inherited</span></label></li><li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-external" name="external"/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>External</span></label></li></ul></div><div class="tsd-theme-toggle"><label class="settings-label" for="tsd-theme">Theme</label><select id="tsd-theme"><option value="os">OS</option><option value="light">Light</option><option value="dark">Dark</option></select></div></div></details></div><details open class="tsd-accordion tsd-page-navigation"><summary class="tsd-accordion-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="assets/icons.svg#icon-chevronDown"></use></svg><h3>On This Page</h3></summary><div class="tsd-accordion-details"><a href="#fsl-mcp-v050"><span>fsl-<wbr/>mcp v0.5.0</span></a><ul><li><a href="#install-run"><span>Install / run</span></a></li><li><a href="#the-seven-tools"><span>The seven tools</span></a></li><li><ul><li><a href="#fsl_render"><span>fsl_<wbr/>render</span></a></li><li><a href="#fsl_guide"><span>fsl_<wbr/>guide</span></a></li><li><a href="#fsl_scaffold"><span>fsl_<wbr/>scaffold</span></a></li></ul></li><li><a href="#ceilings-v1"><span>Ceilings (v1)</span></a></li><li><a href="#test-status"><span>Test status</span></a></li><li><a href="#license"><span>License</span></a></li></ul></div></details></div><div class="site-menu"><nav class="tsd-navigation"><a href="modules.html">fsl-mcp</a><ul class="tsd-small-nested-navigation" id="tsd-nav-container"><li>Loading...</li></ul></nav></div></div></div><footer><p class="tsd-generator">Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p></footer><div class="overlay"></div></body></html>

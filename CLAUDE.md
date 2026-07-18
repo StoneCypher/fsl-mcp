@@ -4,7 +4,10 @@ fsl-mcp is an MCP stdio server that lets an AI agent *author* FSL finite-state
 machines: five authoring tools (`fsl_validate`, `fsl_render`, `fsl_explain`,
 `fsl_simulate`, `fsl_lint`), each taking FSL `source` and returning structured
 JSON, plus `fsl_guide`, which takes no source and returns authoring guidance
-as raw markdown (topics: `language`, `flowcharts`). Wraps the `jssm` library.
+as raw markdown (topics: `language`, `flowcharts`), plus `fsl_scaffold`, which
+also takes no FSL source — it *generates* one from a preset — but
+analyze-gates its generated output before returning it. Seven tools total.
+Wraps the `jssm` library.
 
 ## Analyze-first architecture
 

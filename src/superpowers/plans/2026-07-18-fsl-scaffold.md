@@ -173,7 +173,7 @@ state Standby: { line-style: dashed; };
 ```
 
 - [ ] **Step 2: LF pin.** Append to `.gitattributes`:
-```
+```text
 src/prompts/scaffolds/*.fsl text eol=lf
 ```
 

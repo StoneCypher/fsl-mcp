@@ -1,7 +1,8 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import type { Transport } from '@modelcontextprotocol/sdk/shared/transport.js';
 /**
- * Build the fsl-mcp server with all five FSL authoring tools registered.
+ * Build the fsl-mcp server: the five FSL authoring tools, the fsl_guide
+ * guidance tool, and the fsl_scaffold preset-generator tool (seven tools total).
  * The returned server is transport-agnostic; connect it to stdio (production)
  * or an in-memory transport (tests).
  *
