@@ -1049,15 +1049,29 @@ const PRESET_IDS = Object.keys(SCAFFOLD_REGISTRY).sort();
  * @see ./scaffold-registry.js for the preset catalog
  */
 const BARE = /^[A-Za-z][A-Za-z0-9_]*$/;
-const isBadName = (s) => s.length === 0 || s.includes('\n') || s.includes('\r');
 /**
- * True when `s` ends in a backslash. Every name here is eventually embedded
- * in a quoted FSL literal - double-quoted for state/machine_name tokens,
- * single-quoted for action labels - and a trailing backslash escapes (eats)
- * the literal's closing quote, corrupting the emitted source. Interior
- * backslashes are harmless; only a trailing one breaks the quote.
+ * True when `s` is unusable as a scaffold name: empty, containing any
+ * control character, or containing a backslash ANYWHERE. Backslashes are
+ * rejected wholesale - not just trailing ones - because every name is
+ * embedded in a quoted FSL literal where jssm's string grammar interprets
+ * backslash escapes: a trailing `\` eats the closing quote, an unrecognized
+ * escape (e.g. `\m`) fails to compile, and a recognized escape (e.g. `\\`
+ * or `\n`) COLLAPSES, so the compiled state name would silently differ from
+ * the caller's string and the returned roles map would lie about it.
+ * Control characters (C0 plus DEL) are rejected for the same family of
+ * reasons: jssm's single-quoted action-label grammar rejects some of them
+ * while double-quoted contexts accept the same character, and none of them
+ * belong in a diagram label.
  */
-const endsInBackslash = (s) => s.endsWith('\\');
+const hasControlChar = (s) => {
+    for (let i = 0; i < s.length; i += 1) {
+        const code = s.charCodeAt(i);
+        if (code < 0x20 || code === 0x7f)
+            return true;
+    }
+    return false;
+};
+const isBadName = (s) => s.length === 0 || hasControlChar(s) || s.includes('\\');
 /** Renders a state name as FSL: bare when safe, double-quoted otherwise. */
 const stateToken = (name) => (BARE.test(name) ? name : `"${name}"`);
 /** Renders an action label body with apostrophes escaped for single quotes. */
@@ -1106,13 +1120,8 @@ function fslScaffold(preset, machineName, roles) {
         if (!known.has(key))
             errors.push(`unknown role: ${key}`);
     }
-    if (machineName !== undefined) {
-        if (isBadName(machineName) || machineName.includes('"')) {
-            errors.push('machine_name must be non-empty with no quotes or newlines');
-        }
-        else if (endsInBackslash(machineName)) {
-            errors.push('machine_name may not end in a backslash');
-        }
+    if (machineName !== undefined && (isBadName(machineName) || machineName.includes('"'))) {
+        errors.push('machine_name must be non-empty with no quotes, control characters, or backslashes');
     }
     const resolved = {};
     const finalNames = [];
@@ -1128,8 +1137,6 @@ function fslScaffold(preset, machineName, roles) {
             value.forEach((n) => {
                 if (isBadName(n) || n.includes('"'))
                     errors.push(`role ${slot.role}: bad name ${JSON.stringify(n)}`);
-                else if (endsInBackslash(n))
-                    errors.push(`role ${slot.role}: name may not end in a backslash`);
             });
             resolved[slot.role] = value;
             finalNames.push(...value);
@@ -1142,10 +1149,6 @@ function fslScaffold(preset, machineName, roles) {
             }
             if (isBadName(value) || (slot.kind === 'state' && value.includes('"'))) {
                 errors.push(`role ${slot.role}: bad name ${JSON.stringify(value)}`);
-                continue;
-            }
-            if (endsInBackslash(value)) {
-                errors.push(`role ${slot.role}: name may not end in a backslash`);
                 continue;
             }
             resolved[slot.role] = value;
@@ -1208,20 +1211,19 @@ function fslScaffold(preset, machineName, roles) {
     }
     const source = substitute(raw, subs);
     const diagnostics = analyze(source);
-    /* v8 ignore start -- defensive armor, verified still reachable, not just
-       future-proofing: substitution performs token-boundary renames of names
-       validated above (non-empty, no quotes/newlines/trailing backslash,
-       unique states, unique action labels, correct arity) into source text
-       that scaffold.spec.ts proves compiles both unmodified and under a full
-       rename of every slot for every preset in SCAFFOLD_REGISTRY. Probed and
-       confirmed NOT reachable via a trailing backslash on any name/machine_name
-       or via duplicate resolved action labels (both rejected above now). Probed
-       and confirmed STILL reachable: a name containing an INTERIOR backslash
-       followed by a character jssm's FSL string grammar doesn't recognize as
-       an escape (e.g. '\m') fails analyze() even though '\n', '\r', '\\', and
-       the trailing-backslash case above either compile fine or are rejected
-       pre-substitution - this branch is real, not merely hypothetical, armor
-       against that gap. */
+    /* v8 ignore start -- defensive armor: substitution performs token-boundary
+       renames of names validated above (non-empty, no quotes, no control
+       characters, no backslashes anywhere, unique states, unique action
+       labels, correct arity) into source text that scaffold.spec.ts proves
+       compiles both unmodified and under a full rename of every slot for
+       every preset in SCAFFOLD_REGISTRY. Probed and confirmed rejected in
+       validation, never reaching this gate: every backslash-grammar class
+       (trailing '\', unrecognized interior escapes like '\m', recognized
+       escapes '\\'/'\n' that would silently collapse and make the roles map
+       lie), raw C0/DEL control characters in any position (previously the
+       one reachable class, via single-quoted action-label grammar), and
+       duplicate resolved action labels. No known input reaches this branch;
+       it is retained as armor against jssm grammar surprises. */
     if (hasErrors(diagnostics)) {
         return { valid: false, errors: ['substituted scaffold failed to compile (tool defect - please report)'] };
     }
