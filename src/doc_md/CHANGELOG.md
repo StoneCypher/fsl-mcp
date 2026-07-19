@@ -22,9 +22,39 @@ Published tags:
 
 &nbsp;
 
+## [Untagged] - Jul 18, 2026 4:36:35 PM
+
+Commit [c96896d654bb48c5a363c1779dd6d36ea9d82e70](https://github.com/StoneCypher/fsl-mcp/commit/c96896d654bb48c5a363c1779dd6d36ea9d82e70)
+
+Author: `John Haugeland <stonecypher@gmail.com>`
+
+  * fix(scaffold): reject backslashes and control characters in names wholesale - the roles map must never lie about compiled state names
+
+
+
+
+&nbsp;
+
+&nbsp;
+
+## [Untagged] - Jul 18, 2026 12:20:52 PM
+
+Commit [bc0c6634a11d80de38027411e885b97dfc3aa974](https://github.com/StoneCypher/fsl-mcp/commit/bc0c6634a11d80de38027411e885b97dfc3aa974)
+
+Author: `John Haugeland <stonecypher@gmail.com>`
+
+  * fix(scaffold): validate trailing-backslash names and duplicate action labels; honest eval claim in README
+
+
+
+
+&nbsp;
+
+&nbsp;
+
 ## [Untagged] - Jul 18, 2026 10:42:35 AM
 
-Commit [1a90ae3b08538a8818eda6f97fcb845d45c316e3](https://github.com/StoneCypher/fsl-mcp/commit/1a90ae3b08538a8818eda6f97fcb845d45c316e3)
+Commit [65135dfa8bbb61dc0f5869fe316d8bcf37651094](https://github.com/StoneCypher/fsl-mcp/commit/65135dfa8bbb61dc0f5869fe316d8bcf37651094)
 
 Author: `John Haugeland <stonecypher@gmail.com>`
 
@@ -39,7 +69,7 @@ Author: `John Haugeland <stonecypher@gmail.com>`
 
 ## [Untagged] - Jul 18, 2026 10:29:46 AM
 
-Commit [77c2224aad4f29146b5c9ded754c220542d9801a](https://github.com/StoneCypher/fsl-mcp/commit/77c2224aad4f29146b5c9ded754c220542d9801a)
+Commit [ee9b942a1d28ae87e9e260e97510c38b7e413c3b](https://github.com/StoneCypher/fsl-mcp/commit/ee9b942a1d28ae87e9e260e97510c38b7e413c3b)
 
 Author: `John Haugeland <stonecypher@gmail.com>`
 
@@ -54,7 +84,7 @@ Author: `John Haugeland <stonecypher@gmail.com>`
 
 ## [Untagged] - Jul 18, 2026 9:16:28 AM
 
-Commit [4e64081ff4c580433f57948b9046d297f1f86936](https://github.com/StoneCypher/fsl-mcp/commit/4e64081ff4c580433f57948b9046d297f1f86936)
+Commit [fa923a1e2db0121a5cba7f6f6fd34a71d825069c](https://github.com/StoneCypher/fsl-mcp/commit/fa923a1e2db0121a5cba7f6f6fd34a71d825069c)
 
 Author: `John Haugeland <stonecypher@gmail.com>`
 
@@ -87,7 +117,7 @@ no files added to the coverage exclude list.
 
 ## [Untagged] - Jul 18, 2026 8:55:19 AM
 
-Commit [a0beee899da09e02b28d7d0d7a492fa68f340ddf](https://github.com/StoneCypher/fsl-mcp/commit/a0beee899da09e02b28d7d0d7a492fa68f340ddf)
+Commit [9ac6fef300f0f0e12903757e322b896e830cb5e2](https://github.com/StoneCypher/fsl-mcp/commit/9ac6fef300f0f0e12903757e322b896e830cb5e2)
 
 Author: `John Haugeland <stonecypher@gmail.com>`
 
@@ -102,7 +132,7 @@ Author: `John Haugeland <stonecypher@gmail.com>`
 
 ## [Untagged] - Jul 18, 2026 8:48:47 AM
 
-Commit [6554cb8d269e779f460fcbb1f2ac7f6c698efca5](https://github.com/StoneCypher/fsl-mcp/commit/6554cb8d269e779f460fcbb1f2ac7f6c698efca5)
+Commit [6465eb31cd7810edb20c7c95b448ebcacba519d3](https://github.com/StoneCypher/fsl-mcp/commit/6465eb31cd7810edb20c7c95b448ebcacba519d3)
 
 Author: `John Haugeland <stonecypher@gmail.com>`
 
@@ -117,7 +147,7 @@ Author: `John Haugeland <stonecypher@gmail.com>`
 
 ## [Untagged] - Jul 18, 2026 8:35:33 AM
 
-Commit [91a0d54a953a09f8355acba32e0e741f916bfea6](https://github.com/StoneCypher/fsl-mcp/commit/91a0d54a953a09f8355acba32e0e741f916bfea6)
+Commit [f8c0c13fcb9cc2e29f1f796f2164070c8a85c8a9](https://github.com/StoneCypher/fsl-mcp/commit/f8c0c13fcb9cc2e29f1f796f2164070c8a85c8a9)
 
 Author: `John Haugeland <stonecypher@gmail.com>`
 
@@ -132,7 +162,7 @@ Author: `John Haugeland <stonecypher@gmail.com>`
 
 ## [Untagged] - Jul 18, 2026 7:53:00 AM
 
-Commit [75d0c21be8746daa66e7e76823aac6e8a7f7e67c](https://github.com/StoneCypher/fsl-mcp/commit/75d0c21be8746daa66e7e76823aac6e8a7f7e67c)
+Commit [7895b10e2716372da54af98c24d55187c93c3ad8](https://github.com/StoneCypher/fsl-mcp/commit/7895b10e2716372da54af98c24d55187c93c3ad8)
 
 Author: `John Haugeland <stonecypher@gmail.com>`
 
@@ -147,38 +177,8 @@ Author: `John Haugeland <stonecypher@gmail.com>`
 
 ## [Untagged] - Jul 18, 2026 7:52:48 AM
 
-Commit [212947e9afab4a47dd8822aa05280f72eef3407a](https://github.com/StoneCypher/fsl-mcp/commit/212947e9afab4a47dd8822aa05280f72eef3407a)
+Commit [1ae9b7c30e16d3b19804eee29cd707dc7de2f30a](https://github.com/StoneCypher/fsl-mcp/commit/1ae9b7c30e16d3b19804eee29cd707dc7de2f30a)
 
 Author: `John Haugeland <stonecypher@gmail.com>`
 
   * fix(build): externalize jssm/cli in rollup config - main's build broke when render.ts began importing it
-
-
-
-
-&nbsp;
-
-&nbsp;
-
-## [Untagged] - Jul 18, 2026 7:51:30 AM
-
-Commit [4c78ca39665b0fd3f33e0a78760e788bf685469a](https://github.com/StoneCypher/fsl-mcp/commit/4c78ca39665b0fd3f33e0a78760e788bf685469a)
-
-Author: `John Haugeland <stonecypher@gmail.com>`
-
-  * feat(scaffold): rename engine with analyze gate, unit and stochastic coverage
-
-
-
-
-&nbsp;
-
-&nbsp;
-
-## [Untagged] - Jul 18, 2026 7:39:26 AM
-
-Commit [673f796d9b39f2131f9a023c82ef9b6831319e0d](https://github.com/StoneCypher/fsl-mcp/commit/673f796d9b39f2131f9a023c82ef9b6831319e0d)
-
-Author: `John Haugeland <stonecypher@gmail.com>`
-
-  * feat(scaffold): directory-scanning embedder, preset registry, drift guard
