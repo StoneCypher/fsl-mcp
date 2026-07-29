@@ -154,8 +154,14 @@ coverage-mutat/
 # Developer-local build config (per-machine overrides)
 build.config.local.json
 
-# Subagent-driven-development scratch (ledger, briefs, reports, review diffs)
-.superpowers/
+# Subagent-driven-development scratch (ledger, briefs, reports, review diffs).
+# Contents are ignored, but .superpowers/docs/ holds TRACKED specs and plans.
+# They live here rather than under docs/ because `npm run build`'s clean stage
+# sweeps docs/ and the site stage does not restore them, so every build deleted
+# them. Note the /* form: git cannot re-include a path whose parent directory
+# is itself excluded, so the negation below only works against `.superpowers/*`.
+.superpowers/*
+!.superpowers/docs/
 
 # eval harness run artifact (npm run eval output), not source
 eval-results.json
