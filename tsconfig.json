@@ -1,5 +1,8 @@
 {
   // Visit https://aka.ms/tsconfig to read more about this file
+  // MCP SDK v2's .d.mts files reference Buffer. TypeScript 6.0 stops
+  // auto-including @types/*, so a bump past 5.x will need:
+  //   "types": ["node"]
   "compilerOptions": {
     // File Layout
     // "rootDir": "./src",
