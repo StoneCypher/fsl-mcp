@@ -93,9 +93,16 @@ value does not exist. Trust the declarations, not the guide.
 | Add | `"engines": { "node": ">=20" }`, which v2 requires and `package.json` does not currently declare at all |
 | Unchanged | `zod@^4.3.6` already satisfies v2's `^4.2.0` |
 
-TypeScript stays at `^5.9.3`, so v2's `"types": ["node"]` requirement (which
-applies from TS 6.0) does not bite yet. A comment goes in `tsconfig.json` so the
-next TypeScript bump is not a mystery.
+TypeScript stays at `^5.9.3`. v2's `.d.mts` files reference `Buffer`, and from
+TS 6.0 `@types/*` is no longer auto-included, so `"types"` must name `node`.
+
+**Correction (2026-07-29, from the Task 1 review):** an earlier draft of this
+section claimed that requirement "does not bite yet" and implied `types` was
+unset. It is already satisfied - `tsconfig.json` has carried
+`"types": ["vitest/globals", "node"]` all along. The practical consequence is
+inverted: nothing needs adding, but `node` must never be dropped from that
+array. The `tsconfig.json` comment added in Task 1 documents the constraint,
+though its wording still reflects the original mistaken framing.
 
 ### 4.2 Server module (`src/ts/server.ts`)
 
