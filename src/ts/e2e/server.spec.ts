@@ -1,6 +1,7 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { Client } from '@modelcontextprotocol/client';
 import { InMemoryTransport } from '@modelcontextprotocol/client';
+import type { Transport } from '@modelcontextprotocol/server';
 import { startServer } from '../server.js';
 
 describe('fsl-mcp server', () => {
@@ -151,5 +152,38 @@ describe('fsl-mcp server', () => {
 
     await client.close();
     await handle.close();
+  });
+});
+
+describe('startServer error reporting', () => {
+  it('reports an out-of-band transport error to stderr via onerror, never to stdout', async () => {
+    // A minimal Transport double: enough for serveStdio to install its own
+    // onerror/onmessage/onclose handlers on it without ever touching real
+    // process stdio. Once startServer(transport) returns, transport.onerror
+    // is the SDK's wrapper around the onerror we wired - invoking it here
+    // simulates one of the ~18 out-of-band conditions serveStdio itself
+    // reports (send failures, malformed envelopes, a failed wire.start(),
+    // etc.), which is the seam this fix owns: getting that report to stderr
+    // rather than letting it be dropped for want of a handler.
+    const transport: Transport = {
+      start: () => Promise.resolve(),
+      send: () => Promise.resolve(),
+      close: () => Promise.resolve(),
+    };
+    const handle = startServer(transport);
+
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => undefined);
+    const logSpy   = vi.spyOn(console, 'log').mockImplementation(() => undefined);
+    try {
+      const outOfBand = new Error('simulated out-of-band transport error');
+      transport.onerror?.(outOfBand);
+
+      expect(errorSpy).toHaveBeenCalledWith(outOfBand);
+      expect(logSpy).not.toHaveBeenCalled();
+    } finally {
+      errorSpy.mockRestore();
+      logSpy.mockRestore();
+      await handle.close();
+    }
   });
 });
