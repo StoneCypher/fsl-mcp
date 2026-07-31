@@ -19,18 +19,25 @@ import dts            from 'rollup-plugin-dts';
 // browser, so a browser global would be dead weight.
 //
 // Every runtime dependency is left EXTERNAL in all bundles. jssm, jssm/viz,
-// the MCP SDK, and zod are all declared dependencies, so a consumer installing
-// fsl-mcp already has them — inlining them would bloat the bundles and defeat
-// dependency dedup. Keeping jssm/viz external also means its internal
+// `@modelcontextprotocol/server`, and zod are all declared dependencies, so a
+// consumer installing fsl-mcp already has them — inlining them would bloat the
+// bundles and defeat dependency dedup. It would also *freeze* them: a consumer
+// who patches a security advisory in the MCP SDK would still execute the copy
+// welded into dist/bin.mjs. Keeping jssm/viz external also means its internal
 // `await import('@viz-js/viz')` stays a normal dynamic import (no single-file
 // inlining hack needed). The ESM .d.ts is produced by `tsc --build` and copied
 // into dist/ by the `dts` npm script; the CJS .d.cts is bundled by cjs_cts below.
+//
+// The regex entry is load-bearing: the code imports the `./stdio` subpath
+// (`@modelcontextprotocol/server/stdio`), which the bare string alone does not
+// match. If the SDK package name ever changes again, BOTH entries must move
+// together or rollup silently inlines the whole SDK.
 const external = [
   'jssm',
   'jssm/viz',
   'jssm/cli',
-  '@modelcontextprotocol/sdk',
-  /^@modelcontextprotocol\/sdk\//,
+  '@modelcontextprotocol/server',
+  /^@modelcontextprotocol\/server\//,
   'zod',
   /^node:/
 ];

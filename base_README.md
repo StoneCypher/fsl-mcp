@@ -51,10 +51,13 @@ without configuration.
 
 The `tools/list` response carries a one-hour cache hint (`cacheScope:
 "public"`), since the tool set is compiled in and cannot change while the
-server runs. Set `FSL_MCP_TOOLS_TTL_MS=0` to disable that while developing
-against a local build; an invalid value is ignored with a warning on stderr.
-Cache hints appear on modern responses only - legacy responses are
-unaffected.
+server runs. Set `FSL_MCP_TOOLS_TTL_MS` to another whole number of
+milliseconds to shorten or lengthen that window; `0` marks every response
+immediately stale, which is what you want while developing against a local
+build. The hint fields are still present at `0` - it is a zero-length
+freshness window, not an absent hint. An invalid value is ignored with a
+warning on stderr. Cache hints appear on modern responses only - legacy
+responses are unaffected.
 
 ### fsl_render
 

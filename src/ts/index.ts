@@ -18,3 +18,7 @@ export { fslRender, RasterizationUnsupportedError } from './tools/render.js';
 export type { RenderFormat, RenderRasterOptions, RenderEngine, RenderSvg, RenderDot, RenderImage, RenderUnsupported, RenderFailure, RenderError } from './tools/render.js';
 
 export { createServer, startServer } from './server.js';
+
+// `startServer` returns the SDK's stdio handle. Re-exported so a consumer can
+// name the type of what they were handed without reaching into an SDK subpath.
+export type { StdioServerHandle } from '@modelcontextprotocol/server/stdio';
