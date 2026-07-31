@@ -121,15 +121,38 @@ generated version string (section 4.5).
 
 ```typescript
 export function startServer(transport?: Transport): StdioServerHandle {
+  const onerror = (e: Error): void => { console.error(e); };
   return serveStdio(
     () => createServer(),
-    transport === undefined ? {} : { transport },
+    transport === undefined ? { onerror } : { transport, onerror },
   );
 }
 ```
 
 The conditional spread rather than `{ transport }` is required by
 `exactOptionalPropertyTypes`.
+
+**As-built correction (2026-07-30, from the Task 4 review).** The `onerror`
+wiring above was NOT in this spec's original draft, and its absence was a real
+defect rather than an omission of detail. `serveStdio` routes every out-of-band
+error through `options.onerror`; with no handler, `reportError` is
+`try { options.onerror?.(error); } catch {}` and roughly eighteen call sites
+drop their errors silently. `wire.start()`'s rejection is swallowed too, so a
+startup failure would have produced no output at all. The old `bin.ts` had
+`startServer().catch(e => { console.error(e); process.exit(1); })`; this spec
+removed that and replaced it with nothing. It must be wired on BOTH arms —
+reporting only in production and swallowing in tests is worse than either.
+
+`stderr` only: `stdout` is the protocol channel.
+
+**Known residual, accepted.** This restores visibility but not failure
+signalling. A `wire.start()` rejection still leaves `bin.ts` at exit 0 with a
+live process, because the SDK exposes one `onerror` shared between fatal
+startup failure and routine per-message noise, with no phase tag and no
+distinguishable subtype, and `StdioServerHandle` exposes only `close()`. On
+`bin.ts`'s real path this is unreachable — the SDK's own `StdioServerTransport`
+`start()` throws only on its double-start guard. The honest fix is upstream: a
+`ready: Promise<void>` on the handle, or a distinguishable startup-failure type.
 
 This is still a change to a documented public export (`src/ts/index.ts:20`), so
 it needs: a rewritten DocBlock explaining that `serveStdio` now owns transport
@@ -187,7 +210,7 @@ back loudly on stderr:
  *   toolsCacheHint({ FSL_MCP_TOOLS_TTL_MS: '0' });      // never cache
  *   toolsCacheHint({ FSL_MCP_TOOLS_TTL_MS: 'banana' }); // 1 hour + stderr warning
  */
-export function toolsCacheHint(env: NodeJS.ProcessEnv): CacheHint {
+export function toolsCacheHint(env: NodeJS.ProcessEnv): ToolsCacheHint {
   const DEFAULT_TTL_MS = 3_600_000;
   const raw = env['FSL_MCP_TOOLS_TTL_MS'];
   if (raw === undefined) { return { ttlMs: DEFAULT_TTL_MS, cacheScope: 'public' }; }
@@ -204,6 +227,13 @@ export function toolsCacheHint(env: NodeJS.ProcessEnv): CacheHint {
 Taking `env` as a parameter rather than reading `process.env` keeps it pure and
 lets the unit spec reach every branch without mutating global state. `stderr` is
 safe here because only `stdout` is reserved for the protocol channel.
+
+**As-built correction.** The shipped code returns its own `ToolsCacheHint`
+interface rather than importing the SDK's `CacheHint`, which keeps this module
+dependency-free and unit-testable in isolation. It assigns cleanly because the
+SDK's `CacheHint` declares both fields optional, so required fields satisfy it
+under `exactOptionalPropertyTypes`. The spec's original `CacheHint` return type
+was the weaker choice.
 
 **Standing rule.** Any future `resources/read` registration gets
 `cacheHint: { ttlMs: 0, ... }` unless the resource is provably immutable.
@@ -259,6 +289,29 @@ envelope fields. A modern `tools/list` response carries `ttlMs` and
 legacy half is what pins the SDK's "responses to 2025-era requests are never
 affected" guarantee.
 
+**Added mid-flight, and load-bearing: a real-subprocess spec.** This section's
+original draft had no equivalent, and the gap was structural. `startServer`'s
+omitted-transport arm — the exact call `bin.ts` makes in production — cannot be
+exercised in-process without binding `serveStdio` to the test runner's own
+stdin/stdout, so it carries a `/* v8 ignore */`. `bin.ts` is itself
+coverage-excluded. Nothing tested the shipped entry path at all.
+
+`src/ts/e2e/spawn.spec.ts` closes it by spawning `src/ts/bin.ts` as a real child
+process through `jiti`, asserting `tools/list` over real pipes, and asserting
+exit 0 on stdin EOF. It `JSON.parse`s **every** stdout line, which is the
+stdout-purity guard: `stdout` is the protocol channel, so one stray
+`console.log` must fail the suite.
+
+It targets `src/ts/bin.ts`, NOT `dist/bin.mjs`, because `run_build.js` runs each
+stage's scripts concurrently — the test run races `tsc`, and `dist/bin.mjs` is
+not produced until a later stage. A spec pointed at `dist/` would find nothing,
+or silently exercise a stale binary from a previous build and report a false
+pass. It therefore does not cover rollup bundling or the shebang; that gap is
+stated rather than papered over.
+
+**This spec is the condition on which the `v8 ignore` was accepted.** Removing
+it silently reopens an untested production entry path.
+
 The 100% coverage gate on all four metrics stays enforced, unchanged.
 
 ## 6. Non-goals
@@ -275,11 +328,34 @@ architecture are untouched by this work.
 
 | Risk | Handling |
 |---|---|
-| Build toolchain compatibility with v2's dual ESM/CJS output (`rollup`, `attw`, `terser`, Stryker, typedoc) | Unverified. First implementation step is a full `npm run build` immediately after the dependency swap, before any other edit, so a toolchain problem surfaces in isolation. |
-| Exact key for the `tools/list` entry of `CacheableResultMethod` | Compiler resolves it. Low risk. |
-| Export path of the `Transport` type in v2 | Section 4.2 assumes `@modelcontextprotocol/server`. In v1 it lived at `@modelcontextprotocol/sdk/shared/transport.js`. Not verified; compiler resolves it. |
-| `z.object()` requirement for `inputSchema` is taken from the migration guide, not read from declarations | Compiler resolves it. |
-| `@modelcontextprotocol/sdk@1` and the v2 packages briefly coexisting | They are separate package names, so both can be installed during the transition without conflict. The v1 dependency is removed in the same commit that lands the last import change. |
+| Build toolchain compatibility with v2's dual ESM/CJS output (`rollup`, `attw`, `terser`, Stryker, typedoc) | **RESOLVED.** Full build green, `attw` clean on all four resolution modes. |
+| Exact key for the `tools/list` entry of `CacheableResultMethod` | **RESOLVED.** `'tools/list'` is a literal member of the SDK's closed `CACHEABLE_RESULT_METHODS` union, so it could not have been silently accepted as excess. No cast needed. |
+| Export path of the `Transport` type in v2 | **RESOLVED.** `Transport` is on the main entry only and is NOT re-exported from `./stdio`; `serveStdio`, `StdioServerTransport`, and `StdioServerHandle` are `./stdio`-only. |
+| `z.object()` requirement for `inputSchema` is taken from the migration guide, not read from declarations | **RESOLVED.** Correct as written; all seven wraps compile. |
+| `@modelcontextprotocol/sdk@1` and the v2 packages briefly coexisting | **RESOLVED.** Coexisted cleanly; v1 removed in the same commit as the last import change. |
+
+### 7.1 What this spec missed — recorded so the next one does better
+
+The risk table above was the wrong shape. Every risk it named was resolved
+without incident; every real problem came from somewhere it did not look.
+
+- **The release artifact.** `dist/` is tracked in this repo and `package.json`'s
+  `bin` points into it, but no task's `git add` named it and no test touches it
+  (`vitest.config.ts` excludes `dist/**`). The committed bundles stayed
+  pre-migration v1 output through the entire branch — a published `0.6.0` would
+  have died at `ERR_MODULE_NOT_FOUND`. Only a whole-branch review could see it.
+- **`rollup.config.js`.** Its `external` array still named the v1 package, so
+  the SDK was inlined: `dist/bin.mjs` grew 58,852 → 948,393 bytes. A build
+  config is part of a dependency migration; this spec never mentioned it.
+- **Reserved `_meta` keys.** The research behind this spec recorded that modern
+  requests carry `protocolVersion` and `clientCapabilities`, but not that BOTH
+  are required — a request missing `clientCapabilities` gets `InvalidParams`,
+  not a warning. Prose that read as authoritative, wrong in a way only an
+  executed request could expose.
+
+The lesson for the next migration spec: enumerate the *artifacts* a change
+touches, not only the source files, and treat "no test covers this" as a risk
+in its own right rather than an absence of one.
 
 ## 8. Release
 
