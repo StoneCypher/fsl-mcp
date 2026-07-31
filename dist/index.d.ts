@@ -10,4 +10,5 @@ export type { SimulateResult, SimulateError } from './tools/simulate.js';
 export { fslRender, RasterizationUnsupportedError } from './tools/render.js';
 export type { RenderFormat, RenderRasterOptions, RenderEngine, RenderSvg, RenderDot, RenderImage, RenderUnsupported, RenderFailure, RenderError } from './tools/render.js';
 export { createServer, startServer } from './server.js';
+export type { StdioServerHandle } from '@modelcontextprotocol/server/stdio';
 //# sourceMappingURL=index.d.ts.map

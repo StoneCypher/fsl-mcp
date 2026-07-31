@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-2 releases; Changelogging the last 10 commits; Full changelog at [CHANGELOG.long.md](CHANGELOG.long.md)
+3 releases; Changelogging the last 10 commits; Full changelog at [CHANGELOG.long.md](CHANGELOG.long.md)
 
 
 
@@ -12,7 +12,7 @@ All notable changes to this project will be documented in this file.
 
 Published tags:
 
-<a href="#0__4__0">0.4.0</a>, <a href="#0__3__0">0.3.0</a>
+<a href="#0__5__0">0.5.0</a>, <a href="#0__4__0">0.4.0</a>, <a href="#0__3__0">0.3.0</a>
 
 
 
@@ -22,13 +22,13 @@ Published tags:
 
 &nbsp;
 
-## [Untagged] - Jul 18, 2026 4:36:35 PM
+## [Untagged] - Jul 30, 2026 6:29:17 PM
 
-Commit [c96896d654bb48c5a363c1779dd6d36ea9d82e70](https://github.com/StoneCypher/fsl-mcp/commit/c96896d654bb48c5a363c1779dd6d36ea9d82e70)
+Commit [0b1c584ff56b001f43677b4604e887824c795b56](https://github.com/StoneCypher/fsl-mcp/commit/0b1c584ff56b001f43677b4604e887824c795b56)
 
 Author: `John Haugeland <stonecypher@gmail.com>`
 
-  * fix(scaffold): reject backslashes and control characters in names wholesale - the roles map must never lie about compiled state names
+  * docs: note dual-era protocol support; v0.6.0
 
 
 
@@ -37,13 +37,13 @@ Author: `John Haugeland <stonecypher@gmail.com>`
 
 &nbsp;
 
-## [Untagged] - Jul 18, 2026 12:20:52 PM
+## [Untagged] - Jul 30, 2026 6:14:28 PM
 
-Commit [bc0c6634a11d80de38027411e885b97dfc3aa974](https://github.com/StoneCypher/fsl-mcp/commit/bc0c6634a11d80de38027411e885b97dfc3aa974)
+Commit [99e378adc198503b0224b69e906d0233e33f75b5](https://github.com/StoneCypher/fsl-mcp/commit/99e378adc198503b0224b69e906d0233e33f75b5)
 
 Author: `John Haugeland <stonecypher@gmail.com>`
 
-  * fix(scaffold): validate trailing-backslash names and duplicate action labels; honest eval claim in README
+  * test(e2e): cover the production bin entry as a real subprocess
 
 
 
@@ -52,13 +52,13 @@ Author: `John Haugeland <stonecypher@gmail.com>`
 
 &nbsp;
 
-## [Untagged] - Jul 18, 2026 10:42:35 AM
+## [Untagged] - Jul 30, 2026 6:11:47 PM
 
-Commit [65135dfa8bbb61dc0f5869fe316d8bcf37651094](https://github.com/StoneCypher/fsl-mcp/commit/65135dfa8bbb61dc0f5869fe316d8bcf37651094)
+Commit [22f97b2f35b64633b7c761325469cb4ba60853d7](https://github.com/StoneCypher/fsl-mcp/commit/22f97b2f35b64633b7c761325469cb4ba60853d7)
 
 Author: `John Haugeland <stonecypher@gmail.com>`
 
-  * test(e2e): scalar-kind role rename crosses the fsl_scaffold protocol boundary
+  * test(e2e): prove modern and legacy eras are both served over stdio
 
 
 
@@ -67,13 +67,52 @@ Author: `John Haugeland <stonecypher@gmail.com>`
 
 &nbsp;
 
-## [Untagged] - Jul 18, 2026 10:29:46 AM
+## [Untagged] - Jul 30, 2026 5:52:01 PM
 
-Commit [ee9b942a1d28ae87e9e260e97510c38b7e413c3b](https://github.com/StoneCypher/fsl-mcp/commit/ee9b942a1d28ae87e9e260e97510c38b7e413c3b)
+Commit [5be3038e210d2030f293e6c348b6ef1f194fdb60](https://github.com/StoneCypher/fsl-mcp/commit/5be3038e210d2030f293e6c348b6ef1f194fdb60)
 
 Author: `John Haugeland <stonecypher@gmail.com>`
 
-  * feat(server): fsl_scaffold tool - eight presets, five families; v0.5.0
+  * fix(server): wire onerror reporting and correct createServer's stale DocBlock
+  * Review of the SDK v2 migration (00eea67) found two Important defects,
+both in the brief that commit transcribed faithfully rather than in the
+transcription itself:
+  * 1. The new bin/startServer pairing dropped all error reporting. The old
+   bin did `startServer().catch(e => { console.error(e); process.exit(1); })`;
+   the new one did nothing, and serveStdio routes every out-of-band error
+   (send failures, factory-construction failures, malformed envelopes,
+   discarded-probe timeouts, and a failed wire.start() among ~18 call
+   sites) through `options.onerror`, which was never passed - so
+   `reportError`'s `try { options.onerror?.(error); } catch {}` dropped
+   every one of them on the floor, including a startup failure, silently.
+  *    Fixed by wiring `onerror: (error) => { console.error(error); }` into
+   both arms of startServer's transport-options ternary (injected and
+   omitted), so a real client (bin.ts) and the e2e specs alike get error
+   visibility, on stderr only - `stdout` is the protocol channel and a
+   stray write there corrupts it for every connected client.
+  *    Chose not to reintroduce `process.exit(1)`: `onerror` is a single sink
+   shared between a fatal startup failure and routine per-message
+   conditions (one malformed notification, a discarded probe timeout),
+   and the SDK gives the callback no way to distinguish them. Exiting
+   unconditionally would risk killing an otherwise-healthy server over a
+   transient client mistake, which the review explicitly flagged as a
+   trap to avoid. Logging restores the pre-migration behavior's
+   visibility without that risk.
+  * 2. createServer's DocBlock still described the pre-migration usage
+   pattern - "connect it to stdio (production)" plus an
+   `@example await server.connect(new StdioServerTransport())` -
+   referencing a symbol server.ts no longer imports, and directly
+   contradicting startServer's own DocBlock, which says a hand-connected
+   transport "bypasses the era dispatch entirely." Rewritten to describe
+   what createServer actually is now: a factory product consumed by
+   serveStdio via startServer, not something to .connect() directly.
+  * Covering tests: added a new e2e spec exercising the onerror wiring via
+a minimal custom Transport double, asserting the injected error reaches
+console.error (stderr) and never console.log (stdout). See the fix
+report appended to
+.superpowers/sdd/2026-07-29-mcp-2026-07-28-migration/task-4-report.md
+for the exact commands and output.
+  * Claude-Session: https://claude.ai/code/session_011CX5oVa2L52UkmWZ1jQtXr
 
 
 
@@ -82,31 +121,14 @@ Author: `John Haugeland <stonecypher@gmail.com>`
 
 &nbsp;
 
-## [Untagged] - Jul 18, 2026 9:16:28 AM
+## [Untagged] - Jul 30, 2026 5:46:19 PM
 
-Commit [fa923a1e2db0121a5cba7f6f6fd34a71d825069c](https://github.com/StoneCypher/fsl-mcp/commit/fa923a1e2db0121a5cba7f6f6fd34a71d825069c)
+Commit [c6c81db2f3f05d9459ba7977a26a40434c5f5c8c](https://github.com/StoneCypher/fsl-mcp/commit/c6c81db2f3f05d9459ba7977a26a40434c5f5c8c)
 
 Author: `John Haugeland <stonecypher@gmail.com>`
 
-  * test(coverage): close the 100-gate
-  * Raises unit coverage to exit-0 at the new 100/100/100/100 gate
-(vitest.config.ts, a0beee8) without weakening anything.
-  * Real tests added (3): render.ts's JSON.stringify(err) branch for a
-non-Error thrown value; scaffold.ts's per-element stateList name
-validation and its array-for-scalar-role rejection.
-  * v8-ignore fixes/additions (9): reference.ts and runner.ts each had a
-defaultSpawn shim whose ignore block wrapped only the body, not the
-function declaration, so it still counted toward the functions metric -
-widened both to span the whole function. score.ts, explain.ts, and
-scaffold.ts each get newly-adjudicated ignores over branches verified
-unreachable through any real input (capture-group typing guards, a
-provably-redundant re-validation, jssm's edge.name/start-state
-guarantees traced through the installed jssm 5.162.10 bundle and
-verified empirically, and scaffold's substitution invariants already
-proven by its own test suite). Full per-gap justification in
-.superpowers/sdd/coverage-closure-report.md (gitignored, not committed).
-  * No thresholds lowered, no defensive branches deleted, no tests weakened,
-no files added to the coverage exclude list.
+  * docs(plan): correct the stale SDK claim in base_README during Task 6
+  * Task 4's review found base_README.md:5 still claims the tools are exposed via @modelcontextprotocol/sdk, the package Task 4 uninstalls. Task 6 as written only added a section, so the false claim would have shipped in the generated README. Folded in as Step 1b rather than deferred to the final review, since it is user-facing and certain rather than a judgment call.
 
 
 
@@ -115,13 +137,15 @@ no files added to the coverage exclude list.
 
 &nbsp;
 
-## [Untagged] - Jul 18, 2026 8:55:19 AM
+## [Untagged] - Jul 30, 2026 5:40:14 PM
 
-Commit [9ac6fef300f0f0e12903757e322b896e830cb5e2](https://github.com/StoneCypher/fsl-mcp/commit/9ac6fef300f0f0e12903757e322b896e830cb5e2)
+Commit [fc718c88efaa5f4472325c9955064d7f43387881](https://github.com/StoneCypher/fsl-mcp/commit/fc718c88efaa5f4472325c9955064d7f43387881)
 
 Author: `John Haugeland <stonecypher@gmail.com>`
 
-  * build: raise unit coverage gate to 100 on all four metrics
+  * docs(plan): add a subprocess spec covering the production entry path
+  * Task 4's startServer carries a v8 ignore on its omitted-transport arm, which is the exact call bin.ts makes in production; bin.ts is itself coverage-excluded, so nothing tested the shipped entry path. John chose to close that with a spawn test.
+  * Targets src/ts/bin.ts via jiti rather than dist/bin.mjs: run_build.js runs each stage's scripts concurrently, so the test run races tsc and dist/bin.mjs does not exist until Stage 2. A spec pointed at dist would find nothing, or silently exercise a stale binary from a previous build and report a false pass. The tradeoff is stated in the plan: this covers the no-arg startServer path, real process stdio, stdout purity, and EOF shutdown, but not rollup bundling or the shebang.
 
 
 
@@ -130,13 +154,34 @@ Author: `John Haugeland <stonecypher@gmail.com>`
 
 &nbsp;
 
-## [Untagged] - Jul 18, 2026 8:48:47 AM
+## [Untagged] - Jul 30, 2026 5:33:32 PM
 
-Commit [6465eb31cd7810edb20c7c95b448ebcacba519d3](https://github.com/StoneCypher/fsl-mcp/commit/6465eb31cd7810edb20c7c95b448ebcacba519d3)
+Commit [00eea6706b004cd615cf7288eaaf218faebb8ae8](https://github.com/StoneCypher/fsl-mcp/commit/00eea6706b004cd615cf7288eaaf218faebb8ae8)
 
 Author: `John Haugeland <stonecypher@gmail.com>`
 
-  * fix(scaffold): shield machine_name line in every substitution pass; stoch cross-slot coverage
+  * refactor(server)!: migrate to MCP SDK v2 and revision 2026-07-28
+  * Step 1 export-path discovery (node_modules/@modelcontextprotocol/server/dist/*.d.mts):
+- Transport (type) - main entry only (./dist/index.d.mts), NOT re-exported
+  from ./stdio. Confirmed via the index.d.mts export list: 'type Transport'.
+- StdioServerTransport (class) and StdioServerHandle (type) - ./stdio
+  subpath only (./dist/stdio.d.mts export list), NOT re-exported from the
+  main entry.
+- serveStdio (function) - ./stdio subpath only.
+The brief's Step 2 guess matched these findings exactly; no adjustment
+was needed.
+  * CacheHint structural check: ToolsCacheHint ({ ttlMs: number; cacheScope:
+'public' | 'private' }, both required) assigns cleanly to the SDK's
+CacheHint ({ ttlMs?: number; cacheScope?: CacheScope }, both optional) -
+required fields satisfy optional targets under exactOptionalPropertyTypes.
+cacheHints key used: 'tools/list', a literal member of the SDK's closed
+CacheableResultMethod union.
+  * Also fixes a real 100%-branch-coverage regression the exactOptionalPropertyTypes-
+mandated ternary in startServer introduced: the omitted-transport arm (real
+stdio) has no safe way to be exercised by tests without hijacking the test
+process's actual stdin/stdout, so it carries a targeted v8 ignore with
+rationale, mirroring bin.ts's existing coverage exclusion for the same reason.
+  * Claude-Session: https://claude.ai/code/session_011CX5oVa2L52UkmWZ1jQtXr
 
 
 
@@ -145,13 +190,33 @@ Author: `John Haugeland <stonecypher@gmail.com>`
 
 &nbsp;
 
-## [Untagged] - Jul 18, 2026 8:35:33 AM
+## [Untagged] - Jul 30, 2026 5:33:32 PM
 
-Commit [f8c0c13fcb9cc2e29f1f796f2164070c8a85c8a9](https://github.com/StoneCypher/fsl-mcp/commit/f8c0c13fcb9cc2e29f1f796f2164070c8a85c8a9)
+Commit [e5979495107dd05630d6fb0491555e827fe2518b](https://github.com/StoneCypher/fsl-mcp/commit/e5979495107dd05630d6fb0491555e827fe2518b)
 
 Author: `John Haugeland <stonecypher@gmail.com>`
 
-  * fix(scaffold): single-pass substitution and own-property preset lookup; harden stoch generator
+  * refactor(server)!: migrate to MCP SDK v2 and revision 2026-07-28
+  * Step 1 export-path discovery (node_modules/@modelcontextprotocol/server/dist/*.d.mts):
+- Transport (type) - main entry only (./dist/index.d.mts), NOT re-exported
+  from ./stdio. Confirmed via the index.d.mts export list: 'type Transport'.
+- StdioServerTransport (class) and StdioServerHandle (type) - ./stdio
+  subpath only (./dist/stdio.d.mts export list), NOT re-exported from the
+  main entry.
+- serveStdio (function) - ./stdio subpath only.
+The brief's Step 2 guess matched these findings exactly; no adjustment
+was needed.
+  * CacheHint structural check: ToolsCacheHint ({ ttlMs: number; cacheScope:
+'public' | 'private' }, both required) assigns cleanly to the SDK's
+CacheHint ({ ttlMs?: number; cacheScope?: CacheScope }, both optional) -
+required fields satisfy optional targets under exactOptionalPropertyTypes.
+cacheHints key used: 'tools/list', a literal member of the SDK's closed
+CacheableResultMethod union.
+  * Also fixes a real 100%-branch-coverage regression the exactOptionalPropertyTypes-
+mandated ternary in startServer introduced: the omitted-transport arm (real
+stdio) has no safe way to be exercised by tests without hijacking the test
+process's actual stdin/stdout, so it carries a targeted v8 ignore with
+rationale, mirroring bin.ts's existing coverage exclusion for the same reason.
 
 
 
@@ -160,13 +225,13 @@ Author: `John Haugeland <stonecypher@gmail.com>`
 
 &nbsp;
 
-## [Untagged] - Jul 18, 2026 7:53:00 AM
+## [Untagged] - Jul 30, 2026 5:33:32 PM
 
-Commit [7895b10e2716372da54af98c24d55187c93c3ad8](https://github.com/StoneCypher/fsl-mcp/commit/7895b10e2716372da54af98c24d55187c93c3ad8)
+Commit [bb29b49a18791f9288a9e4a86ffcfce6ad271465](https://github.com/StoneCypher/fsl-mcp/commit/bb29b49a18791f9288a9e4a86ffcfce6ad271465)
 
 Author: `John Haugeland <stonecypher@gmail.com>`
 
-  * fix(eval): allow mcp__fsl__fsl_guide in the tools-condition allowlist
+  * refactor(server)!: migrate to MCP SDK v2 and revision 2026-07-28
 
 
 
@@ -175,10 +240,10 @@ Author: `John Haugeland <stonecypher@gmail.com>`
 
 &nbsp;
 
-## [Untagged] - Jul 18, 2026 7:52:48 AM
+## [Untagged] - Jul 29, 2026 8:49:07 AM
 
-Commit [1ae9b7c30e16d3b19804eee29cd707dc7de2f30a](https://github.com/StoneCypher/fsl-mcp/commit/1ae9b7c30e16d3b19804eee29cd707dc7de2f30a)
+Commit [e7190ab711cd8b24e6a389bdedcb1e22d1c7d43e](https://github.com/StoneCypher/fsl-mcp/commit/e7190ab711cd8b24e6a389bdedcb1e22d1c7d43e)
 
 Author: `John Haugeland <stonecypher@gmail.com>`
 
-  * fix(build): externalize jssm/cli in rollup config - main's build broke when render.ts began importing it
+  * feat(cache): toolsCacheHint resolver for tools/list
