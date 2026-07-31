@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
+import { McpServer } from '@modelcontextprotocol/server';
+import { serveStdio } from '@modelcontextprotocol/server/stdio';
 import { z } from 'zod';
 import { fslDiagnostics, from } from 'jssm';
 import { render, RasterizationUnsupportedError } from 'jssm/cli';
@@ -1231,6 +1231,53 @@ function fslScaffold(preset, machineName, roles) {
     return { valid: true, preset, family: def.family, source, roles: resolved, notes: def.notes };
 }
 
+// GENERATED FILE - DO NOT EDIT.
+// Source: package.json (version field)
+// Regenerate: node src/build_js/generate_version.js (runs automatically before tsc)
+/** The published fsl-mcp version, reported as this server's identity over MCP. */
+// eslint-disable-next-line @typescript-eslint/no-inferrable-types
+const FSL_MCP_VERSION = '0.6.0';
+
+/** Default freshness window for `tools/list`: one hour. */
+const DEFAULT_TTL_MS = 3_600_000;
+/**
+ * Resolve the cache hint applied to `tools/list` results.
+ *
+ * fsl-mcp's tool list is compiled in and cannot change while the process runs,
+ * so it is safely cacheable for a long window, and it carries no
+ * authorization-specific or user-specific data, so it is `'public'`. The TTL is
+ * overridable via `FSL_MCP_TOOLS_TTL_MS` so a development loop can force a
+ * refetch after a rebuild; set it to `0` to mark every response immediately
+ * stale.
+ *
+ * An unparseable, fractional, or negative override is ignored with a warning
+ * rather than propagated, because the SDK throws a `RangeError` at
+ * server-construction time for an invalid hint - which would take the whole
+ * server down at startup and surface to the user as a broken server.
+ *
+ * @param env - the environment to read `FSL_MCP_TOOLS_TTL_MS` from
+ * @returns the hint to pass as the server's `tools/list` cache hint
+ *
+ * @example
+ *   toolsCacheHint({});                                 // { ttlMs: 3600000, cacheScope: 'public' }
+ *   toolsCacheHint({ FSL_MCP_TOOLS_TTL_MS: '0' });      // { ttlMs: 0, cacheScope: 'public' }
+ *   toolsCacheHint({ FSL_MCP_TOOLS_TTL_MS: 'banana' }); // default, plus a stderr warning
+ *
+ * @see {@link https://modelcontextprotocol.io/specification/2026-07-28/changelog | SEP-2549}
+ */
+function toolsCacheHint(env) {
+    const raw = env['FSL_MCP_TOOLS_TTL_MS'];
+    if (raw === undefined) {
+        return { ttlMs: DEFAULT_TTL_MS, cacheScope: 'public' };
+    }
+    const parsed = Number(raw);
+    if (!Number.isInteger(parsed) || parsed < 0) {
+        console.error(`fsl-mcp: ignoring invalid FSL_MCP_TOOLS_TTL_MS=${raw}; using ${String(DEFAULT_TTL_MS)}`);
+        return { ttlMs: DEFAULT_TTL_MS, cacheScope: 'public' };
+    }
+    return { ttlMs: parsed, cacheScope: 'public' };
+}
+
 /** Wrap any JSON-serializable value as an MCP text-content tool result. */
 function jsonResult(value) {
     return { content: [{ type: 'text', text: JSON.stringify(value, null, 2) }] };
@@ -1268,28 +1315,38 @@ function renderResult(r) {
 }
 /**
  * Build the fsl-mcp server: the five FSL authoring tools, the fsl_guide
- * guidance tool, and the fsl_scaffold preset-generator tool (seven tools total).
- * The returned server is transport-agnostic; connect it to stdio (production)
- * or an in-memory transport (tests).
+ * guidance tool, and the fsl_scaffold preset-generator tool (seven tools
+ * total), carrying the generated package identity and the `tools/list`
+ * cache hint.
+ *
+ * Returns a configured but unconnected server - it is a factory product, not
+ * something to `.connect()` directly. Its consumer is `startServer`, which
+ * passes a factory wrapping this function to the SDK's `serveStdio`;
+ * `serveStdio` owns instance construction (it may call the factory more than
+ * once per connection, once per protocol era) and connects each instance to
+ * its own era-aware channel. A hand-connected instance bypasses that era
+ * dispatch entirely, so production and the e2e specs alike go through
+ * `startServer`, never through a direct `server.connect(...)` call.
  *
  * @returns a configured, not-yet-connected MCP server
  *
  * @example
- *   const server = createServer();
- *   await server.connect(new StdioServerTransport());
+ *   const server = createServer();   // wrapped in a factory and passed to startServer
+ *
+ * @see {@link startServer}
  */
 function createServer() {
-    const server = new McpServer({ name: 'fsl-mcp', version: '0.1.0' });
+    const server = new McpServer({ name: 'fsl-mcp', version: FSL_MCP_VERSION }, { cacheHints: { 'tools/list': toolsCacheHint(process.env) } });
     server.registerTool('fsl_validate', { description: 'Validate FSL source; returns { valid, diagnostics: [{severity, message, line, col}] }.',
-        inputSchema: { source: z.string() } }, ({ source }) => jsonResult(fslValidate(source)));
+        inputSchema: z.object({ source: z.string() }) }, ({ source }) => jsonResult(fslValidate(source)));
     server.registerTool('fsl_lint', { description: 'Lint FSL source; returns { notes: [{rule, message, line}] } for non-error diagnostics.',
-        inputSchema: { source: z.string() } }, ({ source }) => jsonResult(fslLint(source)));
+        inputSchema: z.object({ source: z.string() }) }, ({ source }) => jsonResult(fslLint(source)));
     server.registerTool('fsl_explain', { description: 'Explain an FSL machine: { states, transitions, start, terminals, summary } or diagnostics.',
-        inputSchema: { source: z.string() } }, ({ source }) => jsonResult(fslExplain(source)));
+        inputSchema: z.object({ source: z.string() }) }, ({ source }) => jsonResult(fslExplain(source)));
     server.registerTool('fsl_simulate', { description: 'Simulate a walk: apply actions/target-states in order; returns { endState, path, legalNext, rejected? }.',
-        inputSchema: { source: z.string(), actions: z.array(z.string()) } }, ({ source, actions }) => jsonResult(fslSimulate(source, actions)));
+        inputSchema: z.object({ source: z.string(), actions: z.array(z.string()) }) }, ({ source, actions }) => jsonResult(fslSimulate(source, actions)));
     server.registerTool('fsl_render', { description: 'Render FSL to a diagram. format: svg (default) | dot (text) | png | jpeg | gif (returned as an image content block when a raster backend is available, otherwise degraded to svg text plus a note; gif animates a random walk). Raster options: width, height, scale (zoom %, 100 = 3x), quality (jpeg 1-100), delay (gif centiseconds/frame), maxFrames (gif; keep <= 20 for chat).',
-        inputSchema: {
+        inputSchema: z.object({
             source: z.string(),
             format: z.enum(['svg', 'dot', 'png', 'jpeg', 'gif']).optional(),
             width: z.number().int().positive().optional(),
@@ -1298,7 +1355,7 @@ function createServer() {
             quality: z.number().int().min(1).max(100).optional(),
             delay: z.number().int().positive().optional(),
             maxFrames: z.number().int().min(1).max(100).optional(),
-        } }, async ({ source, format, width, height, scale, quality, delay, maxFrames }) => {
+        }) }, async ({ source, format, width, height, scale, quality, delay, maxFrames }) => {
         const options = {};
         if (width !== undefined) {
             options.width = width;
@@ -1321,40 +1378,70 @@ function createServer() {
         return renderResult(await fslRender(source, format, options));
     });
     server.registerTool('fsl_guide', { description: 'Returns FSL authoring guidance as markdown. topic "language": the full FSL primer - call before writing FSL for the first time. topic "flowcharts": how to express flowcharts in FSL (decision diamonds, labeled branches, terminals, failure paths). Takes no FSL source.',
-        inputSchema: { topic: z.enum(['flowcharts', 'language']) } }, ({ topic }) => ({
+        inputSchema: z.object({ topic: z.enum(['flowcharts', 'language']) }) }, ({ topic }) => ({
         content: [{ type: 'text', text: topic === 'flowcharts' ? GUIDE_FLOWCHARTS : GUIDE_LANGUAGE }],
     }));
     server.registerTool('fsl_scaffold', { description: `Returns a complete, compiling FSL starting document for a preset chart shape, with your names substituted in. Presets by family: ${presetFamilySummary()}. Pass roles to rename states/actions; list roles need their exact canonical count. See fsl_guide topic "flowcharts" for the idioms.`,
-        inputSchema: {
+        inputSchema: z.object({
             preset: z.enum(PRESET_IDS),
             machine_name: z.string().optional(),
             roles: z.record(z.string(), z.union([z.string(), z.array(z.string())])).optional(),
-        } }, ({ preset, machine_name, roles }) => jsonResult(fslScaffold(preset, machine_name, roles)));
+        }) }, ({ preset, machine_name, roles }) => jsonResult(fslScaffold(preset, machine_name, roles)));
     return server;
 }
 /**
- * Start the fsl-mcp server on a transport. Resolves once the transport is
- * connected; the process then serves requests until the transport closes.
+ * Start the fsl-mcp server on stdio, serving both protocol eras.
  *
- * Defaults to a real stdio transport wired to the process's actual
- * `stdin`/`stdout` — that default is what the `fsl-mcp` bin entry relies on
- * in production. Pass an explicit transport (e.g. an in-memory transport, or
- * a `StdioServerTransport` wired to injected streams) to run the server
- * without touching the real process streams — this is how tests exercise
- * `startServer` itself without hijacking the test process's stdio.
+ * Delegates to the SDK's `serveStdio`, which owns transport construction and
+ * is what provides dual-era support: modern clients (revision `2026-07-28`,
+ * per-request `_meta`) and legacy clients (`2025-11-25` and earlier, which
+ * open with an `initialize` handshake) are both served from one process. The
+ * factory form is required for this - a hand-connected transport bypasses the
+ * era dispatch entirely.
  *
- * @param transport - the MCP transport to connect (defaults to real stdio)
+ * Passing an explicit transport runs the same serve path over injected
+ * streams instead of the real process `stdin`/`stdout`, which is how the e2e
+ * specs exercise real newline-delimited JSON-RPC framing without hijacking
+ * the test process's stdio.
+ *
+ * Wires `onerror` (both when a transport is passed and when it is omitted)
+ * to log every out-of-band error `serveStdio` reports - send failures,
+ * malformed envelopes, discarded-probe timeouts, and a failed `wire.start()`
+ * among them - to `stderr` via `console.error`. `stdout` is the protocol
+ * channel; a stray write there would corrupt the stream for every connected
+ * client, so nothing here ever writes to it. This does not exit the process:
+ * `onerror` is the single sink for both a fatal startup failure and routine
+ * per-message conditions, and the SDK gives no way to tell those apart from
+ * the callback alone, so treating any of them as fatal risks killing an
+ * otherwise-healthy server over one malformed message. Logging preserves the
+ * pre-migration behavior's visibility without that risk.
+ *
+ * @param transport - an optional transport to serve on; omit for real stdio
+ * @returns a handle whose `close()` tears down the server and the transport
  *
  * @example
- *   await startServer();   // used by the `fsl-mcp` bin entry
+ *   const handle = startServer();          // used by the `fsl-mcp` bin entry
+ *   process.on('SIGINT', () => { void handle.close(); });
+ *
+ * @example
+ *   const handle = startServer(new StdioServerTransport(stdin, stdout));
+ *
+ * @see {@link createServer}
  */
-async function startServer(transport = new StdioServerTransport()) {
-    const server = createServer();
-    await server.connect(transport);
+function startServer(transport) {
+    const onerror = (error) => { console.error(error); };
+    return serveStdio(() => createServer(), 
+    /* v8 ignore next -- the omitted-transport arm binds serveStdio to the
+       real process stdin/stdout; exercising it here would hijack the test
+       process's actual stdio, exactly what passing an explicit transport
+       exists to avoid (see this function's DocBlock). Exercised in
+       production by every real invocation of the `fsl-mcp` bin entry
+       (src/ts/bin.ts), which is itself excluded from the coverage gate for
+       the same reason. */
+    { onerror } );
 }
 
-startServer().catch((err) => {
-    console.error(err);
-    process.exit(1);
-});
+const handle = startServer();
+process.on('SIGINT', () => { void handle.close(); });
+process.on('SIGTERM', () => { void handle.close(); });
 //# sourceMappingURL=bin.mjs.map

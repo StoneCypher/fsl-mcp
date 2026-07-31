@@ -1,10 +1,10 @@
 # fsl-mcp v0.6.0
 
-> Version 0.6.0 was built on Thursday, July 30, 2026 at GMT-07:00 `1785461254372` from hash `99e378a`.
+> Version 0.6.0 was built on Thursday, July 30, 2026 at GMT-07:00 `1785462804696` from hash `0b1c584`.
 
 **fsl-mcp** is an MCP (Model Context Protocol) stdio server that lets an AI agent *author* [FSL](https://github.com/StoneCypher/jssm) finite-state machines — giving the model the same structured feedback the FSL editor gives a human (parse diagnostics, a rendered diagram, a plain-English explanation, a step-by-step simulation, and style lint notes) instead of leaving it to guess whether the FSL it just wrote is even valid. It wraps [`jssm`](https://github.com/StoneCypher/jssm), the reference FSL implementation, and exposes seven tools over stdio (five authoring tools, plus `fsl_guide` guidance and `fsl_scaffold` preset generation) via the official [`@modelcontextprotocol/server`](https://github.com/modelcontextprotocol/typescript-sdk) package.
 
-<!-- Supported embeds: 1785461254372 Thursday, July 30, 2026 at GMT-07:00 100 86 37 99e378a 27.54 21.19 18.07 22.82 6 195 100 100 100 189 0.6.0 -->
+<!-- Supported embeds: 1785462804696 Thursday, July 30, 2026 at GMT-07:00 100 86 37 0b1c584 27.54 21.19 18.07 22.82 6 195 100 100 100 189 0.6.0 -->
 
 &nbsp;
 
@@ -51,10 +51,13 @@ without configuration.
 
 The `tools/list` response carries a one-hour cache hint (`cacheScope:
 "public"`), since the tool set is compiled in and cannot change while the
-server runs. Set `FSL_MCP_TOOLS_TTL_MS=0` to disable that while developing
-against a local build; an invalid value is ignored with a warning on stderr.
-Cache hints appear on modern responses only - legacy responses are
-unaffected.
+server runs. Set `FSL_MCP_TOOLS_TTL_MS` to another whole number of
+milliseconds to shorten or lengthen that window; `0` marks every response
+immediately stale, which is what you want while developing against a local
+build. The hint fields are still present at `0` - it is a zero-length
+freshness window, not an absent hint. An invalid value is ignored with a
+warning on stderr. Cache hints appear on modern responses only - legacy
+responses are unaffected.
 
 ### fsl_render
 
