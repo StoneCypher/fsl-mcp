@@ -1,6 +1,7 @@
-import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
-import type { Transport } from '@modelcontextprotocol/sdk/shared/transport.js';
+import { McpServer } from '@modelcontextprotocol/server';
+import { serveStdio } from '@modelcontextprotocol/server/stdio';
+import type { StdioServerHandle } from '@modelcontextprotocol/server/stdio';
+import type { Transport } from '@modelcontextprotocol/server';
 import { z } from 'zod';
 
 import { fslValidate } from './tools/validate.js';
@@ -12,6 +13,8 @@ import type { RenderRasterOptions } from './tools/render.js';
 import { GUIDE_FLOWCHARTS, GUIDE_LANGUAGE } from './tools/guide-content.js';
 import { fslScaffold } from './tools/scaffold.js';
 import { PRESET_IDS, SCAFFOLD_REGISTRY } from './tools/scaffold-registry.js';
+import { FSL_MCP_VERSION } from './version.js';
+import { toolsCacheHint } from './cache-hints.js';
 
 /** Wrap any JSON-serializable value as an MCP text-content tool result. */
 function jsonResult(value: unknown): { content: { type: 'text'; text: string }[] } {
@@ -66,31 +69,34 @@ function renderResult(r: Awaited<ReturnType<typeof fslRender>>): {
  *   await server.connect(new StdioServerTransport());
  */
 export function createServer(): McpServer {
-  const server = new McpServer({ name: 'fsl-mcp', version: '0.1.0' });
+  const server = new McpServer(
+    { name: 'fsl-mcp', version: FSL_MCP_VERSION },
+    { cacheHints: { 'tools/list': toolsCacheHint(process.env) } },
+  );
 
   server.registerTool('fsl_validate',
     { description: 'Validate FSL source; returns { valid, diagnostics: [{severity, message, line, col}] }.',
-      inputSchema: { source: z.string() } },
+      inputSchema: z.object({ source: z.string() }) },
     ({ source }) => jsonResult(fslValidate(source)));
 
   server.registerTool('fsl_lint',
     { description: 'Lint FSL source; returns { notes: [{rule, message, line}] } for non-error diagnostics.',
-      inputSchema: { source: z.string() } },
+      inputSchema: z.object({ source: z.string() }) },
     ({ source }) => jsonResult(fslLint(source)));
 
   server.registerTool('fsl_explain',
     { description: 'Explain an FSL machine: { states, transitions, start, terminals, summary } or diagnostics.',
-      inputSchema: { source: z.string() } },
+      inputSchema: z.object({ source: z.string() }) },
     ({ source }) => jsonResult(fslExplain(source)));
 
   server.registerTool('fsl_simulate',
     { description: 'Simulate a walk: apply actions/target-states in order; returns { endState, path, legalNext, rejected? }.',
-      inputSchema: { source: z.string(), actions: z.array(z.string()) } },
+      inputSchema: z.object({ source: z.string(), actions: z.array(z.string()) }) },
     ({ source, actions }) => jsonResult(fslSimulate(source, actions)));
 
   server.registerTool('fsl_render',
     { description: 'Render FSL to a diagram. format: svg (default) | dot (text) | png | jpeg | gif (returned as an image content block when a raster backend is available, otherwise degraded to svg text plus a note; gif animates a random walk). Raster options: width, height, scale (zoom %, 100 = 3x), quality (jpeg 1-100), delay (gif centiseconds/frame), maxFrames (gif; keep <= 20 for chat).',
-      inputSchema: {
+      inputSchema: z.object({
         source    : z.string(),
         format    : z.enum(['svg', 'dot', 'png', 'jpeg', 'gif']).optional(),
         width     : z.number().int().positive().optional(),
@@ -99,7 +105,7 @@ export function createServer(): McpServer {
         quality   : z.number().int().min(1).max(100).optional(),
         delay     : z.number().int().positive().optional(),
         maxFrames : z.number().int().min(1).max(100).optional(),
-      } },
+      }) },
     async ({ source, format, width, height, scale, quality, delay, maxFrames }) => {
       const options: RenderRasterOptions = {};
       if (width     !== undefined) { options.width     = width; }
@@ -113,40 +119,60 @@ export function createServer(): McpServer {
 
   server.registerTool('fsl_guide',
     { description: 'Returns FSL authoring guidance as markdown. topic "language": the full FSL primer - call before writing FSL for the first time. topic "flowcharts": how to express flowcharts in FSL (decision diamonds, labeled branches, terminals, failure paths). Takes no FSL source.',
-      inputSchema: { topic: z.enum(['flowcharts', 'language']) } },
+      inputSchema: z.object({ topic: z.enum(['flowcharts', 'language']) }) },
     ({ topic }) => ({
       content: [{ type: 'text' as const, text: topic === 'flowcharts' ? GUIDE_FLOWCHARTS : GUIDE_LANGUAGE }],
     }));
 
   server.registerTool('fsl_scaffold',
     { description: `Returns a complete, compiling FSL starting document for a preset chart shape, with your names substituted in. Presets by family: ${presetFamilySummary()}. Pass roles to rename states/actions; list roles need their exact canonical count. See fsl_guide topic "flowcharts" for the idioms.`,
-      inputSchema: {
+      inputSchema: z.object({
         preset: z.enum(PRESET_IDS as [string, ...string[]]),
         machine_name: z.string().optional(),
         roles: z.record(z.string(), z.union([z.string(), z.array(z.string())])).optional(),
-      } },
+      }) },
     ({ preset, machine_name, roles }) => jsonResult(fslScaffold(preset, machine_name, roles)));
 
   return server;
 }
 
 /**
- * Start the fsl-mcp server on a transport. Resolves once the transport is
- * connected; the process then serves requests until the transport closes.
+ * Start the fsl-mcp server on stdio, serving both protocol eras.
  *
- * Defaults to a real stdio transport wired to the process's actual
- * `stdin`/`stdout` — that default is what the `fsl-mcp` bin entry relies on
- * in production. Pass an explicit transport (e.g. an in-memory transport, or
- * a `StdioServerTransport` wired to injected streams) to run the server
- * without touching the real process streams — this is how tests exercise
- * `startServer` itself without hijacking the test process's stdio.
+ * Delegates to the SDK's `serveStdio`, which owns transport construction and
+ * is what provides dual-era support: modern clients (revision `2026-07-28`,
+ * per-request `_meta`) and legacy clients (`2025-11-25` and earlier, which
+ * open with an `initialize` handshake) are both served from one process. The
+ * factory form is required for this - a hand-connected transport bypasses the
+ * era dispatch entirely.
  *
- * @param transport - the MCP transport to connect (defaults to real stdio)
+ * Passing an explicit transport runs the same serve path over injected
+ * streams instead of the real process `stdin`/`stdout`, which is how the e2e
+ * specs exercise real newline-delimited JSON-RPC framing without hijacking
+ * the test process's stdio.
+ *
+ * @param transport - an optional transport to serve on; omit for real stdio
+ * @returns a handle whose `close()` tears down the server and the transport
  *
  * @example
- *   await startServer();   // used by the `fsl-mcp` bin entry
+ *   const handle = startServer();          // used by the `fsl-mcp` bin entry
+ *   process.on('SIGINT', () => { void handle.close(); });
+ *
+ * @example
+ *   const handle = startServer(new StdioServerTransport(stdin, stdout));
+ *
+ * @see {@link createServer}
  */
-export async function startServer(transport: Transport = new StdioServerTransport()): Promise<void> {
-  const server = createServer();
-  await server.connect(transport);
+export function startServer(transport?: Transport): StdioServerHandle {
+  return serveStdio(
+    () => createServer(),
+    /* v8 ignore next -- the omitted-transport arm binds serveStdio to the
+       real process stdin/stdout; exercising it here would hijack the test
+       process's actual stdio, exactly what passing an explicit transport
+       exists to avoid (see this function's DocBlock). Exercised in
+       production by every real invocation of the `fsl-mcp` bin entry
+       (src/ts/bin.ts), which is itself excluded from the coverage gate for
+       the same reason. */
+    transport === undefined ? {} : { transport },
+  );
 }

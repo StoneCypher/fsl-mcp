@@ -1,6 +1,6 @@
 import { startServer } from './server.js';
 
-startServer().catch((err: unknown) => {
-  console.error(err);
-  process.exit(1);
-});
+const handle = startServer();
+
+process.on('SIGINT',  () => { void handle.close(); });
+process.on('SIGTERM', () => { void handle.close(); });
