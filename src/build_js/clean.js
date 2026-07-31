@@ -6,7 +6,7 @@
  * each `cd` and `mkdir` slow and the script hard to read.
  *
  * The operation runs in three phases:
- *   1. Wipe the six top-level dirs in parallel (they are siblings, no nesting)
+ *   1. Wipe the four top-level dirs in parallel (they are siblings, no nesting)
  *   2. Re-create the required leaves in parallel (with recursive:true so
  *      intermediate parents like `build/rollup` are created)
  *   3. Remove the four root-level bundle PNGs in parallel
@@ -17,8 +17,8 @@
  * @example
  *   // Invoked by the `clean` npm script:
  *   node src/build_js/clean.js
- *   // Wipes src/ts/generated_code, build, dist, docs, coverage-typedoc,
- *   // recreates the required subdirs, and removes bundle_*.png at root.
+ *   // Wipes build, dist, docs, coverage-typedoc, recreates the required
+ *   // subdirs, and removes bundle_*.png at root.
  */
 
 import { rm, mkdir } from 'fs/promises';
@@ -30,7 +30,6 @@ const __dirname = dirname(__filename);
 const PROJECT_ROOT = join(__dirname, '..', '..');
 
 const TOP_LEVEL_WIPES = [
-  'src/ts/generated_code',
   'build',
   'dist',
   'docs',
@@ -38,7 +37,6 @@ const TOP_LEVEL_WIPES = [
 ];
 
 const LEAVES_TO_CREATE = [
-  'src/ts/generated_code',
   'build/rollup/visualizations',
   'dist',
   'docs/dist',

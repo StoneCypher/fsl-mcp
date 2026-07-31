@@ -57,6 +57,23 @@ hash, etc.).
 
 ## Dependencies
 
-Runtime: `jssm`, `@modelcontextprotocol/sdk`, `zod`. `@viz-js/viz` is
+Runtime: `jssm`, `@modelcontextprotocol/server`, `zod`. `@viz-js/viz` is
 *not* a direct dependency — jssm dynamically `import()`s it as its own
 optional dep at render time; it arrives transitively.
+
+`@modelcontextprotocol/client` is a *dev* dependency only — the e2e specs
+drive the server through it; nothing shipped imports it.
+
+## Bundling contract
+
+Every runtime dependency stays EXTERNAL in the rollup bundles. When a runtime
+dependency is added, renamed, or removed, update the `external` array in
+`rollup.config.js` in the same change — it has both a bare-name entry and a
+`/^name\//` regex for subpath imports, and both must move together. Nothing in
+the test suite touches `dist/`, so a missed entry is invisible to CI: it shows
+up only as a bundle that suddenly grew by an order of magnitude. `dist/bin.mjs`
+is tens of KB; if it is hundreds, a dependency got inlined.
+
+`dist/` is tracked deliberately (see the commented-out entry in `.gitignore`).
+Release commits carry the rebuilt `dist/`; a source change that alters the
+bundles and does not commit `dist/` ships stale artifacts.

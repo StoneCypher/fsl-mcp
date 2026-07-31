@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { PassThrough } from 'node:stream';
 import { StdioServerTransport } from '@modelcontextprotocol/server/stdio';
 import { startServer } from '../server.js';
@@ -71,6 +71,14 @@ const META = {
 };
 
 describe('dual-era stdio', () => {
+  // `createServer` reads FSL_MCP_TOOLS_TTL_MS out of the ambient process
+  // environment, so a developer who left that override set would otherwise see
+  // the cache-hint assertion below fail spuriously. Delete it for the duration
+  // of this file so the tests observe the compiled-in default, then restore
+  // whatever the environment actually had.
+  beforeEach(() => { vi.stubEnv('FSL_MCP_TOOLS_TTL_MS', undefined); });
+  afterEach(() => { vi.unstubAllEnvs(); });
+
   it('answers a modern tools/list carrying per-request _meta', async () => {
     const h = harness();
     const res = await h.send({ jsonrpc: '2.0', id: 1, method: 'tools/list', params: { _meta: META } });

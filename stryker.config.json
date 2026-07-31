@@ -6,7 +6,7 @@
     "clear-text",
     "progress"
   ],
-  "ignorePatterns": ["build", "dist", "docs", "coverage", "reports", "**/generated_code/**", "src/build_js/**" ],
+  "ignorePatterns": ["build", "dist", "docs", "coverage", "reports", "src/build_js/**" ],
   "clearTextReporter": {
     "reportMutants": false,
     "reportTests": false,
@@ -24,8 +24,7 @@
     "!src/ts/**/*.spec.ts",
     "!src/ts/**/*.stoch.ts",
     "!src/ts/**/*.mutat.ts",
-    "!src/ts/e2e/**",
-    "!src/ts/generated_code/**"
+    "!src/ts/e2e/**"
   ],
   "coverageAnalysis": "perTest"
 }
