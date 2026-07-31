@@ -2,7 +2,7 @@
 
 > Version {{version}} was built on {{built_text}} `{{built}}` from hash `{{gh_hash}}`.
 
-**fsl-mcp** is an MCP (Model Context Protocol) stdio server that lets an AI agent *author* [FSL](https://github.com/StoneCypher/jssm) finite-state machines — giving the model the same structured feedback the FSL editor gives a human (parse diagnostics, a rendered diagram, a plain-English explanation, a step-by-step simulation, and style lint notes) instead of leaving it to guess whether the FSL it just wrote is even valid. It wraps [`jssm`](https://github.com/StoneCypher/jssm), the reference FSL implementation, and exposes seven tools over stdio (five authoring tools, plus `fsl_guide` guidance and `fsl_scaffold` preset generation) via the official [`@modelcontextprotocol/sdk`](https://github.com/modelcontextprotocol/typescript-sdk).
+**fsl-mcp** is an MCP (Model Context Protocol) stdio server that lets an AI agent *author* [FSL](https://github.com/StoneCypher/jssm) finite-state machines — giving the model the same structured feedback the FSL editor gives a human (parse diagnostics, a rendered diagram, a plain-English explanation, a step-by-step simulation, and style lint notes) instead of leaving it to guess whether the FSL it just wrote is even valid. It wraps [`jssm`](https://github.com/StoneCypher/jssm), the reference FSL implementation, and exposes seven tools over stdio (five authoring tools, plus `fsl_guide` guidance and `fsl_scaffold` preset generation) via the official [`@modelcontextprotocol/server`](https://github.com/modelcontextprotocol/typescript-sdk) package.
 
 <!-- Supported embeds: {{built}} {{built_text}} {{coverage}} {{docblockcount}} {{doccoverage}} {{gh_hash}} {{stochbranch}} {{stochcoverage}} {{stochfunc}} {{stochline}} {{stochtestcount}} {{testcasecount}} {{unitbranch}} {{unitfunc}} {{unitline}} {{unittestcount}} {{version}} -->
 
@@ -42,6 +42,19 @@ Every tool takes FSL `source` (a string) and returns structured JSON — never a
 | `fsl_scaffold` | `preset`, `machine_name?`, `roles?` | complete compiling starter FSL from presets (8 presets, 5 families) with your names substituted |
 
 Under the hood, every source-taking tool runs the same non-throwing `analyze()` pass first and short-circuits to diagnostics on a compile error, so a model can always find out *why* its FSL didn't work instead of getting an exception. `fsl_scaffold` runs the same `analyze()` pass on its *generated* source before returning it, so its output carries the same guarantee.
+
+### Protocol revisions
+
+fsl-mcp speaks MCP revision `2026-07-28` and the legacy `2025-11-25` family
+from the same stdio process, so it works with both current and older clients
+without configuration.
+
+The `tools/list` response carries a one-hour cache hint (`cacheScope:
+"public"`), since the tool set is compiled in and cannot change while the
+server runs. Set `FSL_MCP_TOOLS_TTL_MS=0` to disable that while developing
+against a local build; an invalid value is ignored with a warning on stderr.
+Cache hints appear on modern responses only - legacy responses are
+unaffected.
 
 ### fsl_render
 
