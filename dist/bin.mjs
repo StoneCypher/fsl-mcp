@@ -1236,7 +1236,7 @@ function fslScaffold(preset, machineName, roles) {
 // Regenerate: node src/build_js/generate_version.js (runs automatically before tsc)
 /** The published fsl-mcp version, reported as this server's identity over MCP. */
 // eslint-disable-next-line @typescript-eslint/no-inferrable-types
-const FSL_MCP_VERSION = '0.6.0';
+const FSL_MCP_VERSION = '0.7.0';
 
 /** Default freshness window for `tools/list`: one hour. */
 const DEFAULT_TTL_MS = 3_600_000;
