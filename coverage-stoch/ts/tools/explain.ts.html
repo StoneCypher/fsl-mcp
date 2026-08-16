@@ -25,14 +25,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/18</span>
+                <span class='fraction'>0/16</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/10</span>
+                <span class='fraction'>0/6</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/13</span>
+                <span class='fraction'>0/12</span>
             </div>
         
             
@@ -127,7 +127,25 @@
 <a name='L62'></a><a href='#L62'>62</a>
 <a name='L63'></a><a href='#L63'>63</a>
 <a name='L64'></a><a href='#L64'>64</a>
-<a name='L65'></a><a href='#L65'>65</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L65'></a><a href='#L65'>65</a>
+<a name='L66'></a><a href='#L66'>66</a>
+<a name='L67'></a><a href='#L67'>67</a>
+<a name='L68'></a><a href='#L68'>68</a>
+<a name='L69'></a><a href='#L69'>69</a>
+<a name='L70'></a><a href='#L70'>70</a>
+<a name='L71'></a><a href='#L71'>71</a>
+<a name='L72'></a><a href='#L72'>72</a>
+<a name='L73'></a><a href='#L73'>73</a>
+<a name='L74'></a><a href='#L74'>74</a>
+<a name='L75'></a><a href='#L75'>75</a>
+<a name='L76'></a><a href='#L76'>76</a>
+<a name='L77'></a><a href='#L77'>77</a>
+<a name='L78'></a><a href='#L78'>78</a>
+<a name='L79'></a><a href='#L79'>79</a>
+<a name='L80'></a><a href='#L80'>80</a>
+<a name='L81'></a><a href='#L81'>81</a>
+<a name='L82'></a><a href='#L82'>82</a>
+<a name='L83'></a><a href='#L83'>83</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -178,12 +196,30 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -242,15 +278,33 @@ export function <span class="fstat-no" title="function not covered" >fslExplain(
   const transitions = <span class="cstat-no" title="statement not covered" >m.list_edges().<span class="fstat-no" title="function not covered" >map(e</span> =&gt; {</span>
     const t: ExplainTransition = <span class="cstat-no" title="statement not covered" >{ from: e.from, to: e.to, kind: e.kind };</span>
 <span class="cstat-no" title="statement not covered" >    if (e.action !== undefined) { <span class="cstat-no" title="statement not covered" >t.action = e.action; }</span></span>
-<span class="cstat-no" title="statement not covered" >    if (e.name   !== undefined) { <span class="cstat-no" title="statement not covered" >t.name   = e.name; }</span></span>
+    /* v8 ignore next -- defensive only: `.name` on a jssm edge is populated solely
+       by the hand-built `new Machine(config)` JS API path (its constructor checks
+       `if (tr.name) { ... }` to register `list_named_transitions()`); the FSL
+       compiler pipeline (`from(source)` -&gt; ... -&gt; `makeTransition`) never writes a
+       `name` key onto an edge literal - only `action`/`probability`/`after_time`.
+       Since `fslExplain` only ever calls `from(source)` on FSL text, `e.name` is
+       always `undefined` here for any real input; verified against jssm 5.162.10's
+       bundled source and empirically via `list_edges()` on live-compiled machines. */
+    if (e.name   !== undefined) { t.name   = e.name; }
 <span class="cstat-no" title="statement not covered" >    return t;</span>
   });
 &nbsp;
   const start     = <span class="cstat-no" title="statement not covered" >states.<span class="fstat-no" title="function not covered" >filter((s</span>: string) =&gt; <span class="cstat-no" title="statement not covered" >m.is_start_state(s))</span>;</span>
   const terminals = <span class="cstat-no" title="statement not covered" >states.<span class="fstat-no" title="function not covered" >filter((s</span>: string) =&gt; <span class="cstat-no" title="statement not covered" >m.state_is_terminal(s))</span>;</span>
+  /* v8 ignore next -- defensive only: jssm's compiler rejects (error diagnostic)
+     any source with zero transitions, and when no explicit start_state is
+     declared it defaults to the first transition's `from` state - so a machine
+     that clears the analyze-first guard above always has &gt;=1 state and &gt;=1
+     start state; `start` can never be empty here. (`terminals` has no such
+     guarantee - a cyclic machine like `a &lt;-&gt; b;` has zero terminal states - so
+     only the `start` fallback, not the `terminals` one, is dead.) Verified
+     against jssm 5.162.10's compile() source and empirically via
+     fslDiagnostics()/from() on minimal sources. */
+  const startLabel = start.join(', ') || '(none)';
   const summary   =
 <span class="cstat-no" title="statement not covered" >    `${String(states.length)} states, ${String(transitions.length)} transitions; ` +</span>
-    `start: ${start.join(', ') || '(none)'}; ` +
+    `start: ${startLabel}; ` +
     `terminal: ${terminals.join(', ') || '(none)'}.`;
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  return { valid: true, states, transitions, start, terminals, summary };</span>
@@ -262,7 +316,7 @@ export function <span class="fstat-no" title="function not covered" >fslExplain(
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-07-16T06:26:16.827Z
+                at 2026-08-16T20:33:38.203Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

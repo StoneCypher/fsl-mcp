@@ -4,4 +4,4 @@
 
 /** The published fsl-mcp version, reported as this server's identity over MCP. */
 // eslint-disable-next-line @typescript-eslint/no-inferrable-types
-export const FSL_MCP_VERSION: string = '0.6.0';
+export const FSL_MCP_VERSION: string = '0.7.0';
