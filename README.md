@@ -1,10 +1,10 @@
-# fsl-mcp v0.5.1
+# fsl-mcp v0.7.0
 
-> Version 0.5.1 was built on Sunday, July 19, 2026 at GMT-07:00 `1784446628939` from hash `c96896d`.
+> Version 0.7.0 was built on Sunday, August 16, 2026 at GMT-07:00 `1786912424644` from hash `ff04f72`.
 
-**fsl-mcp** is an MCP (Model Context Protocol) stdio server that lets an AI agent *author* [FSL](https://github.com/StoneCypher/jssm) finite-state machines — giving the model the same structured feedback the FSL editor gives a human (parse diagnostics, a rendered diagram, a plain-English explanation, a step-by-step simulation, and style lint notes) instead of leaving it to guess whether the FSL it just wrote is even valid. It wraps [`jssm`](https://github.com/StoneCypher/jssm), the reference FSL implementation, and exposes seven tools over stdio (five authoring tools, plus `fsl_guide` guidance and `fsl_scaffold` preset generation) via the official [`@modelcontextprotocol/sdk`](https://github.com/modelcontextprotocol/typescript-sdk).
+**fsl-mcp** is an MCP (Model Context Protocol) stdio server that lets an AI agent *author* [FSL](https://github.com/StoneCypher/jssm) finite-state machines — giving the model the same structured feedback the FSL editor gives a human (parse diagnostics, a rendered diagram, a plain-English explanation, a step-by-step simulation, and style lint notes) instead of leaving it to guess whether the FSL it just wrote is even valid. It wraps [`jssm`](https://github.com/StoneCypher/jssm), the reference FSL implementation, and exposes seven tools over stdio (five authoring tools, plus `fsl_guide` guidance and `fsl_scaffold` preset generation) via the official [`@modelcontextprotocol/server`](https://github.com/modelcontextprotocol/typescript-sdk) package.
 
-<!-- Supported embeds: 1784446628939 Sunday, July 19, 2026 at GMT-07:00 100 86 37 c96896d 28.07 21.86 18.98 23.46 6 182 100 100 100 176 0.5.1 -->
+<!-- Supported embeds: 1786912424644 Sunday, August 16, 2026 at GMT-07:00 100 86 37 ff04f72 27.54 21.19 18.07 22.82 6 195 100 100 100 189 0.7.0 -->
 
 &nbsp;
 
@@ -42,6 +42,22 @@ Every tool takes FSL `source` (a string) and returns structured JSON — never a
 | `fsl_scaffold` | `preset`, `machine_name?`, `roles?` | complete compiling starter FSL from presets (8 presets, 5 families) with your names substituted |
 
 Under the hood, every source-taking tool runs the same non-throwing `analyze()` pass first and short-circuits to diagnostics on a compile error, so a model can always find out *why* its FSL didn't work instead of getting an exception. `fsl_scaffold` runs the same `analyze()` pass on its *generated* source before returning it, so its output carries the same guarantee.
+
+### Protocol revisions
+
+fsl-mcp speaks MCP revision `2026-07-28` and the legacy `2025-11-25` family
+from the same stdio process, so it works with both current and older clients
+without configuration.
+
+The `tools/list` response carries a one-hour cache hint (`cacheScope:
+"public"`), since the tool set is compiled in and cannot change while the
+server runs. Set `FSL_MCP_TOOLS_TTL_MS` to another whole number of
+milliseconds to shorten or lengthen that window; `0` marks every response
+immediately stale, which is what you want while developing against a local
+build. The hint fields are still present at `0` - it is a zero-length
+freshness window, not an absent hint. An invalid value is ignored with a
+warning on stderr. Cache hints appear on modern responses only - legacy
+responses are unaffected.
 
 ### fsl_render
 
@@ -113,7 +129,7 @@ your names, get source ready for fsl_validate / fsl_render.
   </tr>
   <tr>
     <th>Unit</th>
-    <td>176</td>
+    <td>189</td>
     <td>100<small>%</small></td>
     <td>100<small>%</small></td>
     <td>100<small>%</small></td>
@@ -123,9 +139,9 @@ your names, get source ready for fsl_validate / fsl_render.
     <th>Stochastic</th>
     <td>6</td>
     <td>100<small>%</small></td>
-    <td>28.07<small>%</small></td>
-    <td>18.98<small>%</small></td>
-    <td>23.46<small>%</small></td>
+    <td>27.54<small>%</small></td>
+    <td>18.07<small>%</small></td>
+    <td>22.82<small>%</small></td>
   </tr>
 </table>
 
