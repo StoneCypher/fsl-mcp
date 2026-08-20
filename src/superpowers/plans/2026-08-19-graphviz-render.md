@@ -33,19 +33,33 @@
 **Repository:** StoneCypher/jssm, NOT fsl-mcp. This task gates Task 3 only. Tasks 2, 5, 6, and 7 do not depend on it.
 
 **Files:**
-- Modify: `src/ts/cli/lib.ts` (the export list; exact line found by searching for the existing `export {` block)
-- Modify: `rollup.config.cli.js` only if the export list is duplicated there
+- Modify: `src/ts/cli/subcommands/render/rasterize.ts:16` (one keyword)
+- Modify: `src/ts/cli/lib.ts` (two re-export lines, after line 16)
 - Test: jssm's existing cli spec directory
 
 **Interfaces:**
-- Produces: `rasterize(svg: string, target: 'png' | 'jpeg' | 'gif', opts: { width?: number; height?: number; scale?: number; quality?: number }): Promise<Uint8Array>`, exported from `jssm/cli`, with its type surfaced in `jssm.cli.d.ts`.
+- Produces: `rasterize(svg: string, target: RasterTarget, opts?: RasterOptions): Promise<Uint8Array>`, re-exported from `jssm/cli` along with the `RasterOptions` and `RasterTarget` types, all surfaced in `jssm.cli.d.ts`. `RasterTarget` is `'png' | 'jpeg'`.
 
-- [ ] **Step 1: Locate the function and the export list**
+- [ ] **Step 1: Confirm the current state**
 
-Run: `grep -n "async function rasterize" src/ts/cli/lib.ts`
-Run: `grep -n "^export {" src/ts/cli/lib.ts`
+`rasterize` is *already* exported from its own module at
+`src/ts/cli/subcommands/render/rasterize.ts:83`, with a complete DocBlock, a
+worked example, and `@throws RasterizationUnsupportedError`. `RasterOptions`
+is already an exported interface at `rasterize.ts:9`. Nothing needs writing.
 
-Expected: `rasterize` is defined but absent from the export list.
+Two things are missing: `RasterTarget` at `rasterize.ts:16` is a bare
+`type` with no `export`, and the `jssm/cli` barrel does not re-export any of
+it.
+
+Re-exporting from the barrel is the documented extension path. `lib.ts:9-11`
+says so in the file's own header: "Adding a new subcommand here means: (1)
+implement it under `src/ts/cli/subcommands/<name>/`, (2) re-export its library
+function(s) from this file".
+
+Note for later tasks: `rasterize` feature-detects `OffscreenCanvas` at call
+time and falls back to `@resvg/resvg-wasm`, throwing
+`RasterizationUnsupportedError` only when neither backend exists. That is why
+Task 3 needs a degrade path rather than assuming raster always works.
 
 - [ ] **Step 2: Write the failing test**
 
@@ -70,9 +84,23 @@ describe('rasterize is public', () => {
 
 Expected: FAIL with an import error, because `rasterize` is not exported.
 
-- [ ] **Step 4: Add `rasterize` to the export list**
+- [ ] **Step 4: Export the type, then re-export both from the barrel**
 
-Add the identifier to the existing `export { ... }` statement, alphabetically among its neighbours. Do not change the function body.
+In `src/ts/cli/subcommands/render/rasterize.ts`, line 16:
+
+```ts
+export type RasterTarget = 'png' | 'jpeg';
+```
+
+In `src/ts/cli/lib.ts`, after line 16, alongside the other render re-exports:
+
+```ts
+export { rasterize } from './subcommands/render/rasterize.js';
+export type { RasterOptions, RasterTarget } from './subcommands/render/rasterize.js';
+```
+
+Do not touch any function body. `rasterizeRgba` is also exported from that
+module and is deliberately left out of the barrel; fsl-mcp does not need it.
 
 - [ ] **Step 5: Rebuild and re-run**
 
@@ -464,7 +492,25 @@ Add these imports at the top of `src/ts/tools/graphviz.ts`:
 
 ```ts
 import { rasterize, RasterizationUnsupportedError } from 'jssm/cli';
+import type { RasterOptions, RasterTarget } from 'jssm/cli';
 ```
+
+Now that the real types are importable, replace Task 2's structural
+`Rasterizer` placeholder with one that matches jssm's actual signature, so the
+default assignment needs no cast:
+
+```ts
+/** SVG-to-pixels; jssm/cli's `rasterize` by default. */
+export type Rasterizer = (
+  svg    : string,
+  target : RasterTarget,
+  opts   : RasterOptions,
+) => Promise<Uint8Array>;
+```
+
+Task 2 declared it structurally only because `jssm/cli` did not export these
+types yet. With Task 1 released, `deps.raster ?? rasterize` type-checks
+directly.
 
 Re-export the error class so tests and callers can detect the degrade path:
 
@@ -525,7 +571,7 @@ And replace the tail of the function, everything after `const warnings = ...`, w
     return out;
   }
 
-  const rasterFn = deps.raster ?? (rasterize as Rasterizer);
+  const rasterFn = deps.raster ?? rasterize;
 
   try {
     const bytes = await rasterFn(svg, format, definedOptions(options));
