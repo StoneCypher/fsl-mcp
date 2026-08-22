@@ -38,6 +38,8 @@ const external = [
   'jssm/cli',
   '@modelcontextprotocol/server',
   /^@modelcontextprotocol\/server\//,
+  '@viz-js/viz',
+  /^@viz-js\//,
   'zod',
   /^node:/
 ];
