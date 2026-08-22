@@ -175,7 +175,7 @@ schema that cannot be described ahead of time.
 
 ## Data flow
 
-```
+```text
 dot ─► viz.render(dot, { engine, format: 'svg' })
         │
         ├─ status:'failure' ─────► { valid: false, errors: [...] }
