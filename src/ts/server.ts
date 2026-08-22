@@ -10,7 +10,7 @@ import { fslExplain  } from './tools/explain.js';
 import { fslSimulate } from './tools/simulate.js';
 import { fslRender  } from './tools/render.js';
 import type { RenderRasterOptions } from './tools/render.js';
-import { GUIDE_FLOWCHARTS, GUIDE_LANGUAGE } from './tools/guide-content.js';
+import { GUIDE_FLOWCHARTS, GUIDE_GRAPHVIZ, GUIDE_LANGUAGE } from './tools/guide-content.js';
 import { fslScaffold } from './tools/scaffold.js';
 import { PRESET_IDS, SCAFFOLD_REGISTRY } from './tools/scaffold-registry.js';
 import { FSL_MCP_VERSION } from './version.js';
@@ -128,11 +128,12 @@ export function createServer(): McpServer {
     });
 
   server.registerTool('fsl_guide',
-    { description: 'Returns FSL authoring guidance as markdown. topic "language": the full FSL primer - call before writing FSL for the first time. topic "flowcharts": how to express flowcharts in FSL (decision diamonds, labeled branches, terminals, failure paths). Takes no FSL source.',
-      inputSchema: z.object({ topic: z.enum(['flowcharts', 'language']) }) },
-    ({ topic }) => ({
-      content: [{ type: 'text' as const, text: topic === 'flowcharts' ? GUIDE_FLOWCHARTS : GUIDE_LANGUAGE }],
-    }));
+    { description: 'Returns authoring guidance as markdown. topic "language": the full FSL primer - call before writing FSL for the first time. topic "flowcharts": how to express flowcharts in FSL (decision diamonds, labeled branches, terminals, failure paths). topic "graphviz": how to write graphviz DOT directly (digraph vs graph, attributes, clusters, records, ranking, layout engines). Takes no FSL source.',
+      inputSchema: z.object({ topic: z.enum(['flowcharts', 'graphviz', 'language']) }) },
+    ({ topic }) => {
+      const bodies = { flowcharts: GUIDE_FLOWCHARTS, graphviz: GUIDE_GRAPHVIZ, language: GUIDE_LANGUAGE };
+      return { content: [{ type: 'text' as const, text: bodies[topic] }] };
+    });
 
   server.registerTool('fsl_scaffold',
     { description: `Returns a complete, compiling FSL starting document for a preset chart shape, with your names substituted in. Presets by family: ${presetFamilySummary()}. Pass roles to rename states/actions; list roles need their exact canonical count. See fsl_guide topic "flowcharts" for the idioms.`,

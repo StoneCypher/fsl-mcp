@@ -132,6 +132,23 @@ describe('fsl-mcp server', () => {
     await handle.close();
   });
 
+  it('serves the graphviz primer through fsl_guide, without the fsl guides', async () => {
+    const [clientTx, serverTx] = InMemoryTransport.createLinkedPair();
+    const client = new Client({ name: 'test', version: '0.0.0' });
+    const handle = startServer(serverTx);
+    await client.connect(clientTx);
+
+    const result = await client.callTool({ name: 'fsl_guide', arguments: { topic: 'graphviz' } });
+    const content = result.content as { type: string; text?: string }[];
+    const text = content.find((c) => c.type === 'text');
+    expect(text?.text).toContain('# Graphviz DOT (authoring guide for LLMs)');
+    expect(text?.text).toContain('rankdir');
+    expect(text?.text).not.toContain('# Flowcharts in FSL');
+
+    await client.close();
+    await handle.close();
+  });
+
   it('scaffolds a renamed decision preset through fsl_scaffold', async () => {
     const [clientTx, serverTx] = InMemoryTransport.createLinkedPair();
     const client = new Client({ name: 'test', version: '0.0.0' });

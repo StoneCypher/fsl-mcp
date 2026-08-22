@@ -38,7 +38,7 @@ Every tool takes FSL `source` (a string) and returns structured JSON — never a
 | `fsl_explain` | `source` | `{ states, transitions, start, terminals, summary }`, or diagnostics if invalid |
 | `fsl_simulate` | `source`, `actions: string[]` | `{ endState, path, legalNext, rejected? }`, or diagnostics if invalid |
 | `fsl_lint` | `source` | `{ notes: [{rule, message, line}] }` |
-| `fsl_guide` | `topic: "language" \| "flowcharts"` | FSL authoring guidance as markdown - topics: language, flowcharts |
+| `fsl_guide` | `topic: "language" \| "flowcharts" \| "graphviz"` | authoring guidance as markdown - topics: language, flowcharts, graphviz |
 | `fsl_scaffold` | `preset`, `machine_name?`, `roles?` | complete compiling starter FSL from presets (8 presets, 5 families) with your names substituted |
 
 Under the hood, every source-taking tool runs the same non-throwing `analyze()` pass first and short-circuits to diagnostics on a compile error, so a model can always find out *why* its FSL didn't work instead of getting an exception. `fsl_scaffold` runs the same `analyze()` pass on its *generated* source before returning it, so its output carries the same guarantee.
@@ -88,9 +88,15 @@ out-of-band primer pasting needed.
   its first FSL.
 - `topic: "flowcharts"` - the flowchart idiom: decision diamonds with labeled
   branches, terminals, failure paths on `~>`, layout, and a worked example.
+- `topic: "graphviz"` - a graphviz DOT primer verified against graphviz
+  15.1.1: `digraph` versus `graph` and their edge operators, attribute
+  syntax, clusters and the `cluster_` prefix, record and HTML-like labels,
+  ranking, the layout engines, and empirically verified gotchas. Every DOT
+  example in it was rendered before it shipped.
 
 This is one of two tools that take no FSL source; it cannot fail and does not
-touch the parser.
+touch the parser. The `language` topic stays FSL-only - graphviz is a
+different language and lives in its own topic.
 
 ### fsl_scaffold
 
