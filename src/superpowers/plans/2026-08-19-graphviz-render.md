@@ -122,9 +122,19 @@ Open the PR, get it merged, and publish. Note the released version; Task 3 raise
 
 ---
 
-### Task 2: `graphvizRender` SVG path
+### Task 2: `graphvizRender`, complete except the default rasterizer
 
 This task also performs the dependency and bundling work, because this is the first code that imports viz-js and the bundling change is meaningless without it.
+
+**Amended 2026-08-22.** This task originally implemented only the SVG path and
+left `format` and `options` declared but unread until Task 3, which would have
+tripped `no-unused-vars`. Two facts make a better split available:
+`RasterizationUnsupportedError` is *already* exported from `jssm/cli` and
+already imported by `render.ts:1`, and the rasterizer is an injectable
+collaborator. So this task implements the whole tool, raster branch and degrade
+path included, with `deps.raster` as the only source of a rasterizer. Every
+raster path is tested here through injection. Task 3 then wires the real
+default once jssm ships it.
 
 **Files:**
 - Create: `src/ts/tools/graphviz.ts`
@@ -238,7 +248,93 @@ describe('graphvizRender, svg', () => {
   });
 
 });
+
+describe('graphvizRender, raster via an injected rasterizer', () => {
+
+  it('returns image bytes and the matching mime type', async () => {
+    const fake: Rasterizer = () => Promise.resolve(new Uint8Array([1, 2, 3]));
+    const r = await graphvizRender('digraph { a -> b; }', 'dot', 'png', {}, { raster: fake });
+    expect(r.valid).toBe(true);
+    if (r.valid && 'bytes' in r) {
+      expect(r.mimeType).toBe('image/png');
+      expect(Array.from(r.bytes)).toEqual([1, 2, 3]);
+    }
+  });
+
+  it('uses the jpeg mime type for jpeg', async () => {
+    const fake: Rasterizer = () => Promise.resolve(new Uint8Array([9]));
+    const r = await graphvizRender('digraph { a -> b; }', 'dot', 'jpeg', {}, { raster: fake });
+    expect(r.valid).toBe(true);
+    if (r.valid && 'bytes' in r) { expect(r.mimeType).toBe('image/jpeg'); }
+  });
+
+  it('hands the rasterizer the real svg, not the dot source', async () => {
+    let seenSvg = '';
+    const spy: Rasterizer = (svg) => { seenSvg = svg; return Promise.resolve(new Uint8Array([1])); };
+    await graphvizRender('digraph { a -> b; }', 'dot', 'png', {}, { raster: spy });
+    expect(seenSvg).toContain('<svg');
+  });
+
+  it('forwards only the defined raster options', async () => {
+    let seen: Record<string, number> | undefined;
+    const spy: Rasterizer = (_svg, _target, opts) => {
+      seen = opts;
+      return Promise.resolve(new Uint8Array([1]));
+    };
+    await graphvizRender('digraph { a -> b; }', 'dot', 'png', { width: 640 }, { raster: spy });
+    expect(seen).toEqual({ width: 640 });
+  });
+
+  it('forwards every defined raster option when all are given', async () => {
+    let seen: Record<string, number> | undefined;
+    const spy: Rasterizer = (_svg, _target, opts) => {
+      seen = opts;
+      return Promise.resolve(new Uint8Array([1]));
+    };
+    await graphvizRender(
+      'digraph { a -> b; }', 'dot', 'jpeg',
+      { width: 1, height: 2, scale: 3, quality: 4 },
+      { raster: spy },
+    );
+    expect(seen).toEqual({ width: 1, height: 2, scale: 3, quality: 4 });
+  });
+
+  it('degrades to svg when the rasterizer reports no backend', async () => {
+    const noBackend: Rasterizer = () => Promise.reject(new RasterizationUnsupportedError('nope'));
+    const r = await graphvizRender('digraph { a -> b; }', 'dot', 'png', {}, { raster: noBackend });
+    expect(r.valid).toBe(true);
+    if (r.valid && 'note' in r) {
+      expect(r.svg).toContain('<svg');
+      expect(r.note).toContain('no raster backend');
+    }
+  });
+
+  it('returns a failure when the rasterizer throws anything else', async () => {
+    const boom: Rasterizer = () => Promise.reject(new Error('canvas exploded'));
+    const r = await graphvizRender('digraph { a -> b; }', 'dot', 'png', {}, { raster: boom });
+    expect(r.valid).toBe(false);
+    if (!r.valid && 'error' in r) { expect(r.error).toBe('canvas exploded'); }
+  });
+
+  it('reports no rasterizer when raster is requested with none injected', async () => {
+    const r = await graphvizRender('digraph { a -> b; }', 'dot', 'png');
+    expect(r.valid).toBe(false);
+    if (!r.valid && 'error' in r) { expect(r.error).toBe('no rasterizer configured'); }
+  });
+
+  it('never reaches the rasterizer when the dot is invalid', async () => {
+    let called = false;
+    const spy: Rasterizer = () => { called = true; return Promise.resolve(new Uint8Array()); };
+    const r = await graphvizRender('digraph { a -> ', 'dot', 'png', {}, { raster: spy });
+    expect(r.valid).toBe(false);
+    expect(called).toBe(false);
+  });
+
+});
 ```
+
+That last test is the one that proves the guard: the rasterizer must never see
+input graphviz rejected. Keep it.
 
 - [ ] **Step 4: Run the tests to verify they fail**
 
@@ -355,7 +451,7 @@ export async function graphvizRender(
   format  : GraphvizFormat        = 'svg',
   options : GraphvizRasterOptions = {},
   deps    : GraphvizDeps          = {},
-): Promise<GraphvizSvg | GraphvizError | GraphvizFailure> {
+): Promise<GraphvizSvg | GraphvizImage | GraphvizUnsupported | GraphvizError | GraphvizFailure> {
 
   const makeViz = deps.viz ?? (instance as VizFactory);
 
@@ -372,155 +468,55 @@ export async function graphvizRender(
     return { valid: false, errors: result.errors.map(normalize) };
   }
 
+  const svg      = result.output;
   const warnings = result.errors.map((e) => e.message);
-  const out: GraphvizSvg = { valid: true, format: 'svg', svg: result.output };
-  if (warnings.length > 0) { out.warnings = warnings; }
-  return out;
+
+  if (format === 'svg') {
+    const out: GraphvizSvg = { valid: true, format: 'svg', svg };
+    if (warnings.length > 0) { out.warnings = warnings; }
+    return out;
+  }
+
+  const rasterFn = deps.raster;
+
+  if (rasterFn === undefined) {
+    return { valid: false, error: 'no rasterizer configured' };
+  }
+
+  try {
+    const bytes = await rasterFn(svg, format, definedOptions(options));
+    const out: GraphvizImage = { valid: true, format, mimeType: MIME[format], bytes };
+    if (warnings.length > 0) { out.warnings = warnings; }
+    return out;
+  } catch (err: unknown) {
+    if (err instanceof RasterizationUnsupportedError) {
+      return {
+        valid  : true,
+        format,
+        svg,
+        note   : 'no raster backend available in this runtime; returning the svg instead.',
+      };
+    }
+    return { valid: false, error: messageOf(err) };
+  }
 
 }
 ```
 
-Note: `options` and `format` are accepted but unused until Task 3. If eslint objects to the unused parameters before Task 3 lands, complete Tasks 2 and 3 back to back rather than suppressing the warning.
+The `rasterFn === undefined` branch is temporary and disappears in Task 3. Until
+jssm exports `rasterize`, there is no default rasterizer to fall back to, so the
+tool is honest about it rather than pretending raster works.
 
-- [ ] **Step 6: Run the tests to verify they pass**
-
-Run: `npx vitest run src/ts/tests/graphviz.spec.ts`
-Expected: PASS, all six.
-
-- [ ] **Step 7: Verify the bundle did not swallow viz-js**
-
-Run: `npm run build`
-Run: `ls -l dist/bin.mjs`
-
-Expected: still tens of KB, in the same ballpark as the 63 KB it was at v0.7.0. Hundreds of KB or megabytes means Step 2 did not take, and the wasm build got inlined. Stop and fix before continuing.
-
-- [ ] **Step 8: Commit**
-
-```bash
-git add package.json package-lock.json rollup.config.js src/ts/tools/graphviz.ts src/ts/tests/graphviz.spec.ts
-git commit -m "feat(graphviz): render DOT to svg via viz-js, non-throwing"
-```
-
----
-
-### Task 3: Raster formats and the unsupported degrade
-
-**Files:**
-- Modify: `src/ts/tools/graphviz.ts`
-- Modify: `package.json` (raise the jssm floor to the Task 1 release)
-- Test: `src/ts/tests/graphviz.spec.ts`
-
-**Interfaces:**
-- Consumes: `rasterize` from `jssm/cli` (Task 1), and everything Task 2 produced.
-- Produces: `GraphvizImage`, `GraphvizUnsupported`, and a widened `graphvizRender` return union.
-
-- [ ] **Step 1: Raise the jssm floor**
-
-Run: `npm install jssm@^<version released in Task 1>`
-
-- [ ] **Step 2: Write the failing tests**
+Also add, above `graphvizRender`, the imports and helpers the raster branch
+needs. `RasterizationUnsupportedError` is already exported from `jssm/cli`
+today, as `render.ts:1` demonstrates:
 
 ```ts
-describe('graphvizRender, raster', () => {
+import { RasterizationUnsupportedError } from 'jssm/cli';
 
-  it('produces png bytes with the right magic number', async () => {
-    const r = await graphvizRender('digraph { a -> b; }', 'dot', 'png');
-    expect(r.valid).toBe(true);
-    if (r.valid && 'bytes' in r) {
-      expect(r.mimeType).toBe('image/png');
-      expect(Array.from(r.bytes.slice(0, 4))).toEqual([0x89, 0x50, 0x4e, 0x47]);
-    }
-  });
-
-  it('produces jpeg bytes with the right magic number', async () => {
-    const r = await graphvizRender('digraph { a -> b; }', 'dot', 'jpeg');
-    expect(r.valid).toBe(true);
-    if (r.valid && 'bytes' in r) {
-      expect(r.mimeType).toBe('image/jpeg');
-      expect(Array.from(r.bytes.slice(0, 3))).toEqual([0xff, 0xd8, 0xff]);
-    }
-  });
-
-  it('forwards only the defined raster options', async () => {
-    let seen: Record<string, number> | undefined;
-    const spy: Rasterizer = (_svg, _target, opts) => {
-      seen = opts;
-      return Promise.resolve(new Uint8Array([1]));
-    };
-    await graphvizRender('digraph { a -> b; }', 'dot', 'png', { width: 640 }, { raster: spy });
-    expect(seen).toEqual({ width: 640 });
-  });
-
-  it('degrades to svg when no rasterizer backend exists', async () => {
-    const noBackend: Rasterizer = () => Promise.reject(new RasterizationUnsupportedError('nope'));
-    const r = await graphvizRender('digraph { a -> b; }', 'dot', 'png', {}, { raster: noBackend });
-    expect(r.valid).toBe(true);
-    if (r.valid && 'note' in r) {
-      expect(r.svg).toContain('<svg');
-      expect(r.note).toContain('no raster backend');
-    }
-  });
-
-  it('returns a failure when the rasterizer throws anything else', async () => {
-    const boom: Rasterizer = () => Promise.reject(new Error('canvas exploded'));
-    const r = await graphvizRender('digraph { a -> b; }', 'dot', 'png', {}, { raster: boom });
-    expect(r.valid).toBe(false);
-    if (!r.valid && 'error' in r) { expect(r.error).toBe('canvas exploded'); }
-  });
-
-  it('never reaches the rasterizer when the dot is invalid', async () => {
-    let called = false;
-    const spy: Rasterizer = () => { called = true; return Promise.resolve(new Uint8Array()); };
-    const r = await graphvizRender('digraph { a -> ', 'dot', 'png', {}, { raster: spy });
-    expect(r.valid).toBe(false);
-    expect(called).toBe(false);
-  });
-
-});
-```
-
-The last test is the one that proves the guard. Keep it.
-
-- [ ] **Step 3: Run the tests to verify they fail**
-
-Run: `npx vitest run src/ts/tests/graphviz.spec.ts`
-Expected: the six new tests FAIL; Task 2's six still PASS.
-
-- [ ] **Step 4: Extend the implementation**
-
-Add these imports at the top of `src/ts/tools/graphviz.ts`:
-
-```ts
-import { rasterize, RasterizationUnsupportedError } from 'jssm/cli';
-import type { RasterOptions, RasterTarget } from 'jssm/cli';
-```
-
-Now that the real types are importable, replace Task 2's structural
-`Rasterizer` placeholder with one that matches jssm's actual signature, so the
-default assignment needs no cast:
-
-```ts
-/** SVG-to-pixels; jssm/cli's `rasterize` by default. */
-export type Rasterizer = (
-  svg    : string,
-  target : RasterTarget,
-  opts   : RasterOptions,
-) => Promise<Uint8Array>;
-```
-
-Task 2 declared it structurally only because `jssm/cli` did not export these
-types yet. With Task 1 released, `deps.raster ?? rasterize` type-checks
-directly.
-
-Re-export the error class so tests and callers can detect the degrade path:
-
-```ts
+/** Re-exported so callers and tests can detect the degrade path. */
 export { RasterizationUnsupportedError };
-```
 
-Add these types:
-
-```ts
 /** Successful raster render; bytes are the encoded image. */
 export interface GraphvizImage {
   valid     : true;
@@ -554,62 +550,162 @@ function definedOptions(options: GraphvizRasterOptions): Record<string, number> 
 }
 ```
 
-Widen the return type to:
+- [ ] **Step 6: Run the tests to verify they pass**
 
-```ts
-Promise<GraphvizSvg | GraphvizImage | GraphvizUnsupported | GraphvizError | GraphvizFailure>
+Run: `npx vitest run src/ts/tests/graphviz.spec.ts`
+Expected: PASS, all six.
+
+- [ ] **Step 7: Verify the bundle did not swallow viz-js**
+
+Run: `npm run build`
+Run: `ls -l dist/bin.mjs`
+
+Expected: still tens of KB, in the same ballpark as the 63 KB it was at v0.7.0. Hundreds of KB or megabytes means Step 2 did not take, and the wasm build got inlined. Stop and fix before continuing.
+
+- [ ] **Step 8: Commit**
+
+```bash
+git add package.json package-lock.json rollup.config.js src/ts/tools/graphviz.ts src/ts/tests/graphviz.spec.ts
+git commit -m "feat(graphviz): render DOT to svg via viz-js, non-throwing"
 ```
 
-And replace the tail of the function, everything after `const warnings = ...`, with:
+---
+
+### Task 3: Wire the real rasterizer
+
+**Amended 2026-08-22.** This task originally carried the whole raster
+implementation. Task 2 now owns that, tested through an injected rasterizer, so
+all that remains here is replacing the temporary "no rasterizer configured"
+branch with jssm's real one and proving it against actual bytes.
+
+**Blocked by Task 1.** Do not start until jssm has released the `rasterize`
+export.
+
+**Files:**
+- Modify: `src/ts/tools/graphviz.ts` (two lines in the function, plus imports)
+- Modify: `package.json` (raise the jssm floor to the Task 1 release)
+- Test: `src/ts/tests/graphviz.spec.ts`
+
+**Interfaces:**
+- Consumes: `rasterize`, `RasterOptions`, and `RasterTarget` from `jssm/cli` (Task 1); everything Task 2 produced.
+- Produces: no new types. `graphvizRender`'s signature and return union are unchanged from Task 2.
+
+- [ ] **Step 1: Raise the jssm floor**
+
+Run: `npm install jssm@^<version released in Task 1>`
+
+- [ ] **Step 2: Write the failing tests**
+
+These are the first tests to exercise a real rasterizer rather than an injected
+one, so they assert on real encoded bytes.
 
 ```ts
-  const svg = result.output;
+describe('graphvizRender, raster with the default rasterizer', () => {
 
-  if (format === 'svg') {
-    const out: GraphvizSvg = { valid: true, format: 'svg', svg };
-    if (warnings.length > 0) { out.warnings = warnings; }
-    return out;
-  }
-
-  const rasterFn = deps.raster ?? rasterize;
-
-  try {
-    const bytes = await rasterFn(svg, format, definedOptions(options));
-    const out: GraphvizImage = { valid: true, format, mimeType: MIME[format], bytes };
-    if (warnings.length > 0) { out.warnings = warnings; }
-    return out;
-  } catch (err: unknown) {
-    if (err instanceof RasterizationUnsupportedError) {
-      return {
-        valid  : true,
-        format,
-        svg,
-        note   : 'no raster backend available in this runtime; returning the svg instead.',
-      };
+  it('produces png bytes with the right magic number', async () => {
+    const r = await graphvizRender('digraph { a -> b; }', 'dot', 'png');
+    expect(r.valid).toBe(true);
+    if (r.valid && 'bytes' in r) {
+      expect(r.mimeType).toBe('image/png');
+      expect(Array.from(r.bytes.slice(0, 4))).toEqual([0x89, 0x50, 0x4e, 0x47]);
     }
-    return { valid: false, error: messageOf(err) };
+  });
+
+  it('produces jpeg bytes with the right magic number', async () => {
+    const r = await graphvizRender('digraph { a -> b; }', 'dot', 'jpeg');
+    expect(r.valid).toBe(true);
+    if (r.valid && 'bytes' in r) {
+      expect(r.mimeType).toBe('image/jpeg');
+      expect(Array.from(r.bytes.slice(0, 3))).toEqual([0xff, 0xd8, 0xff]);
+    }
+  });
+
+  it('honours a requested width', async () => {
+    const narrow = await graphvizRender('digraph { a -> b; }', 'dot', 'png', { width: 100 });
+    const wide   = await graphvizRender('digraph { a -> b; }', 'dot', 'png', { width: 400 });
+    expect(narrow.valid).toBe(true);
+    expect(wide.valid).toBe(true);
+    if (narrow.valid && 'bytes' in narrow && wide.valid && 'bytes' in wide) {
+      expect(wide.bytes.length).toBeGreaterThan(narrow.bytes.length);
+    }
+  });
+
+});
+```
+
+Delete Task 2's `reports no rasterizer when raster is requested with none
+injected` test in the same change. Its branch no longer exists, and leaving it
+would assert behavior the code deliberately dropped.
+
+- [ ] **Step 3: Run the tests to verify they fail**
+
+Run: `npx vitest run src/ts/tests/graphviz.spec.ts`
+
+Expected: the three new tests FAIL with `no rasterizer configured`. Every other
+test in the file still passes, because they inject their own rasterizer and are
+untouched by this change.
+
+- [ ] **Step 4: Wire the default**
+
+Add to the existing `jssm/cli` import line in `src/ts/tools/graphviz.ts`:
+
+```ts
+import { rasterize, RasterizationUnsupportedError } from 'jssm/cli';
+import type { RasterOptions, RasterTarget } from 'jssm/cli';
+```
+
+Now that the real types are importable, replace Task 2's structural
+`Rasterizer` placeholder so the default assignment needs no cast:
+
+```ts
+/** SVG-to-pixels; jssm/cli's `rasterize` by default. */
+export type Rasterizer = (
+  svg    : string,
+  target : RasterTarget,
+  opts   : RasterOptions,
+) => Promise<Uint8Array>;
+```
+
+Then delete the temporary branch:
+
+```ts
+  const rasterFn = deps.raster;
+
+  if (rasterFn === undefined) {
+    return { valid: false, error: 'no rasterizer configured' };
   }
 ```
+
+and replace it with:
+
+```ts
+  const rasterFn = deps.raster ?? rasterize;
+```
+
+That is the entire behavioral change in this task.
 
 - [ ] **Step 5: Run the tests to verify they pass**
 
 Run: `npx vitest run src/ts/tests/graphviz.spec.ts`
-Expected: PASS, all twelve.
+Expected: PASS, all of them.
 
-- [ ] **Step 6: Check coverage on this file**
+- [ ] **Step 6: Check coverage**
 
 Run: `npm run test`
 
-Expected: 100% on all four metrics. If a branch is uncovered, add the test rather than an ignore comment.
+Expected: 100% on all four metrics. The deleted branch removes a line that was
+covered; nothing should become uncovered. If something does, add the test rather
+than an ignore comment.
 
 - [ ] **Step 7: Commit**
 
 ```bash
 git add package.json package-lock.json src/ts/tools/graphviz.ts src/ts/tests/graphviz.spec.ts
-git commit -m "feat(graphviz): add png and jpeg output with the no-backend degrade"
+git commit -m "feat(graphviz): use jssm's rasterize as the default raster backend"
 ```
 
 ---
+
 
 ### Task 4: Register the tool
 
@@ -947,7 +1043,14 @@ Then open the PR against `main`.
 
 ## Self-Review
 
-**Spec coverage.** Naming, Task 4. Standalone architecture, Task 2. The restated guard, Task 3 step 2's final test plus Task 7 step 2. jssm export, Task 1. viz-js direct dependency and both rollup entries, Task 2. Tool surface and defaults, Tasks 2 through 4. Hardcoded engine enum, Task 4. Data flow, Tasks 2 and 3. All five result types, Tasks 2 and 3. Four error paths, Tasks 2 and 3. `renderResult` widening, Task 4. Unit and stochastic testing, Tasks 2, 3, and 5. Guide topic, Task 6. Documentation obligations, Task 7. Sequencing, Task 1's repository note. No gaps found.
+**Amended 2026-08-22.** Tasks 2 and 3 were re-split. Task 2 originally built
+only the SVG path and left `format` and `options` declared but unread, which
+would have tripped `no-unused-vars` and forced Tasks 2 and 3 to land together
+behind a jssm release. Task 2 now implements the complete tool with the
+rasterizer as a required injection, and Task 3 shrinks to swapping in the real
+default. The coverage mapping below reflects the new split.
+
+**Spec coverage.** Naming, Task 4. Standalone architecture, Task 2. The restated guard, Task 2's final raster test plus Task 7 step 2. jssm export, Task 1. viz-js direct dependency and both rollup entries, Task 2. Tool surface and defaults, Tasks 2 and 4. Hardcoded engine enum, Task 4. Data flow, Task 2. All five result types, Task 2. Four error paths, Task 2, with the real rasterizer wired in Task 3. `renderResult` widening, Task 4. Unit and stochastic testing, Tasks 2, 3, and 5. Guide topic, Task 6. Documentation obligations, Task 7. Sequencing, Task 1's repository note. No gaps found.
 
 **Placeholders.** The one soft spot is Task 6 Step 1, which describes the primer's required coverage rather than supplying its prose. That is deliberate: it is an authoring task, not a code task, and pre-writing a graphviz primer here would put unverified claims into a plan. The step names the model document, the required topics, and the command that yields the exact version to verify against.
 
